@@ -3,7 +3,6 @@ package fitness_app_be.fitness_app.PersistenceLayer.Entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
