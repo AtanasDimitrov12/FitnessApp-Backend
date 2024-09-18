@@ -14,7 +14,7 @@ public class UserMapper {
 
     public User toEntity(UserDTO userDTO) {
         return new User(userDTO.getId(), userDTO.getUsername(), userDTO.getEmail(),
-                null, // We don't want to transfer the password via DTO
+                null,
                 userDTO.getFitnessGoal(), userDTO.getDietPreference());
     }
 }

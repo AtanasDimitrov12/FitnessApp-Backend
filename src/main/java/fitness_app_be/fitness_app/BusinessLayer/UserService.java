@@ -9,13 +9,11 @@ import fitness_app_be.fitness_app.PersistenceLayer.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor // Lombok will generate a constructor with required arguments (final fields)
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;

@@ -19,16 +19,19 @@ public class UserController {
 
     @GetMapping
     public List<UserDTO> getAllUsers() {
+
         return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
     public UserDTO getUserById(@PathVariable Long id) {
+
         return userService.getUserById(id);
     }
 
     @PostMapping
     public UserDTO createUser(@RequestBody UserDTO userDTO) {
+
         return userService.createUser(userDTO);
     }
 
