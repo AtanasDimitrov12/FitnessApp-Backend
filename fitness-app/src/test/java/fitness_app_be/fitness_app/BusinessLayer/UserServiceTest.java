@@ -67,6 +67,7 @@ class UserServiceTest {
         // Verify interactions
         verify(userRepository, times(1)).findAll();
         verify(userMapper, times(1)).toDto(mockUser);
+
     }
 
 
