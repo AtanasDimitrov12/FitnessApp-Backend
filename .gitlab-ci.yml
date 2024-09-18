@@ -1,16 +1,16 @@
-variables: 
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false" 
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   
-stages: 
+stages:
   - build
-  - test 
-  
+  - test
+
 build:
-  stage: build 
+  stage: build
   script:
-    - gradlew.bat assemble  
-    
-test: 
+    - ./gradlew assemble
+
+test:
   stage: test
   script:
-   - gradlew.bat test 
+  - ./gradlew test
