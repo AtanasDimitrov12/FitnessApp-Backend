@@ -1,7 +1,7 @@
-package fitness_app.web_app_be.MapperLayer;
+package fitness_app_be.fitness_app.MapperLayer;
 
-import fitness_app.web_app_be.DTOsLayer.UserDTO;
-import fitness_app.web_app_be.PersistenceLayer.Entity.User;
+import fitness_app_be.fitness_app.DTOsLayer.UserDTO;
+import fitness_app_be.fitness_app.PersistenceLayer.Entity.User;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,4 +18,3 @@ public class UserMapper {
                 userDTO.getFitnessGoal(), userDTO.getDietPreference());
     }
 }
-

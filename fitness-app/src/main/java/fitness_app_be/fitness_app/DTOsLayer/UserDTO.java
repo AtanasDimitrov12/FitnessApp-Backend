@@ -1,4 +1,4 @@
-package fitness_app.web_app_be.DTOsLayer;
+package fitness_app_be.fitness_app.DTOsLayer;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,4 +14,3 @@ public class UserDTO {
     private String fitnessGoal;
     private String dietPreference;
 }
-

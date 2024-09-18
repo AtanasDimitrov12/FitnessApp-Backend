@@ -1,13 +1,16 @@
-package fitness_app.web_app_be.BusinessLayer;
+package fitness_app_be.fitness_app.BusinessLayer;
 
-import fitness_app.web_app_be.DTOsLayer.UserDTO;
-import fitness_app.web_app_be.ExceptionHandlingLayer.UserNotFoundException;
-import fitness_app.web_app_be.MapperLayer.UserMapper;
-import fitness_app.web_app_be.PersistenceLayer.Entity.User;
-import fitness_app.web_app_be.PersistenceLayer.UserRepository;
+
+import fitness_app_be.fitness_app.DTOsLayer.UserDTO;
+import fitness_app_be.fitness_app.ExceptionHandlingLayer.UserNotFoundException;
+import fitness_app_be.fitness_app.MapperLayer.UserMapper;
+import fitness_app_be.fitness_app.PersistenceLayer.Entity.User;
+import fitness_app_be.fitness_app.PersistenceLayer.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,8 +41,25 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
+
         userRepository.deleteById(id);
     }
+
+    public UserDTO getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(userMapper::toDto)
+                .orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
+    }
+
+    public List<UserDTO> searchUsersByPartialUsername(String partialUsername) {
+        List<User> users = userRepository.findByUsernameContainingIgnoreCase(partialUsername);
+        return users.stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+
 }
+
 
 

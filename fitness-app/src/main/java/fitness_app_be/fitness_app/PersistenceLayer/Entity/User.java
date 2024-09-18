@@ -1,5 +1,4 @@
-package fitness_app.web_app_be.PersistenceLayer.Entity;
-
+package fitness_app_be.fitness_app.PersistenceLayer.Entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -23,5 +22,3 @@ public class User {
     private String fitnessGoal;
     private String dietPreference;
 }
-
-

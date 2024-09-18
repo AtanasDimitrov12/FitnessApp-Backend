@@ -1,14 +1,13 @@
-package fitness_app.web_app_be;
+package fitness_app_be.fitness_app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class WebAppBeApplication {
+public class FitnessAppApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(WebAppBeApplication.class, args);
+		SpringApplication.run(FitnessAppApplication.class, args);
 	}
 
 }
-

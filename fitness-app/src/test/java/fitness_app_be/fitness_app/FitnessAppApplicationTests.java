@@ -1,10 +1,10 @@
-package fitness_app.web_app_be;
+package fitness_app_be.fitness_app;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class WebAppBeApplicationTests {
+class FitnessAppApplicationTests {
 
 	@Test
 	void contextLoads() {
