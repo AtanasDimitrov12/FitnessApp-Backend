@@ -19,7 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class UserServiceTest {
+class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
@@ -28,7 +28,7 @@ class UserServiceTest {
     private UserMapper userMapper;
 
     @InjectMocks
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
 
     private User mockUser;
     private UserDTO mockUserDTO;
@@ -55,7 +55,7 @@ class UserServiceTest {
         when(userRepository.findAll()).thenReturn(users); // Return a list of mock users
         when(userMapper.toDto(mockUser)).thenReturn(mockUserDTO);
 
-        List<UserDTO> userDTOList = userService.getAllUsers();
+        List<UserDTO> userDTOList = userServiceImpl.getAllUsers();
 
         assertNotNull(userDTOList, "Null list of users is returned.");
         assertEquals(1, userDTOList.size(), "Returned size users list does not match expected one.");
@@ -74,7 +74,7 @@ class UserServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(mockUser));
         when(userMapper.toDto(mockUser)).thenReturn(mockUserDTO);
 
-        UserDTO userDTO = userService.getUserById(1L);
+        UserDTO userDTO = userServiceImpl.getUserById(1L);
 
         assertNotNull(userDTO, "Null user is returned.");
         assertEquals("testUser", userDTO.getUsername(), "Incorrect username.");
@@ -88,7 +88,7 @@ class UserServiceTest {
 
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(UserNotFoundException.class, () -> userService.getUserById(1L));
+        assertThrows(UserNotFoundException.class, () -> userServiceImpl.getUserById(1L));
 
         verify(userRepository, times(1)).findById(1L);
         verify(userMapper, never()).toDto(any());
@@ -101,7 +101,7 @@ class UserServiceTest {
         when(userRepository.save(mockUser)).thenReturn(mockUser);
         when(userMapper.toDto(mockUser)).thenReturn(mockUserDTO);
 
-        UserDTO savedUserDTO = userService.createUser(mockUserDTO);
+        UserDTO savedUserDTO = userServiceImpl.createUser(mockUserDTO);
 
         assertNotNull(savedUserDTO, "Null user is returned.");
         assertEquals("testUser", savedUserDTO.getUsername());
@@ -114,7 +114,7 @@ class UserServiceTest {
     @Test
     void deleteUser() {
 
-        userService.deleteUser(1L);
+        userServiceImpl.deleteUser(1L);
 
         verify(userRepository, times(1)).deleteById(1L);
     }
@@ -125,7 +125,7 @@ class UserServiceTest {
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUser));
         when(userMapper.toDto(mockUser)).thenReturn(mockUserDTO);
 
-        UserDTO foundUserDTO = userService.getUserByEmail("test@example.com");
+        UserDTO foundUserDTO = userServiceImpl.getUserByEmail("test@example.com");
 
         assertNotNull(foundUserDTO, "Null user is returned.");
         assertEquals("test@example.com", foundUserDTO.getEmail());
