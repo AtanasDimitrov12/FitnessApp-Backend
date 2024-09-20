@@ -1,5 +1,6 @@
 package fitness_app_be.fitness_app.BusinessLayer;
 
+import fitness_app_be.fitness_app.BusinessLayer.Impl.UserServiceImpl;
 import fitness_app_be.fitness_app.DTOsLayer.UserDTO;
 import fitness_app_be.fitness_app.ExceptionHandlingLayer.UserNotFoundException;
 import fitness_app_be.fitness_app.MapperLayer.UserMapper;
@@ -132,6 +133,22 @@ class UserServiceImplTest {
 
         verify(userRepository, times(1)).findByEmail("test@example.com");
         verify(userMapper, times(1)).toDto(mockUser);
+    }
+
+    @Test
+    void searchUsersByPartialUsername() {
+
+        String partialUsername = "test";
+        List<User> users = Arrays.asList(mockUser);
+        List<UserDTO> userDTOList = Arrays.asList(mockUserDTO);
+
+        when(userRepository.findByUsernameContainingIgnoreCase(partialUsername)).thenReturn(users);
+        when(userMapper.toDto(mockUser)).thenReturn(mockUserDTO);
+
+        List<UserDTO> result = userServiceImpl.searchUsersByPartialUsername(partialUsername);
+
+        assertEquals(1, result.size(), "Incorrect number of users returned.");
+        assertEquals("testUser", result.get(0).getUsername(), "Username does not match expected one.");
     }
 
 }

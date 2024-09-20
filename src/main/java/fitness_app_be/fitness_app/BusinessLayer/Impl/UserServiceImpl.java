@@ -1,5 +1,6 @@
-package fitness_app_be.fitness_app.BusinessLayer;
+package fitness_app_be.fitness_app.BusinessLayer.Impl;
 
+import fitness_app_be.fitness_app.BusinessLayer.UserService;
 import fitness_app_be.fitness_app.DTOsLayer.UserDTO;
 import fitness_app_be.fitness_app.ExceptionHandlingLayer.UserNotFoundException;
 import fitness_app_be.fitness_app.MapperLayer.UserMapper;
