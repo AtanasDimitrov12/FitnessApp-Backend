@@ -1,0 +1,1 @@
+GIT URL: https://git.fhict.nl/I530410/ia-s3-fitness-app
