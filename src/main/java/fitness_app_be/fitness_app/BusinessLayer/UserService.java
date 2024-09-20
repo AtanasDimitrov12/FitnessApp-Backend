@@ -10,4 +10,5 @@ public interface UserService {
     void deleteUser(Long id);
     UserDTO getUserByEmail(String email);
     List<UserDTO> searchUsersByPartialUsername(String partialUsername);
+    UserDTO updateUser(UserDTO userDTO);
 }

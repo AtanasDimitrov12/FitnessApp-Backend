@@ -4,7 +4,7 @@ import fitness_app_be.fitness_app.BusinessLayer.UserService;
 import fitness_app_be.fitness_app.DTOsLayer.UserDTO;
 import fitness_app_be.fitness_app.ExceptionHandlingLayer.UserNotFoundException;
 import fitness_app_be.fitness_app.MapperLayer.UserMapper;
-import fitness_app_be.fitness_app.PersistenceLayer.Entity.User;
+import fitness_app_be.fitness_app.PersistenceLayer.Entity.UserEntity;
 import fitness_app_be.fitness_app.PersistenceLayer.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,9 +35,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
-        User user = userMapper.toEntity(userDTO);
-        User savedUser = userRepository.save(user);
-        return userMapper.toDto(savedUser);
+        UserEntity userEntity = userMapper.toEntity(userDTO);
+        UserEntity savedUserEntity = userRepository.save(userEntity);
+        return userMapper.toDto(savedUserEntity);
     }
 
     @Override
@@ -54,9 +54,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDTO> searchUsersByPartialUsername(String partialUsername) {
-        List<User> users = userRepository.findByUsernameContainingIgnoreCase(partialUsername);
-        return users.stream()
+        List<UserEntity> userEntities = userRepository.findByUsernameContainingIgnoreCase(partialUsername);
+        return userEntities.stream()
                 .map(userMapper::toDto)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public UserDTO updateUser(UserDTO userDTO) {
+        UserEntity existingUserEntity = userRepository.findByEmail(userDTO.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("User with email " + userDTO.getEmail() + " not found"));
+
+        // Update fields from the UserDTO to the existing User
+        existingUserEntity.setUsername(userDTO.getUsername());
+        existingUserEntity.setFitnessGoal(userDTO.getFitnessGoal());
+        existingUserEntity.setDietPreference(userDTO.getDietPreference());
+
+
+        UserEntity updatedUserEntity = userRepository.save(existingUserEntity);
+        return userMapper.toDto(updatedUserEntity);
+    }
+
+
+
 }

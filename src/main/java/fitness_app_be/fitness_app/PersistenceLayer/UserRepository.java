@@ -1,6 +1,6 @@
 package fitness_app_be.fitness_app.PersistenceLayer;
 
-import fitness_app_be.fitness_app.PersistenceLayer.Entity.User;
+import fitness_app_be.fitness_app.PersistenceLayer.Entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,15 +8,15 @@ import java.util.Optional;
 import java.util.List;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
-    Optional<User> findByEmail(String email);
+    Optional<UserEntity> findByEmail(String email);
 
-    Optional<User> findByUsername(String username);
+    Optional<UserEntity> findByUsername(String username);
 
-    List<User> findByFitnessGoal(String fitnessGoal);
+    List<UserEntity> findByFitnessGoal(String fitnessGoal);
 
-    List<User> findByUsernameContainingIgnoreCase(String partialUsername);
+    List<UserEntity> findByUsernameContainingIgnoreCase(String partialUsername);
 
     long countByEmail(String email);
 }
