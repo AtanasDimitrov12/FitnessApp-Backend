@@ -1,7 +1,7 @@
 package fitness_app_be.fitness_app.BusinessLayer;
 
 import fitness_app_be.fitness_app.BusinessLayer.Impl.UserServiceImpl;
-import fitness_app_be.fitness_app.DTOsLayer.UserDTO;
+import fitness_app_be.fitness_app.Domain.User;
 import fitness_app_be.fitness_app.ExceptionHandlingLayer.UserNotFoundException;
 import fitness_app_be.fitness_app.MapperLayer.UserMapper;
 import fitness_app_be.fitness_app.PersistenceLayer.Entity.UserEntity;
@@ -12,7 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class UserEntityServiceImplTest {
+class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
@@ -32,7 +31,7 @@ class UserEntityServiceImplTest {
     private UserServiceImpl userServiceImpl;
 
     private UserEntity mockUserEntity;
-    private UserDTO mockUserDTO;
+    private User mockUser;
 
     @BeforeEach
     void setUp() {
@@ -43,78 +42,67 @@ class UserEntityServiceImplTest {
         mockUserEntity.setUsername("testUser");
         mockUserEntity.setEmail("test@example.com");
 
-        mockUserDTO = new UserDTO();
-        mockUserDTO.setId(1L);
-        mockUserDTO.setUsername("testUser");
-        mockUserDTO.setEmail("test@example.com");
+        mockUser = new User(1L, "testUser", "test@example.com", "Gain muscle", "Vegetarian");
     }
 
     @Test
     void getAllUsers() {
-
         List<UserEntity> userEntities = Arrays.asList(mockUserEntity);
-        when(userRepository.findAll()).thenReturn(userEntities); // Return a list of mock users
-        when(userMapper.toDto(mockUserEntity)).thenReturn(mockUserDTO);
+        when(userRepository.findAll()).thenReturn(userEntities);
+        when(userMapper.entityToDomain(mockUserEntity)).thenReturn(mockUser);
 
-        List<UserDTO> userDTOList = userServiceImpl.getAllUsers();
+        List<User> userList = userServiceImpl.getAllUsers();
 
-        assertNotNull(userDTOList, "Null list of users is returned.");
-        assertEquals(1, userDTOList.size(), "Returned size users list does not match expected one.");
-        assertEquals("testUser", userDTOList.get(0).getUsername(), "Returned first username does not match expected one.");
+        assertNotNull(userList, "Null list of users is returned.");
+        assertEquals(1, userList.size(), "Returned size of users list does not match expected one.");
+        assertEquals("testUser", userList.get(0).getUsername(), "Returned username does not match expected one.");
 
         verify(userRepository, times(1)).findAll();
-        verify(userMapper, times(1)).toDto(mockUserEntity);
-
+        verify(userMapper, times(1)).entityToDomain(mockUserEntity);
     }
-
-
 
     @Test
     void getUserById() {
-
         when(userRepository.findById(1L)).thenReturn(Optional.of(mockUserEntity));
-        when(userMapper.toDto(mockUserEntity)).thenReturn(mockUserDTO);
+        when(userMapper.entityToDomain(mockUserEntity)).thenReturn(mockUser);
 
-        UserDTO userDTO = userServiceImpl.getUserById(1L);
+        User user = userServiceImpl.getUserById(1L);
 
-        assertNotNull(userDTO, "Null user is returned.");
-        assertEquals("testUser", userDTO.getUsername(), "Incorrect username.");
+        assertNotNull(user, "Null user is returned.");
+        assertEquals("testUser", user.getUsername(), "Incorrect username.");
 
         verify(userRepository, times(1)).findById(1L);
-        verify(userMapper, times(1)).toDto(mockUserEntity);
+        verify(userMapper, times(1)).entityToDomain(mockUserEntity);
     }
 
     @Test
     void getUserById_UserNotFound() {
-
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> userServiceImpl.getUserById(1L));
 
         verify(userRepository, times(1)).findById(1L);
-        verify(userMapper, never()).toDto(any());
+        verify(userMapper, never()).entityToDomain(any());
     }
 
     @Test
     void createUser() {
-
-        when(userMapper.toEntity(mockUserDTO)).thenReturn(mockUserEntity);
+        when(userMapper.domainToEntity(mockUser)).thenReturn(mockUserEntity);
         when(userRepository.save(mockUserEntity)).thenReturn(mockUserEntity);
-        when(userMapper.toDto(mockUserEntity)).thenReturn(mockUserDTO);
+        when(userMapper.entityToDomain(mockUserEntity)).thenReturn(mockUser);
 
-        UserDTO savedUserDTO = userServiceImpl.createUser(mockUserDTO);
+        User createdUser = userServiceImpl.createUser(mockUser);
 
-        assertNotNull(savedUserDTO, "Null user is returned.");
-        assertEquals("testUser", savedUserDTO.getUsername());
+        assertNotNull(createdUser, "Null user is returned.");
+        assertEquals("testUser", createdUser.getUsername());
 
-        verify(userMapper, times(1)).toEntity(mockUserDTO);
+        verify(userMapper, times(1)).domainToEntity(mockUser);
         verify(userRepository, times(1)).save(mockUserEntity);
-        verify(userMapper, times(1)).toDto(mockUserEntity);
+        verify(userMapper, times(1)).entityToDomain(mockUserEntity);
     }
 
     @Test
     void deleteUser() {
-
         userServiceImpl.deleteUser(1L);
 
         verify(userRepository, times(1)).deleteById(1L);
@@ -122,33 +110,30 @@ class UserEntityServiceImplTest {
 
     @Test
     void findUserByEmail() {
-
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUserEntity));
-        when(userMapper.toDto(mockUserEntity)).thenReturn(mockUserDTO);
+        when(userMapper.entityToDomain(mockUserEntity)).thenReturn(mockUser);
 
-        UserDTO foundUserDTO = userServiceImpl.getUserByEmail("test@example.com");
+        User foundUser = userServiceImpl.getUserByEmail("test@example.com");
 
-        assertNotNull(foundUserDTO, "Null user is returned.");
-        assertEquals("test@example.com", foundUserDTO.getEmail());
+        assertNotNull(foundUser, "Null user is returned.");
+        assertEquals("test@example.com", foundUser.getEmail());
 
         verify(userRepository, times(1)).findByEmail("test@example.com");
-        verify(userMapper, times(1)).toDto(mockUserEntity);
+        verify(userMapper, times(1)).entityToDomain(mockUserEntity);
     }
 
     @Test
     void searchUsersByPartialUsername() {
-
         String partialUsername = "test";
         List<UserEntity> userEntities = Arrays.asList(mockUserEntity);
-        List<UserDTO> userDTOList = Arrays.asList(mockUserDTO);
+        List<User> userList = Arrays.asList(mockUser);
 
         when(userRepository.findByUsernameContainingIgnoreCase(partialUsername)).thenReturn(userEntities);
-        when(userMapper.toDto(mockUserEntity)).thenReturn(mockUserDTO);
+        when(userMapper.entityToDomain(mockUserEntity)).thenReturn(mockUser);
 
-        List<UserDTO> result = userServiceImpl.searchUsersByPartialUsername(partialUsername);
+        List<User> result = userServiceImpl.searchUsersByPartialUsername(partialUsername);
 
         assertEquals(1, result.size(), "Incorrect number of users returned.");
         assertEquals("testUser", result.get(0).getUsername(), "Username does not match expected one.");
     }
-
 }

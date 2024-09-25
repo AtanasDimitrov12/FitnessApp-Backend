@@ -1,7 +1,7 @@
 package fitness_app_be.fitness_app.BusinessLayer.Impl;
 
 import fitness_app_be.fitness_app.BusinessLayer.UserService;
-import fitness_app_be.fitness_app.DTOsLayer.UserDTO;
+import fitness_app_be.fitness_app.Domain.User;
 import fitness_app_be.fitness_app.ExceptionHandlingLayer.UserNotFoundException;
 import fitness_app_be.fitness_app.MapperLayer.UserMapper;
 import fitness_app_be.fitness_app.PersistenceLayer.Entity.UserEntity;
@@ -20,24 +20,24 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
-    public List<UserDTO> getAllUsers() {
+    public List<User> getAllUsers() {
         return userRepository.findAll().stream()
-                .map(userMapper::toDto)
+                .map(userMapper::entityToDomain)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public UserDTO getUserById(Long id) {
+    public User getUserById(Long id) {
         return userRepository.findById(id)
-                .map(userMapper::toDto)
+                .map(userMapper::entityToDomain)
                 .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     @Override
-    public UserDTO createUser(UserDTO userDTO) {
-        UserEntity userEntity = userMapper.toEntity(userDTO);
+    public User createUser(User user) {
+        UserEntity userEntity = userMapper.domainToEntity(user);
         UserEntity savedUserEntity = userRepository.save(userEntity);
-        return userMapper.toDto(savedUserEntity);
+        return userMapper.entityToDomain(savedUserEntity);
     }
 
     @Override
@@ -46,35 +46,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO getUserByEmail(String email) {
+    public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .map(userMapper::toDto)
+                .map(userMapper::entityToDomain)
                 .orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
     }
 
     @Override
-    public List<UserDTO> searchUsersByPartialUsername(String partialUsername) {
+    public List<User> searchUsersByPartialUsername(String partialUsername) {
         List<UserEntity> userEntities = userRepository.findByUsernameContainingIgnoreCase(partialUsername);
         return userEntities.stream()
-                .map(userMapper::toDto)
+                .map(userMapper::entityToDomain)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public UserDTO updateUser(UserDTO userDTO) {
-        UserEntity existingUserEntity = userRepository.findByEmail(userDTO.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("User with email " + userDTO.getEmail() + " not found"));
+    public User updateUser(User user) {
+        UserEntity existingUserEntity = userRepository.findByEmail(user.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("User with email " + user.getEmail() + " not found"));
 
-        // Update fields from the UserDTO to the existing User
-        existingUserEntity.setUsername(userDTO.getUsername());
-        existingUserEntity.setFitnessGoal(userDTO.getFitnessGoal());
-        existingUserEntity.setDietPreference(userDTO.getDietPreference());
-
+        // Update fields from the User domain object to the existing UserEntity
+        existingUserEntity.setUsername(user.getUsername());
+        existingUserEntity.setFitnessGoal(user.getFitnessGoal());
+        existingUserEntity.setDietPreference(user.getDietPreference());
 
         UserEntity updatedUserEntity = userRepository.save(existingUserEntity);
-        return userMapper.toDto(updatedUserEntity);
+        return userMapper.entityToDomain(updatedUserEntity);
     }
-
-
-
 }

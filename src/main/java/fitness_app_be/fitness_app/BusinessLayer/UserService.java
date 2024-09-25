@@ -1,14 +1,14 @@
 package fitness_app_be.fitness_app.BusinessLayer;
 
-import fitness_app_be.fitness_app.DTOsLayer.UserDTO;
+import fitness_app_be.fitness_app.Domain.User;
 import java.util.List;
 
 public interface UserService {
-    List<UserDTO> getAllUsers();
-    UserDTO getUserById(Long id);
-    UserDTO createUser(UserDTO userDTO);
+    List<User> getAllUsers();
+    User getUserById(Long id);
+    User createUser(User user);
     void deleteUser(Long id);
-    UserDTO getUserByEmail(String email);
-    List<UserDTO> searchUsersByPartialUsername(String partialUsername);
-    UserDTO updateUser(UserDTO userDTO);
+    User getUserByEmail(String email);
+    List<User> searchUsersByPartialUsername(String partialUsername);
+    User updateUser(User user);
 }
