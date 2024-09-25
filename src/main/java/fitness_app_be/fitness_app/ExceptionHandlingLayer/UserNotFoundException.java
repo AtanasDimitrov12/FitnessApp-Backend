@@ -11,8 +11,9 @@ public class UserNotFoundException extends RuntimeException {
         super("User not found with ID: " + id);
     }
 
-    // Constructor for email not found or other custom messages
+
     public UserNotFoundException(String message) {
+
         super(message);
     }
 }

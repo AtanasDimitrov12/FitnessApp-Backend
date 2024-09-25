@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .map(userMapper::entityToDomain)
-                .orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
+                .orElseThrow(() -> new UserNotFoundException("User with email: " + email + " not found"));
     }
 
     @Override
@@ -65,7 +65,6 @@ public class UserServiceImpl implements UserService {
         UserEntity existingUserEntity = userRepository.findByEmail(user.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("User with email " + user.getEmail() + " not found"));
 
-        // Update fields from the User domain object to the existing UserEntity
         existingUserEntity.setUsername(user.getUsername());
         existingUserEntity.setFitnessGoal(user.getFitnessGoal());
         existingUserEntity.setDietPreference(user.getDietPreference());

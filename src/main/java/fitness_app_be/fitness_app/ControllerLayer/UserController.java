@@ -21,7 +21,7 @@ public class UserController {
 
     @GetMapping
     public List<UserDTO> getAllUsers() {
-        // Get all Users from the service, map them to UserDTO, and return them
+
         return userService.getAllUsers().stream()
                 .map(userMapper::domainToDto)
                 .collect(Collectors.toList());
@@ -29,22 +29,21 @@ public class UserController {
 
     @GetMapping("/{id}")
     public UserDTO getUserById(@PathVariable Long id) {
-        // Get the User by ID from the service and map it to UserDTO
+
         User user = userService.getUserById(id);
         return userMapper.domainToDto(user);
     }
 
     @PostMapping
     public UserDTO createUser(@RequestBody UserDTO userDTO) {
-        // Map the incoming UserDTO to a User domain object, pass it to the service, and map the result back to UserDTO
-        User user = userMapper.toDomain(userDTO);
-        User createdUser = userService.createUser(user);
+
+        User createdUser = userService.createUser(userMapper.toDomain(userDTO));
         return userMapper.domainToDto(createdUser);
     }
 
     @PutMapping
     public UserDTO updateUser(@RequestBody UserDTO userDTO) {
-        // Map the incoming UserDTO to a User domain object, pass it to the service, and map the result back to UserDTO
+
         User user = userMapper.toDomain(userDTO);
         User updatedUser = userService.updateUser(user);
         return userMapper.domainToDto(updatedUser);
@@ -52,7 +51,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        // Call the service to delete the user
+
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }

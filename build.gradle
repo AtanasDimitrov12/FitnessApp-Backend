@@ -24,21 +24,17 @@ repositories {
 }
 
 dependencies {
-	// Spring Boot JPA and Web dependencies
+
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
-	// Database driver (replace with MySQL if needed)
 	implementation 'com.h2database:h2' // Or MySQL dependency if you're using MySQL
 
-	// Lombok dependency for main and test source sets
 	implementation 'org.projectlombok:lombok:1.18.28'
 	annotationProcessor 'org.projectlombok:lombok:1.18.28'
 
-	// Test dependencies
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-	// Mockito for testing
 	testImplementation 'org.mockito:mockito-junit-jupiter:5.3.1'
 }
 
