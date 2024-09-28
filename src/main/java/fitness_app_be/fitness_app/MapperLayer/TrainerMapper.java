@@ -10,23 +10,23 @@ public class TrainerMapper {
 
     public TrainerDTO toDto(TrainerEntity trainerEntity) {
         return new TrainerDTO(trainerEntity.getId(), trainerEntity.getFirstName(),
-                trainerEntity.getLastName(), trainerEntity.getEmail(),
-                trainerEntity.getAge(), trainerEntity.getGender(),
-                trainerEntity.getExpertise());
+                trainerEntity.getLastName(), trainerEntity.getUsername(),  // Added username
+                trainerEntity.getEmail(), trainerEntity.getAge(),
+                trainerEntity.getGender(), trainerEntity.getExpertise());
     }
 
-    public TrainerEntity toEntity(TrainerDTO TrainerDTO) {
-        return new TrainerEntity(TrainerDTO.getId(), TrainerDTO.getFirstName(),
-                TrainerDTO.getLastName(), TrainerDTO.getEmail(), null,
-                TrainerDTO.getAge(), TrainerDTO.getGender(),
-                TrainerDTO.getExpertise());
+    public TrainerEntity toEntity(TrainerDTO trainerDTO) {
+        return new TrainerEntity(trainerDTO.getId(), trainerDTO.getFirstName(),
+                trainerDTO.getLastName(), trainerDTO.getUsername(),  // Added username
+                trainerDTO.getEmail(), null, trainerDTO.getAge(),
+                trainerDTO.getGender(), trainerDTO.getExpertise());
     }
 
     public Trainer entityToDomain(TrainerEntity trainerEntity) {
         return new Trainer(trainerEntity.getId(), trainerEntity.getFirstName(),
-                trainerEntity.getLastName(), trainerEntity.getEmail(),
-                trainerEntity.getAge(), trainerEntity.getGender(),
-                trainerEntity.getExpertise());
+                trainerEntity.getLastName(), trainerEntity.getUsername(),  // Added username
+                trainerEntity.getEmail(), trainerEntity.getAge(),
+                trainerEntity.getGender(), trainerEntity.getExpertise());
     }
 
     public TrainerEntity domainToEntity(Trainer trainer) {
@@ -34,6 +34,7 @@ public class TrainerMapper {
         trainerEntity.setId(trainer.getId());
         trainerEntity.setFirstName(trainer.getFirstName());
         trainerEntity.setLastName(trainer.getLastName());
+        trainerEntity.setUsername(trainer.getUsername());  // Added username
         trainerEntity.setEmail(trainer.getEmail());
         trainerEntity.setAge(trainer.getAge());
         trainerEntity.setGender(trainer.getGender());
@@ -41,17 +42,17 @@ public class TrainerMapper {
         return trainerEntity;
     }
 
-    public Trainer toDomain(TrainerDTO TrainerDTO) {
-        return new Trainer(TrainerDTO.getId(), TrainerDTO.getFirstName(),
-                TrainerDTO.getLastName(), TrainerDTO.getEmail(),
-                TrainerDTO.getAge(), TrainerDTO.getGender(),
-                TrainerDTO.getExpertise());
+    public Trainer toDomain(TrainerDTO trainerDTO) {
+        return new Trainer(trainerDTO.getId(), trainerDTO.getFirstName(),
+                trainerDTO.getLastName(), trainerDTO.getUsername(),  // Added username
+                trainerDTO.getEmail(), trainerDTO.getAge(),
+                trainerDTO.getGender(), trainerDTO.getExpertise());
     }
 
     public TrainerDTO domainToDto(Trainer trainer) {
         return new TrainerDTO(trainer.getId(), trainer.getFirstName(),
-                trainer.getLastName(), trainer.getEmail(),
-                trainer.getAge(), trainer.getGender(),
-                trainer.getExpertise());
+                trainer.getLastName(), trainer.getUsername(),  // Added username
+                trainer.getEmail(), trainer.getAge(),
+                trainer.getGender(), trainer.getExpertise());
     }
 }
