@@ -4,7 +4,7 @@ package fitness_app_be.fitness_app.Controllers;
 import fitness_app_be.fitness_app.Business.TrainerService;
 import fitness_app_be.fitness_app.Controllers.DTOs.TrainerDTO;
 import fitness_app_be.fitness_app.Domain.Trainer;
-import fitness_app_be.fitness_app.Controllers.MapperLayer.TrainerMapper;
+import fitness_app_be.fitness_app.Controllers.Mapper.TrainerMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

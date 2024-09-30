@@ -2,7 +2,7 @@ package fitness_app_be.fitness_app.Business.Impl;
 
 import fitness_app_be.fitness_app.Domain.Trainer;
 import fitness_app_be.fitness_app.ExceptionHandling.TrainerNotFoundException;
-import fitness_app_be.fitness_app.PersistenceLayer.TrainerRepository;
+import fitness_app_be.fitness_app.Persistence.TrainerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
