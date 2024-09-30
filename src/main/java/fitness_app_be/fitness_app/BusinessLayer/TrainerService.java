@@ -1,7 +1,6 @@
 package fitness_app_be.fitness_app.BusinessLayer;
 
 import fitness_app_be.fitness_app.Domain.Trainer;
-import fitness_app_be.fitness_app.Domain.User;
 
 import java.util.List;
 

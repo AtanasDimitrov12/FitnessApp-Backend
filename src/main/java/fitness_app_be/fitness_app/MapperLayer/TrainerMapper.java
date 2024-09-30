@@ -1,6 +1,7 @@
 package fitness_app_be.fitness_app.MapperLayer;
 
 import fitness_app_be.fitness_app.ControllerLayer.DTOs.TrainerDTO;
+import fitness_app_be.fitness_app.ControllerLayer.DTOs.TrainerDTO;
 import fitness_app_be.fitness_app.Domain.Trainer;
 import fitness_app_be.fitness_app.PersistenceLayer.Entity.TrainerEntity;
 import org.springframework.stereotype.Component;

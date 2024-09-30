@@ -3,7 +3,6 @@ package fitness_app_be.fitness_app.ControllerLayer;
 
 import fitness_app_be.fitness_app.BusinessLayer.TrainerService;
 import fitness_app_be.fitness_app.ControllerLayer.DTOs.TrainerDTO;
-import fitness_app_be.fitness_app.ControllerLayer.DTOs.UserDTO;
 import fitness_app_be.fitness_app.Domain.Trainer;
 import fitness_app_be.fitness_app.MapperLayer.TrainerMapper;
 import lombok.RequiredArgsConstructor;
