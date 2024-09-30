@@ -1,4 +1,4 @@
-package fitness_app_be.fitness_app.ControllerLayer.DTOs;
+package fitness_app_be.fitness_app.Controllers.DTOs;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

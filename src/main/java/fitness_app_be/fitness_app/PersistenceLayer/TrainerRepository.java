@@ -1,6 +1,6 @@
 package fitness_app_be.fitness_app.PersistenceLayer;
 
-import fitness_app_be.fitness_app.PersistenceLayer.Entity.TrainerEntity;
+import fitness_app_be.fitness_app.Domain.Trainer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,15 +8,15 @@ import java.util.Optional;
 import java.util.List;
 
 @Repository
-public interface TrainerRepository extends JpaRepository<TrainerEntity, Long> {
+public interface TrainerRepository extends JpaRepository<Trainer, Long> {
 
-    Optional<TrainerEntity> findByEmail(String email);
+    Optional<Trainer> findByEmail(String email);
 
-    Optional<TrainerEntity> findByUsername(String username);  // Corrected to use lowercase 'username'
+    Optional<Trainer> findByUsername(String username);
 
-    List<TrainerEntity> findByExpertise(String expertise);
+    List<Trainer> findByExpertise(String expertise);
 
-    List<TrainerEntity> findByUsernameContainingIgnoreCase(String partialUsername);
+    List<Trainer> findByUsernameContainingIgnoreCase(String partialUsername);
 
     long countByEmail(String email);
 }

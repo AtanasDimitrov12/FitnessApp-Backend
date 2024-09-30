@@ -1,4 +1,4 @@
-package fitness_app_be.fitness_app.BusinessLayer;
+package fitness_app_be.fitness_app.Business;
 
 import fitness_app_be.fitness_app.Domain.User;
 import java.util.List;
