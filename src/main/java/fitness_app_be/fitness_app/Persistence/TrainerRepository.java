@@ -1,4 +1,4 @@
-package fitness_app_be.fitness_app.PersistenceLayer;
+package fitness_app_be.fitness_app.Persistence;
 
 import fitness_app_be.fitness_app.Domain.Trainer;
 import org.springframework.data.jpa.repository.JpaRepository;

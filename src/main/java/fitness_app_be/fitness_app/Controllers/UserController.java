@@ -3,7 +3,7 @@ package fitness_app_be.fitness_app.Controllers;
 import fitness_app_be.fitness_app.Business.UserService;
 import fitness_app_be.fitness_app.Controllers.DTOs.UserDTO;
 import fitness_app_be.fitness_app.Domain.User;
-import fitness_app_be.fitness_app.Controllers.MapperLayer.UserMapper;
+import fitness_app_be.fitness_app.Controllers.Mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

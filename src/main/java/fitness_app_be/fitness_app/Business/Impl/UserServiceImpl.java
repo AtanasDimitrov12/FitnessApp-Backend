@@ -3,7 +3,7 @@ package fitness_app_be.fitness_app.Business.Impl;
 import fitness_app_be.fitness_app.Business.UserService;
 import fitness_app_be.fitness_app.Domain.User;
 import fitness_app_be.fitness_app.ExceptionHandling.UserNotFoundException;
-import fitness_app_be.fitness_app.PersistenceLayer.UserRepository;
+import fitness_app_be.fitness_app.Persistence.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

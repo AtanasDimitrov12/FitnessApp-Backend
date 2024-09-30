@@ -1,4 +1,4 @@
-package fitness_app_be.fitness_app.Controllers.MapperLayer;
+package fitness_app_be.fitness_app.Controllers.Mapper;
 
 import fitness_app_be.fitness_app.Controllers.DTOs.TrainerDTO;
 import fitness_app_be.fitness_app.Domain.Trainer;
