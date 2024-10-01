@@ -36,7 +36,7 @@ class TrainerServiceImplTest {
     @Test
     void getAllTrainers() {
         List<Trainer> trainers = Arrays.asList(mockTrainer);
-        when(trainerRepository.findAll()).thenReturn(trainers);
+        when(trainerRepository.getAll()).thenReturn(trainers);
 
         List<Trainer> trainerList = trainerServiceImpl.getAllTrainers();
 
@@ -44,49 +44,59 @@ class TrainerServiceImplTest {
         assertEquals(1, trainerList.size(), "The size of the trainer list does not match.");
         assertEquals("johndoe", trainerList.get(0).getUsername(), "The trainer username does not match.");
 
-        verify(trainerRepository, times(1)).findAll();
+        verify(trainerRepository, times(1)).getAll();
     }
 
     @Test
     void getTrainerById() {
-        when(trainerRepository.findById(1L)).thenReturn(Optional.of(mockTrainer));
+        when(trainerRepository.getTrainerById(1L)).thenReturn(Optional.of(mockTrainer));
 
         Trainer trainer = trainerServiceImpl.getTrainerById(1L);
 
         assertNotNull(trainer, "Trainer should not be null.");
         assertEquals("johndoe", trainer.getUsername(), "Trainer username does not match.");
 
-        verify(trainerRepository, times(1)).findById(1L);
+        verify(trainerRepository, times(1)).getTrainerById(1L);
     }
 
     @Test
     void getTrainerById_TrainerNotFound() {
-        when(trainerRepository.findById(1L)).thenReturn(Optional.empty());
+        when(trainerRepository.getTrainerById(1L)).thenReturn(Optional.empty());
 
         assertThrows(TrainerNotFoundException.class, () -> trainerServiceImpl.getTrainerById(1L));
 
-        verify(trainerRepository, times(1)).findById(1L);
+        verify(trainerRepository, times(1)).getTrainerById(1L);
     }
 
     @Test
     void createTrainer() {
-        when(trainerRepository.save(mockTrainer)).thenReturn(mockTrainer);
+        when(trainerRepository.create(mockTrainer)).thenReturn(mockTrainer);
 
         Trainer createdTrainer = trainerServiceImpl.createTrainer(mockTrainer);
 
         assertNotNull(createdTrainer, "Created trainer should not be null.");
         assertEquals("johndoe", createdTrainer.getUsername());
 
-        verify(trainerRepository, times(1)).save(mockTrainer);
+        verify(trainerRepository, times(1)).create(mockTrainer);
     }
 
     @Test
     void deleteTrainer() {
-        when(trainerRepository.existsById(1L)).thenReturn(true);
+        when(trainerRepository.exists(1L)).thenReturn(true);
 
         trainerServiceImpl.deleteTrainer(1L);
 
-        verify(trainerRepository, times(1)).deleteById(1L);
+        verify(trainerRepository, times(1)).delete(1L);
+    }
+
+    @Test
+    void deleteTrainer_TrainerNotFound() {
+        when(trainerRepository.exists(1L)).thenReturn(false);
+
+        assertThrows(TrainerNotFoundException.class, () -> trainerServiceImpl.deleteTrainer(1L));
+
+        verify(trainerRepository, times(1)).exists(1L);
+        verify(trainerRepository, never()).delete(1L);
     }
 
     @Test
@@ -117,7 +127,7 @@ class TrainerServiceImplTest {
     @Test
     void updateTrainer() {
         when(trainerRepository.findByEmail("john.doe@example.com")).thenReturn(Optional.of(mockTrainer));
-        when(trainerRepository.save(mockTrainer)).thenReturn(mockTrainer);
+        when(trainerRepository.update(mockTrainer)).thenReturn(mockTrainer);
 
         mockTrainer.setExpertise("Increase Stamina");
 
@@ -127,6 +137,6 @@ class TrainerServiceImplTest {
         assertEquals("Increase Stamina", updatedTrainer.getExpertise(), "Trainer expertise did not update correctly.");
 
         verify(trainerRepository, times(1)).findByEmail("john.doe@example.com");
-        verify(trainerRepository, times(1)).save(mockTrainer);
+        verify(trainerRepository, times(1)).update(mockTrainer);
     }
 }

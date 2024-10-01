@@ -36,7 +36,7 @@ class WorkoutServiceImplTest {
     @Test
     void getAllWorkouts() {
         List<Workout> workouts = Arrays.asList(mockWorkout);
-        when(workoutRepository.findAll()).thenReturn(workouts);
+        when(workoutRepository.getAll()).thenReturn(workouts);
 
         List<Workout> workoutList = workoutServiceImpl.getAllWorkouts();
 
@@ -44,47 +44,59 @@ class WorkoutServiceImplTest {
         assertEquals(1, workoutList.size(), "The size of the workout list does not match.");
         assertEquals("Strength Training", workoutList.get(0).getName(), "The workout name does not match.");
 
-        verify(workoutRepository, times(1)).findAll();
+        verify(workoutRepository, times(1)).getAll();
     }
 
     @Test
     void getWorkoutById() {
-        when(workoutRepository.findById(1L)).thenReturn(Optional.of(mockWorkout));
+        when(workoutRepository.getWorkoutById(1L)).thenReturn(Optional.of(mockWorkout));
 
         Workout workout = workoutServiceImpl.getWorkoutById(1L);
 
         assertNotNull(workout, "The returned workout should not be null.");
         assertEquals("Strength Training", workout.getName(), "The workout name does not match.");
 
-        verify(workoutRepository, times(1)).findById(1L);
+        verify(workoutRepository, times(1)).getWorkoutById(1L);
     }
 
     @Test
     void getWorkoutById_WorkoutNotFound() {
-        when(workoutRepository.findById(1L)).thenReturn(Optional.empty());
+        when(workoutRepository.getWorkoutById(1L)).thenReturn(Optional.empty());
 
         assertThrows(WorkoutNotFoundException.class, () -> workoutServiceImpl.getWorkoutById(1L));
 
-        verify(workoutRepository, times(1)).findById(1L);
+        verify(workoutRepository, times(1)).getWorkoutById(1L);
     }
 
     @Test
     void createWorkout() {
-        when(workoutRepository.save(mockWorkout)).thenReturn(mockWorkout);
+        when(workoutRepository.create(mockWorkout)).thenReturn(mockWorkout);
 
         Workout createdWorkout = workoutServiceImpl.createWorkout(mockWorkout);
 
         assertNotNull(createdWorkout, "The created workout should not be null.");
         assertEquals("Strength Training", createdWorkout.getName());
 
-        verify(workoutRepository, times(1)).save(mockWorkout);
+        verify(workoutRepository, times(1)).create(mockWorkout);
     }
 
     @Test
     void deleteWorkout() {
+        when(workoutRepository.exists(1L)).thenReturn(true);
+
         workoutServiceImpl.deleteWorkout(1L);
 
-        verify(workoutRepository, times(1)).deleteById(1L);
+        verify(workoutRepository, times(1)).delete(1L);
+    }
+
+    @Test
+    void deleteWorkout_WorkoutNotFound() {
+        when(workoutRepository.exists(1L)).thenReturn(false);
+
+        assertThrows(WorkoutNotFoundException.class, () -> workoutServiceImpl.deleteWorkout(1L));
+
+        verify(workoutRepository, times(1)).exists(1L);
+        verify(workoutRepository, never()).delete(1L);
     }
 
     @Test
@@ -104,8 +116,8 @@ class WorkoutServiceImplTest {
 
     @Test
     void updateWorkout() {
-        when(workoutRepository.findById(1L)).thenReturn(Optional.of(mockWorkout));
-        when(workoutRepository.save(mockWorkout)).thenReturn(mockWorkout);
+        when(workoutRepository.getWorkoutById(1L)).thenReturn(Optional.of(mockWorkout));
+        when(workoutRepository.update(mockWorkout)).thenReturn(mockWorkout);
 
         mockWorkout.setName("Updated Workout Name");
 
@@ -114,7 +126,7 @@ class WorkoutServiceImplTest {
         assertNotNull(updatedWorkout, "The updated workout should not be null.");
         assertEquals("Updated Workout Name", updatedWorkout.getName(), "The workout name did not update correctly.");
 
-        verify(workoutRepository, times(1)).findById(1L);
-        verify(workoutRepository, times(1)).save(mockWorkout);
+        verify(workoutRepository, times(1)).getWorkoutById(1L);
+        verify(workoutRepository, times(1)).update(mockWorkout);
     }
 }

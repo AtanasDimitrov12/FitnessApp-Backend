@@ -17,23 +17,26 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public List<Workout> getAllWorkouts() {
-        return workoutRepository.findAll();
+        return workoutRepository.getAll();
     }
 
     @Override
     public Workout getWorkoutById(Long id) {
-        return workoutRepository.findById(id)
+        return workoutRepository.getWorkoutById(id)
                 .orElseThrow(() -> new WorkoutNotFoundException(id));
     }
 
     @Override
     public Workout createWorkout(Workout workout) {
-        return workoutRepository.save(workout);
+        return workoutRepository.create(workout);
     }
 
     @Override
     public void deleteWorkout(Long id) {
-        workoutRepository.deleteById(id);
+        if (!workoutRepository.exists(id)) {
+            throw new WorkoutNotFoundException(id);
+        }
+        workoutRepository.delete(id);
     }
 
     @Override
@@ -43,7 +46,7 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public Workout updateWorkout(Workout workout) {
-        Workout existingWorkout = workoutRepository.findById(workout.getId())
+        Workout existingWorkout = workoutRepository.getWorkoutById(workout.getId())
                 .orElseThrow(() -> new WorkoutNotFoundException("Workout with ID " + workout.getId() + " not found"));
 
         // Update necessary fields
@@ -51,6 +54,6 @@ public class WorkoutServiceImpl implements WorkoutService {
         existingWorkout.setDescription(workout.getDescription());
         existingWorkout.setExercises(workout.getExercises());
 
-        return workoutRepository.save(existingWorkout);
+        return workoutRepository.update(existingWorkout);
     }
 }

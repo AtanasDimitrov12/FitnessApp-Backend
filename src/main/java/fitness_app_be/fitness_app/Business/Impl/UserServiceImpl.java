@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -15,31 +16,35 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+
     @Override
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return userRepository.getAll();
     }
 
     @Override
-    public User getUserById(Long id) {
-        return userRepository.findById(id)
+    public User getUserById(long id) {
+        return userRepository.getUserById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     @Override
     public User createUser(User user) {
-        return userRepository.save(user);
+        return userRepository.create(user);
     }
 
     @Override
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+    public void deleteUser(long userId) {
+        if (userRepository.exists(userId)) {
+            userRepository.delete(userId);
+        } else {
+            throw new UserNotFoundException(userId);
+        }
     }
 
     @Override
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User with email: " + email + " not found"));
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     @Override
@@ -49,13 +54,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(User user) {
-        User existingUser = userRepository.findByEmail(user.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("User with email " + user.getEmail() + " not found"));
-
-        existingUser.setUsername(user.getUsername());
-        existingUser.setFitnessGoal(user.getFitnessGoal());
-        existingUser.setDietPreference(user.getDietPreference());
-
-        return userRepository.save(existingUser);
+        if (userRepository.exists(user.getId())) {
+            return userRepository.update(user);
+        } else {
+            throw new UserNotFoundException(user.getId());
+        }
     }
+
+
 }
