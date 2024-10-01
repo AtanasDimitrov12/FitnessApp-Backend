@@ -17,26 +17,26 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     public List<Trainer> getAllTrainers() {
-        return trainerRepository.findAll();
+        return trainerRepository.getAll();
     }
 
     @Override
     public Trainer getTrainerById(Long id) {
-        return trainerRepository.findById(id)
+        return trainerRepository.getTrainerById(id)
                 .orElseThrow(() -> new TrainerNotFoundException(id));
     }
 
     @Override
     public Trainer createTrainer(Trainer trainer) {
-        return trainerRepository.save(trainer);
+        return trainerRepository.create(trainer);
     }
 
     @Override
     public void deleteTrainer(Long id) {
-        if (!trainerRepository.existsById(id)) {
+        if (!trainerRepository.exists(id)) {
             throw new TrainerNotFoundException(id);
         }
-        trainerRepository.deleteById(id);
+        trainerRepository.delete(id);
     }
 
     @Override
@@ -55,6 +55,7 @@ public class TrainerServiceImpl implements TrainerService {
         Trainer existingTrainer = trainerRepository.findByEmail(trainer.getEmail())
                 .orElseThrow(() -> new TrainerNotFoundException("Trainer with email " + trainer.getEmail() + " not found"));
 
+
         existingTrainer.setFirstName(trainer.getFirstName());
         existingTrainer.setLastName(trainer.getLastName());
         existingTrainer.setUsername(trainer.getUsername());
@@ -62,6 +63,6 @@ public class TrainerServiceImpl implements TrainerService {
         existingTrainer.setGender(trainer.getGender());
         existingTrainer.setExpertise(trainer.getExpertise());
 
-        return trainerRepository.save(existingTrainer);
+        return trainerRepository.update(existingTrainer);
     }
 }

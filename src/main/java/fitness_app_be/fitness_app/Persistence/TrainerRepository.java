@@ -1,14 +1,23 @@
 package fitness_app_be.fitness_app.Persistence;
 
 import fitness_app_be.fitness_app.Domain.Trainer;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.List;
 
-@Repository
-public interface TrainerRepository extends JpaRepository<Trainer, Long> {
+public interface TrainerRepository {
+
+    boolean exists(long id);
+
+    List<Trainer> getAll();
+
+    Trainer create(Trainer trainer);
+
+    Trainer update(Trainer trainer);
+
+    void delete(long trainerId);
+
+    Optional<Trainer> getTrainerById(long trainerId);
 
     Optional<Trainer> findByEmail(String email);
 
