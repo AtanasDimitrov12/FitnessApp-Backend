@@ -11,4 +11,5 @@ public class User {
     private String email;
     private String fitnessGoal;
     private String dietPreference;
+    private String pictureURL;
 }

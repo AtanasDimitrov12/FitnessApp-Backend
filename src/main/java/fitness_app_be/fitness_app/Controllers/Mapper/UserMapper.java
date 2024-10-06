@@ -11,13 +11,13 @@ public class UserMapper {
 
     public User toDomain(UserDTO userDTO) {
         return new User(userDTO.getId(), userDTO.getUsername(), userDTO.getEmail(),
-                userDTO.getFitnessGoal(), userDTO.getDietPreference());
+                userDTO.getFitnessGoal(), userDTO.getDietPreference(), userDTO.getPictureURL());
     }
 
 
     public UserDTO domainToDto(User user) {
         return new UserDTO(user.getId(), user.getUsername(), user.getEmail(),
-                user.getFitnessGoal(), user.getDietPreference());
+                user.getFitnessGoal(), user.getDietPreference(), user.getPictureURL());
     }
 
 }

@@ -13,4 +13,5 @@ public class UserDTO {
     private String email;
     private String fitnessGoal;
     private String dietPreference;
+    private String pictureURL;
 }

@@ -16,4 +16,5 @@ public class TrainerDTO {
     private int age;
     private String gender;
     private String expertise;
+    private String pictureURL;
 }

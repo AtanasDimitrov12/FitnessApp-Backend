@@ -15,6 +15,7 @@ public class WorkoutDTO {
     private Long id;
     private String name;
     private String description;
+    private String pictureURL;
     private List<Exercises> exercises;
 
 }

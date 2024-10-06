@@ -11,15 +11,15 @@ public class TrainerMapper {
 
     public Trainer toDomain(TrainerDTO trainerDTO) {
         return new Trainer(trainerDTO.getId(), trainerDTO.getFirstName(),
-                trainerDTO.getLastName(), trainerDTO.getUsername(),  // Added username
+                trainerDTO.getLastName(), trainerDTO.getUsername(),
                 trainerDTO.getEmail(), trainerDTO.getAge(),
-                trainerDTO.getGender(), trainerDTO.getExpertise());
+                trainerDTO.getGender(), trainerDTO.getExpertise(), trainerDTO.getPictureURL());
     }
 
     public TrainerDTO domainToDto(Trainer trainer) {
         return new TrainerDTO(trainer.getId(), trainer.getFirstName(),
-                trainer.getLastName(), trainer.getUsername(),  // Added username
+                trainer.getLastName(), trainer.getUsername(),
                 trainer.getEmail(), trainer.getAge(),
-                trainer.getGender(), trainer.getExpertise());
+                trainer.getGender(), trainer.getExpertise(), trainer.getPictureURL());
     }
 }

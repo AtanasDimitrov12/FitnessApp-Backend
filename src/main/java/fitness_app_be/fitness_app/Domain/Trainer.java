@@ -14,4 +14,5 @@ public class Trainer {
     private int age;
     private String gender;
     private String expertise;
+    private String pictureURL;
 }
