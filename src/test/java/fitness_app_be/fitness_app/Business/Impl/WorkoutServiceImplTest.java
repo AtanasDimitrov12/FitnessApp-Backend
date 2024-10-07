@@ -30,7 +30,7 @@ class WorkoutServiceImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        mockWorkout = new Workout(1L, "Strength Training", "Workout focused on building strength", Arrays.asList());
+        mockWorkout = new Workout(1L, "Strength Training", "Workout focused on building strength", "./images/user.jpg", Arrays.asList());
     }
 
     @Test

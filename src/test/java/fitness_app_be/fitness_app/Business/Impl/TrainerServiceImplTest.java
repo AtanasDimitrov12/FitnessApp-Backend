@@ -30,7 +30,7 @@ class TrainerServiceImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        mockTrainer = new Trainer(1L, "John", "Doe", "johndoe", "john.doe@example.com", 35, "Male", "Increase Muscle Mass");
+        mockTrainer = new Trainer(1L, "John", "Doe", "johndoe", "john.doe@example.com", 35, "Male", "Increase Muscle Mass", "./images/trainer.jpg");
     }
 
     @Test
