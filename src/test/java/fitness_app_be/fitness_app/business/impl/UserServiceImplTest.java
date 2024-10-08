@@ -30,7 +30,7 @@ class UserServiceImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        mockUser = new User(1L, "testUser", "test@example.com", "Gain muscle", "Vegetarian");
+        mockUser = new User(1L, "testUser", "test@example.com", "Gain muscle", "Vegetarian", "./images/user.jpg");
     }
 
     @Test
