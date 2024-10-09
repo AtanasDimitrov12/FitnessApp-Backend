@@ -1,6 +1,4 @@
 package fitness_app_be.fitness_app.persistence.Impl.fake;
-
-import fitness_app_be.fitness_app.domain.enums.Exercises;
 import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.persistence.WorkoutRepository;
 import org.springframework.stereotype.Repository;
@@ -19,6 +17,8 @@ public class FakeWorkoutRepositoryImpl implements WorkoutRepository {
     public FakeWorkoutRepositoryImpl() {
         this.savedWorkouts = new ArrayList<>();
     }
+
+
 
     @Override
     public boolean exists(long id) {
@@ -74,7 +74,7 @@ public class FakeWorkoutRepositoryImpl implements WorkoutRepository {
     }
 
     @Override
-    public List<Workout> findByExercises(Exercises exercise) {
+    public List<Workout> findByExercises(String exercise) {
         List<Workout> matchingWorkouts = new ArrayList<>();
         for (Workout workout : savedWorkouts) {
             if (workout.getExercises().contains(exercise)) {

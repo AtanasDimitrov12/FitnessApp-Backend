@@ -1,6 +1,5 @@
 package fitness_app_be.fitness_app.persistence;
 
-import fitness_app_be.fitness_app.domain.enums.Exercises;
 import fitness_app_be.fitness_app.domain.Workout;
 
 import java.util.List;
@@ -22,7 +21,7 @@ public interface WorkoutRepository {
 
     List<Workout> findByNameContainingIgnoreCase(String name);
 
-    List<Workout> findByExercises(Exercises exercise);
+    List<Workout> findByExercises(String exercise);
 
     List<Workout> findByDescriptionContainingIgnoreCase(String keyword);
 }

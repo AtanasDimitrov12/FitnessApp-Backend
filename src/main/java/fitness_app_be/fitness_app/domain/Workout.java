@@ -1,6 +1,5 @@
 package fitness_app_be.fitness_app.domain;
 
-import fitness_app_be.fitness_app.domain.enums.Exercises;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +16,6 @@ public class Workout {
     private String name;
     private String description;
     private String pictureURL;
-    private List<Exercises> exercises;
+    private List<String> exercises;
 
 }

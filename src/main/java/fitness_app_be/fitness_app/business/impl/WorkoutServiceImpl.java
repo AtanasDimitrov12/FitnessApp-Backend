@@ -1,19 +1,28 @@
 package fitness_app_be.fitness_app.business.impl;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import fitness_app_be.fitness_app.business.WorkoutService;
 import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.exceptionHandling.WorkoutNotFoundException;
 import fitness_app_be.fitness_app.persistence.WorkoutRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class WorkoutServiceImpl implements WorkoutService {
 
     private final WorkoutRepository workoutRepository;
+    private final Cloudinary cloudinary;
 
     @Override
     public List<Workout> getAllWorkouts() {
@@ -27,8 +36,16 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public Workout createWorkout(Workout workout) {
+    public Workout createWorkout(Workout workout, File imageFile) throws IOException {
+        // Upload image to Cloudinary
+        String imageUrl = uploadImageToCloudinary(imageFile);
+        workout.setPictureURL(imageUrl);
         return workoutRepository.create(workout);
+    }
+
+    String uploadImageToCloudinary(File file) throws IOException {
+        Map uploadResult = cloudinary.uploader().upload(file, ObjectUtils.emptyMap());
+        return uploadResult.get("url").toString();  // Return the image URL
     }
 
     @Override
@@ -55,5 +72,19 @@ public class WorkoutServiceImpl implements WorkoutService {
         existingWorkout.setExercises(workout.getExercises());
 
         return workoutRepository.update(existingWorkout);
+    }
+
+    @Override
+    public String saveImage(MultipartFile image) throws IOException {
+        // For example, save the image to local storage (adjust to your cloud storage)
+        String filename = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
+        File imageFile = new File("path/to/save/images/" + filename); // Replace with your desired path
+
+        try (FileOutputStream fos = new FileOutputStream(imageFile)) {
+            fos.write(image.getBytes());
+        }
+
+        // Return the URL (in local storage or cloud storage, return the proper URL)
+        return "http://your-domain.com/images/" + filename;
     }
 }

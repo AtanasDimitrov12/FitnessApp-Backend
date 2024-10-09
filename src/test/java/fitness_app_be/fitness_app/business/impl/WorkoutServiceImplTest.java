@@ -1,5 +1,6 @@
 package fitness_app_be.fitness_app.business.impl;
 
+import fitness_app_be.fitness_app.business.impl.WorkoutServiceImpl;
 import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.exceptionHandling.WorkoutNotFoundException;
 import fitness_app_be.fitness_app.persistence.WorkoutRepository;
@@ -8,7 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -21,8 +25,12 @@ class WorkoutServiceImplTest {
     @Mock
     private WorkoutRepository workoutRepository;
 
+    @Mock
+    private File imageFile; // Mocked File for image
+
     @InjectMocks
-    private WorkoutServiceImpl workoutServiceImpl;
+    @Spy
+    private WorkoutServiceImpl workoutServiceImpl; // Spy for partial mocking
 
     private Workout mockWorkout;
 
@@ -69,15 +77,18 @@ class WorkoutServiceImplTest {
     }
 
     @Test
-    void createWorkout() {
+    void createWorkout() throws IOException {
         when(workoutRepository.create(mockWorkout)).thenReturn(mockWorkout);
+        doReturn("http://mock-url.com/image.jpg").when(workoutServiceImpl).uploadImageToCloudinary(imageFile); // Mock image upload
 
-        Workout createdWorkout = workoutServiceImpl.createWorkout(mockWorkout);
+        Workout createdWorkout = workoutServiceImpl.createWorkout(mockWorkout, imageFile);
 
         assertNotNull(createdWorkout, "The created workout should not be null.");
-        assertEquals("Strength Training", createdWorkout.getName());
+        assertEquals("Strength Training", createdWorkout.getName(), "The workout name does not match.");
+        assertEquals("http://mock-url.com/image.jpg", createdWorkout.getPictureURL(), "The image URL does not match.");
 
         verify(workoutRepository, times(1)).create(mockWorkout);
+        verify(workoutServiceImpl, times(1)).uploadImageToCloudinary(imageFile); // Verify image upload method call
     }
 
     @Test
