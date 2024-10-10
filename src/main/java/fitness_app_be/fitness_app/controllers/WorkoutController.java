@@ -38,10 +38,9 @@ public class WorkoutController {
 
     @PostMapping(consumes = "multipart/form-data")
     public WorkoutDTO createWorkout(
-            @RequestPart("workout") String workoutJson,  // Workout details as a JSON string
-            @RequestPart("image") MultipartFile image) {    // Image file as multipart
+            @RequestPart("workout") String workoutJson,
+            @RequestPart("image") MultipartFile image) {
 
-        // Convert the workout JSON string to a WorkoutDTO object
         ObjectMapper objectMapper = new ObjectMapper();
         WorkoutDTO workoutDTO;
         try {
@@ -50,14 +49,12 @@ public class WorkoutController {
             throw new RuntimeException("Error while parsing workout JSON", e);
         }
 
-        // Convert MultipartFile to File
         File convertedFile = convertMultipartFileToFile(image);
 
-        // Map DTO to domain
         Workout workout = workoutMapper.toDomain(workoutDTO);
 
         try {
-            // Call service method to create workout with image
+
             Workout createdWorkout = workoutService.createWorkout(workout, convertedFile);
             return workoutMapper.domainToDto(createdWorkout);
         } catch (IOException e) {
@@ -69,14 +66,12 @@ public class WorkoutController {
 
     @PutMapping(consumes = "multipart/form-data")
     public WorkoutDTO updateWorkout(
-            @RequestPart("workout") WorkoutDTO workoutDTO,  // Workout details as JSON in the request part
-            @RequestPart(value = "image", required = false) MultipartFile image) {    // Image file as multipart, optional for update
+            @RequestPart("workout") WorkoutDTO workoutDTO,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
 
-        // Handle the image file if provided
         if (image != null) {
             File convertedFile = convertMultipartFileToFile(image);
             try {
-                // Handle update logic with image (similar to create logic)
                 workoutService.saveImage(image);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -94,7 +89,6 @@ public class WorkoutController {
         return ResponseEntity.noContent().build();
     }
 
-    // Helper method to convert MultipartFile to File
     private File convertMultipartFileToFile(MultipartFile multipartFile) {
         try {
             File convFile = new File(System.getProperty("java.io.tmpdir") + "/" + multipartFile.getOriginalFilename());

@@ -66,7 +66,6 @@ public class WorkoutServiceImpl implements WorkoutService {
         Workout existingWorkout = workoutRepository.getWorkoutById(workout.getId())
                 .orElseThrow(() -> new WorkoutNotFoundException("Workout with ID " + workout.getId() + " not found"));
 
-        // Update necessary fields
         existingWorkout.setName(workout.getName());
         existingWorkout.setDescription(workout.getDescription());
         existingWorkout.setExercises(workout.getExercises());
@@ -76,15 +75,14 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public String saveImage(MultipartFile image) throws IOException {
-        // For example, save the image to local storage (adjust to your cloud storage)
+
         String filename = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
-        File imageFile = new File("path/to/save/images/" + filename); // Replace with your desired path
+        File imageFile = new File("path/to/save/images/" + filename);
 
         try (FileOutputStream fos = new FileOutputStream(imageFile)) {
             fos.write(image.getBytes());
         }
 
-        // Return the URL (in local storage or cloud storage, return the proper URL)
         return "http://your-domain.com/images/" + filename;
     }
 }
