@@ -37,7 +37,7 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public Workout createWorkout(Workout workout, File imageFile) throws IOException {
-        // Upload image to Cloudinary
+
         String imageUrl = uploadImageToCloudinary(imageFile);
         workout.setPictureURL(imageUrl);
         return workoutRepository.create(workout);
