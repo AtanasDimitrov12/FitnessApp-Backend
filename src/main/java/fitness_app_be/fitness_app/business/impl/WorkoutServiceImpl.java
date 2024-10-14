@@ -45,7 +45,7 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     String uploadImageToCloudinary(File file) throws IOException {
         Map uploadResult = cloudinary.uploader().upload(file, ObjectUtils.emptyMap());
-        return uploadResult.get("url").toString();  // Return the image URL
+        return uploadResult.get("url").toString();
     }
 
     @Override

@@ -26,11 +26,11 @@ class WorkoutServiceImplTest {
     private WorkoutRepository workoutRepository;
 
     @Mock
-    private File imageFile; // Mocked File for image
+    private File imageFile;
 
     @InjectMocks
     @Spy
-    private WorkoutServiceImpl workoutServiceImpl; // Spy for partial mocking
+    private WorkoutServiceImpl workoutServiceImpl;
 
     private Workout mockWorkout;
 
@@ -79,7 +79,7 @@ class WorkoutServiceImplTest {
     @Test
     void createWorkout() throws IOException {
         when(workoutRepository.create(mockWorkout)).thenReturn(mockWorkout);
-        doReturn("http://mock-url.com/image.jpg").when(workoutServiceImpl).uploadImageToCloudinary(imageFile); // Mock image upload
+        doReturn("http://mock-url.com/image.jpg").when(workoutServiceImpl).uploadImageToCloudinary(imageFile);
 
         Workout createdWorkout = workoutServiceImpl.createWorkout(mockWorkout, imageFile);
 
@@ -88,7 +88,7 @@ class WorkoutServiceImplTest {
         assertEquals("http://mock-url.com/image.jpg", createdWorkout.getPictureURL(), "The image URL does not match.");
 
         verify(workoutRepository, times(1)).create(mockWorkout);
-        verify(workoutServiceImpl, times(1)).uploadImageToCloudinary(imageFile); // Verify image upload method call
+        verify(workoutServiceImpl, times(1)).uploadImageToCloudinary(imageFile);
     }
 
     @Test
