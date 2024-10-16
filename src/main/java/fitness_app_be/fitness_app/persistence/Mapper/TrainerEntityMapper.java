@@ -5,7 +5,7 @@ import fitness_app_be.fitness_app.persistence.Entity.TrainerEntity;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TrainerMapper {
+public class TrainerEntityMapper {
 
     public Trainer toDomain(TrainerEntity trainerEntity) {
         if (trainerEntity == null) {

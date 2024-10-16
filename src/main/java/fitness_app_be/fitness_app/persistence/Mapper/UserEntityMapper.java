@@ -5,7 +5,7 @@ import fitness_app_be.fitness_app.persistence.Entity.UserEntity;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserMapper {
+public class UserEntityMapper {
 
     public User toDomain(UserEntity entity) {
         return new User(
@@ -13,7 +13,8 @@ public class UserMapper {
                 entity.getUsername(),
                 entity.getEmail(),
                 entity.getFitnessGoal(),
-                entity.getDietPreference()
+                entity.getDietPreference(),
+                entity.getPictureURL()
         );
     }
 

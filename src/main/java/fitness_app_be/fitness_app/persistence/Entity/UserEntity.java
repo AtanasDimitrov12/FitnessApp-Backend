@@ -20,5 +20,8 @@ public class UserEntity {
 
     private String fitnessGoal;
     private String dietPreference;
+
+    @Column(nullable = false)
+    private String pictureURL;
 }
 

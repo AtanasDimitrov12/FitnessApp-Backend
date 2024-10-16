@@ -3,7 +3,7 @@ package fitness_app_be.fitness_app.persistence.Impl;
 import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.persistence.Entity.UserEntity;
 import fitness_app_be.fitness_app.persistence.JPARepositories.JpaUserRepository;
-import fitness_app_be.fitness_app.persistence.Mapper.UserMapper;
+import fitness_app_be.fitness_app.persistence.Mapper.UserEntityMapper;
 import fitness_app_be.fitness_app.persistence.Repositories.UserRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
@@ -13,9 +13,9 @@ import java.util.Optional;
 public class UserRepositoryImpl implements UserRepository {
 
     private final JpaUserRepository jpaUserRepository;
-    private final UserMapper userMapper;
+    private final UserEntityMapper userMapper;
 
-    public UserRepositoryImpl(JpaUserRepository jpaUserRepository, UserMapper userMapper) {
+    public UserRepositoryImpl(JpaUserRepository jpaUserRepository, UserEntityMapper userMapper) {
         this.jpaUserRepository = jpaUserRepository;
         this.userMapper = userMapper;
     }
