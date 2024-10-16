@@ -1,7 +1,7 @@
 package fitness_app_be.fitness_app.configuration.db;
 
 import fitness_app_be.fitness_app.domain.Workout;
-import fitness_app_be.fitness_app.persistence.WorkoutRepository;
+import fitness_app_be.fitness_app.persistence.Repositories.WorkoutRepository;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;

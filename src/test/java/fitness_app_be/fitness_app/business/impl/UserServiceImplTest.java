@@ -2,7 +2,7 @@ package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.exceptionHandling.UserNotFoundException;
-import fitness_app_be.fitness_app.persistence.UserRepository;
+import fitness_app_be.fitness_app.persistence.Repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

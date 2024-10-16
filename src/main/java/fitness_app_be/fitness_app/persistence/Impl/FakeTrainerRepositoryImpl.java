@@ -1,7 +1,7 @@
-package fitness_app_be.fitness_app.persistence.Impl.fake;
+package fitness_app_be.fitness_app.persistence.Impl;
 
 import fitness_app_be.fitness_app.domain.Trainer;
-import fitness_app_be.fitness_app.persistence.TrainerRepository;
+import fitness_app_be.fitness_app.persistence.Repositories.TrainerRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

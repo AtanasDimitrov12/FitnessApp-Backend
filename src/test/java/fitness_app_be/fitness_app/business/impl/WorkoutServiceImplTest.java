@@ -1,9 +1,8 @@
 package fitness_app_be.fitness_app.business.impl;
 
-import fitness_app_be.fitness_app.business.impl.WorkoutServiceImpl;
 import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.exceptionHandling.WorkoutNotFoundException;
-import fitness_app_be.fitness_app.persistence.WorkoutRepository;
+import fitness_app_be.fitness_app.persistence.Repositories.WorkoutRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
