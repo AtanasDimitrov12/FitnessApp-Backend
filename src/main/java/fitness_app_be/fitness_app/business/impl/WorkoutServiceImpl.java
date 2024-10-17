@@ -36,6 +36,11 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
+    public List<Workout> getWorkoutByTrainer(Long trainerId) {
+        return workoutRepository.getWorkoutsByTrainer(trainerId);
+    }
+
+    @Override
     public Workout createWorkout(Workout workout, File imageFile) throws IOException {
 
         String imageUrl = uploadImageToCloudinary(imageFile);

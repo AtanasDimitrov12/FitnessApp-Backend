@@ -1,7 +1,7 @@
 package fitness_app_be.fitness_app.persistence.Mapper;
 
-
 import fitness_app_be.fitness_app.domain.Workout;
+import fitness_app_be.fitness_app.persistence.Entity.TrainerEntity;
 import fitness_app_be.fitness_app.persistence.Entity.WorkoutEntity;
 import org.springframework.stereotype.Component;
 
@@ -12,8 +12,10 @@ public class WorkoutEntityMapper {
         if (workoutEntity == null) {
             return null;
         }
+
         return new Workout(
                 workoutEntity.getId(),
+                workoutEntity.getTrainer().getId(),
                 workoutEntity.getName(),
                 workoutEntity.getDescription(),
                 workoutEntity.getPictureURL(),
@@ -21,7 +23,6 @@ public class WorkoutEntityMapper {
         );
     }
 
-    // Convert Domain to Entity
     public WorkoutEntity domainToEntity(Workout workout) {
         if (workout == null) {
             return null;
@@ -32,6 +33,11 @@ public class WorkoutEntityMapper {
         workoutEntity.setDescription(workout.getDescription());
         workoutEntity.setPictureURL(workout.getPictureURL());
         workoutEntity.setExercises(workout.getExercises());
+
+        TrainerEntity trainerEntity = new TrainerEntity();
+        trainerEntity.setId(workout.getTrainerId());
+        workoutEntity.setTrainer(trainerEntity);
+
         return workoutEntity;
     }
 }

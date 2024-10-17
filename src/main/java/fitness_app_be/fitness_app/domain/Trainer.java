@@ -1,11 +1,14 @@
 package fitness_app_be.fitness_app.domain;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Setter;
 
 @Data
 @AllArgsConstructor
 public class Trainer {
+    @Setter(AccessLevel.NONE)
     private Long id;
     private String firstName;
     private String lastName;

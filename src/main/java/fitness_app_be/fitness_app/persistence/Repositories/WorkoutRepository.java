@@ -19,6 +19,8 @@ public interface WorkoutRepository {
 
     Optional<Workout> getWorkoutById(long workoutId);
 
+    List<Workout> getWorkoutsByTrainer(long trainerId);
+
     List<Workout> findByNameContainingIgnoreCase(String name);
 
     List<Workout> findByExercises(String exercise);

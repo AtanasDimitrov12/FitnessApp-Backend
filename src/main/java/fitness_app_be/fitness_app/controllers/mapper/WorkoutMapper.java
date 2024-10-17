@@ -10,13 +10,13 @@ public class WorkoutMapper {
 
 
     public Workout toDomain(WorkoutDTO workoutDTO) {
-        return new Workout(workoutDTO.getId(), workoutDTO.getName(), workoutDTO.getDescription(), workoutDTO.getPictureURL(),
+        return new Workout(workoutDTO.getId(), workoutDTO.getTrainerId(), workoutDTO.getName(), workoutDTO.getDescription(), workoutDTO.getPictureURL(),
                 workoutDTO.getExercises());
     }
 
 
     public WorkoutDTO domainToDto(Workout workout) {
-        return new WorkoutDTO(workout.getId(), workout.getName(), workout.getDescription(), workout.getPictureURL(),
+        return new WorkoutDTO(workout.getId(), workout.getTrainerId(), workout.getName(), workout.getDescription(), workout.getPictureURL(),
                 workout.getExercises());
     }
 

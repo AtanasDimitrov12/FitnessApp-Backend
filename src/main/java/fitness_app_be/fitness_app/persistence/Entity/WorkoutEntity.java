@@ -18,6 +18,10 @@ public class WorkoutEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "trainer_id", nullable = false) // Foreign key reference to trainers table
+    private TrainerEntity trainer;
+
     @Column(nullable = false)
     private String name;
 

@@ -10,6 +10,7 @@ import java.io.IOException;
 public interface WorkoutService {
     List<Workout> getAllWorkouts();
     Workout getWorkoutById(Long id);
+    List<Workout> getWorkoutByTrainer(Long trainerId);
     Workout createWorkout(Workout workout, File imageFile) throws IOException;
     void deleteWorkout(Long id);
     List<Workout> searchWorkoutsByPartialUsername(String partialUsername);

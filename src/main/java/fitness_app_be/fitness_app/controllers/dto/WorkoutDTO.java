@@ -12,6 +12,7 @@ import java.util.List;
 public class WorkoutDTO {
 
     private Long id;
+    private Long trainerId;
     private String name;
     private String description;
     private String pictureURL;
