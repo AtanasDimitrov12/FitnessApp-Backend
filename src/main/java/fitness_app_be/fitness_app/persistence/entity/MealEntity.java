@@ -39,4 +39,8 @@ public class MealEntity {
 
     @Column(name = "cooking_time")
     private double cookingTime;
+
+    @ManyToOne
+    @JoinColumn(name = "diet_id")
+    private DietEntity diet;
 }

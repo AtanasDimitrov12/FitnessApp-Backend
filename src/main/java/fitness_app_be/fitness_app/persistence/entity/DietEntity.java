@@ -3,7 +3,6 @@ package fitness_app_be.fitness_app.persistence.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-
 import java.util.List;
 
 @Entity
@@ -22,8 +21,6 @@ public class DietEntity {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "trainer_id", nullable = false)
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     private TrainerEntity trainer;
 
     @Column(name = "name")
