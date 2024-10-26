@@ -1,0 +1,65 @@
+package fitness_app_be.fitness_app.persistence.impl;
+
+import fitness_app_be.fitness_app.domain.Meal;
+import fitness_app_be.fitness_app.persistence.entity.MealEntity;
+import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaMealRepository;
+import fitness_app_be.fitness_app.persistence.mapper.MealEntityMapper;
+import fitness_app_be.fitness_app.persistence.repositories.MealRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Repository
+@RequiredArgsConstructor
+public class MealRepositoryImpl implements MealRepository {
+
+    private final JpaMealRepository jpaMealRepository;
+    private final MealEntityMapper mealEntityMapper;
+
+    @Override
+    public boolean exists(long id) {
+        return jpaMealRepository.existsById(id);
+    }
+
+    @Override
+    public List<Meal> getAll() {
+        return jpaMealRepository.findAll().stream()
+                .map(mealEntityMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Meal create(Meal meal) {
+        MealEntity mealEntity = mealEntityMapper.toEntity(meal);
+        MealEntity savedEntity = jpaMealRepository.save(mealEntity);
+        return mealEntityMapper.toDomain(savedEntity);
+    }
+
+    @Override
+    public Meal update(Meal meal) {
+        MealEntity mealEntity = mealEntityMapper.toEntity(meal);
+        MealEntity updatedEntity = jpaMealRepository.save(mealEntity);
+        return mealEntityMapper.toDomain(updatedEntity);
+    }
+
+    @Override
+    public void delete(long mealId) {
+        jpaMealRepository.deleteById(mealId);
+    }
+
+    @Override
+    public Optional<Meal> getMealById(long mealId) {
+        return jpaMealRepository.findById(mealId)
+                .map(mealEntityMapper::toDomain);
+    }
+
+    @Override
+    public List<Meal> findByNameContainingIgnoreCase(String name) {
+        return jpaMealRepository.findByNameContainingIgnoreCase(name).stream()
+                .map(mealEntityMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+}

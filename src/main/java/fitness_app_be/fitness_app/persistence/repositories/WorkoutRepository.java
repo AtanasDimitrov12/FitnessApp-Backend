@@ -1,4 +1,4 @@
-package fitness_app_be.fitness_app.persistence;
+package fitness_app_be.fitness_app.persistence.repositories;
 
 import fitness_app_be.fitness_app.domain.Workout;
 
@@ -18,6 +18,8 @@ public interface WorkoutRepository {
     void delete(long workoutId);
 
     Optional<Workout> getWorkoutById(long workoutId);
+
+    List<Workout> getWorkoutsByTrainer(long trainerId);
 
     List<Workout> findByNameContainingIgnoreCase(String name);
 

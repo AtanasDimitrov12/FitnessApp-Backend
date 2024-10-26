@@ -1,9 +1,7 @@
 package fitness_app_be.fitness_app.domain;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -12,10 +10,13 @@ import java.util.List;
 @NoArgsConstructor
 public class Workout {
 
+    @Setter(AccessLevel.NONE)
     private Long id;
+    @Setter(AccessLevel.NONE)
+    private Long trainerId;
     private String name;
     private String description;
     private String pictureURL;
     private List<String> exercises;
-
+    private List<User> users;
 }

@@ -1,4 +1,4 @@
-package fitness_app_be.fitness_app.persistence;
+package fitness_app_be.fitness_app.persistence.repositories;
 
 import fitness_app_be.fitness_app.domain.User;
 

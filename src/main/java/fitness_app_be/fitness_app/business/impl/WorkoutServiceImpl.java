@@ -5,7 +5,7 @@ import com.cloudinary.utils.ObjectUtils;
 import fitness_app_be.fitness_app.business.WorkoutService;
 import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.exceptionHandling.WorkoutNotFoundException;
-import fitness_app_be.fitness_app.persistence.WorkoutRepository;
+import fitness_app_be.fitness_app.persistence.repositories.WorkoutRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +33,11 @@ public class WorkoutServiceImpl implements WorkoutService {
     public Workout getWorkoutById(Long id) {
         return workoutRepository.getWorkoutById(id)
                 .orElseThrow(() -> new WorkoutNotFoundException(id));
+    }
+
+    @Override
+    public List<Workout> getWorkoutByTrainer(Long trainerId) {
+        return workoutRepository.getWorkoutsByTrainer(trainerId);
     }
 
     @Override
