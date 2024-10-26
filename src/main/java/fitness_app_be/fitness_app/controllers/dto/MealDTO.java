@@ -4,20 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class WorkoutDTO {
-
+public class MealDTO {
     private Long id;
     private Long trainerId;
     private String name;
-    private String description;
-    private String pictureURL;
-    private List<String> exercises;
-    private List<UserDTO> users;
+    private int calories;
+    private int protein;
+    private int carbs;
+    private double cookingTime;
 }
-
-

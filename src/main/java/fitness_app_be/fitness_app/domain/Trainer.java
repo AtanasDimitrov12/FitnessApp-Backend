@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Setter;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 public class Trainer {
@@ -18,4 +20,6 @@ public class Trainer {
     private String gender;
     private String expertise;
     private String pictureURL;
+    private List<Workout> workoutsCreated;
+    private List<Diet> dietsCreated;
 }

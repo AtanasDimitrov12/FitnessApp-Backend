@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,4 +16,8 @@ public class UserDTO {
     private String fitnessGoal;
     private String dietPreference;
     private String pictureURL;
+    private List<WorkoutDTO> workouts;
+    private List<DietDTO> diets;
+    private List<ProgressNoteDTO> notes;
 }
+

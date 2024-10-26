@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Workout {
+public class Diet {
 
     @Setter(AccessLevel.NONE)
     private Long id;
@@ -17,6 +17,6 @@ public class Workout {
     private String name;
     private String description;
     private String pictureURL;
-    private List<String> exercises;
+    private List<Meal> meals;
     private List<User> users;
 }

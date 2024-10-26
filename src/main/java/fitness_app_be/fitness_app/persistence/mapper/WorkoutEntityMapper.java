@@ -1,0 +1,48 @@
+package fitness_app_be.fitness_app.persistence.mapper;
+
+import fitness_app_be.fitness_app.domain.Workout;
+import fitness_app_be.fitness_app.persistence.entity.WorkoutEntity;
+import org.springframework.stereotype.Component;
+
+import java.util.stream.Collectors;
+
+@Component
+public class WorkoutEntityMapper {
+
+    private final UserEntityMapper userEntityMapper;
+
+    public WorkoutEntityMapper(UserEntityMapper userEntityMapper) {
+        this.userEntityMapper = userEntityMapper;
+    }
+
+    public Workout toDomain(WorkoutEntity workoutEntity) {
+        if (workoutEntity == null) {
+            return null;
+        }
+        return new Workout(
+                workoutEntity.getId(),
+                workoutEntity.getTrainer().getId(),
+                workoutEntity.getName(),
+                workoutEntity.getDescription(),
+                workoutEntity.getPictureURL(),
+                workoutEntity.getExercises(),
+                workoutEntity.getUsers().stream().map(userEntityMapper::toDomain).collect(Collectors.toList())
+        );
+    }
+
+    public WorkoutEntity toEntity(Workout workout) {
+        if (workout == null) {
+            return null;
+        }
+
+        WorkoutEntity workoutEntity = new WorkoutEntity();
+        workoutEntity.setId(workout.getId());
+        workoutEntity.setName(workout.getName());
+        workoutEntity.setDescription(workout.getDescription());
+        workoutEntity.setPictureURL(workout.getPictureURL());
+        workoutEntity.setExercises(workout.getExercises());
+        workoutEntity.setUsers(workout.getUsers().stream().map(userEntityMapper::toEntity).collect(Collectors.toList()));
+
+        return workoutEntity;
+    }
+}

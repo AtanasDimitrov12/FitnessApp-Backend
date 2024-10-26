@@ -9,15 +9,12 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class WorkoutDTO {
-
+public class DietDTO {
     private Long id;
     private Long trainerId;
     private String name;
     private String description;
     private String pictureURL;
-    private List<String> exercises;
+    private List<MealDTO> meals;
     private List<UserDTO> users;
 }
-
-

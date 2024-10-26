@@ -1,14 +1,17 @@
 package fitness_app_be.fitness_app.business.impl;
 
+import fitness_app_be.fitness_app.domain.Diet;
 import fitness_app_be.fitness_app.domain.Trainer;
+import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.exceptionHandling.TrainerNotFoundException;
-import fitness_app_be.fitness_app.persistence.Repositories.TrainerRepository;
+import fitness_app_be.fitness_app.persistence.repositories.TrainerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +33,24 @@ class TrainerServiceImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        mockTrainer = new Trainer(1L, "John", "Doe", "johndoe", "john.doe@example.com", 35, "Male", "Increase Muscle Mass", "./images/trainer.jpg");
+        // Initialize sample workouts and diets for testing
+        List<Workout> workoutsCreated = new ArrayList<>(); // Add mock Workout objects if necessary
+        List<Diet> dietsCreated = new ArrayList<>(); // Add mock Diet objects if necessary
+
+        // Initialize mockTrainer with the workouts and diets
+        mockTrainer = new Trainer(
+                1L,
+                "John",
+                "Doe",
+                "johndoe",
+                "john.doe@example.com",
+                35,
+                "Male",
+                "Increase Muscle Mass",
+                "./images/trainer.jpg",
+                workoutsCreated,
+                dietsCreated
+        );
     }
 
     @Test
@@ -42,7 +62,7 @@ class TrainerServiceImplTest {
 
         assertNotNull(trainerList, "Trainer list should not be null.");
         assertEquals(1, trainerList.size(), "The size of the trainer list does not match.");
-        assertEquals("johndoe", trainerList.get(0).getUsername(), "The trainer username does not match.");
+        assertEquals(mockTrainer, trainerList.get(0), "The trainer does not match expected value.");
 
         verify(trainerRepository, times(1)).getAll();
     }
@@ -54,7 +74,7 @@ class TrainerServiceImplTest {
         Trainer trainer = trainerServiceImpl.getTrainerById(1L);
 
         assertNotNull(trainer, "Trainer should not be null.");
-        assertEquals("johndoe", trainer.getUsername(), "Trainer username does not match.");
+        assertEquals(mockTrainer, trainer, "Trainer does not match expected value.");
 
         verify(trainerRepository, times(1)).getTrainerById(1L);
     }
@@ -75,7 +95,7 @@ class TrainerServiceImplTest {
         Trainer createdTrainer = trainerServiceImpl.createTrainer(mockTrainer);
 
         assertNotNull(createdTrainer, "Created trainer should not be null.");
-        assertEquals("johndoe", createdTrainer.getUsername());
+        assertEquals(mockTrainer, createdTrainer, "Created trainer does not match expected value.");
 
         verify(trainerRepository, times(1)).create(mockTrainer);
     }
@@ -87,6 +107,7 @@ class TrainerServiceImplTest {
         trainerServiceImpl.deleteTrainer(1L);
 
         verify(trainerRepository, times(1)).delete(1L);
+        verify(trainerRepository, times(1)).exists(1L);
     }
 
     @Test
@@ -106,7 +127,7 @@ class TrainerServiceImplTest {
         Trainer foundTrainer = trainerServiceImpl.getTrainerByEmail("john.doe@example.com");
 
         assertNotNull(foundTrainer, "Found trainer should not be null.");
-        assertEquals("john.doe@example.com", foundTrainer.getEmail());
+        assertEquals(mockTrainer, foundTrainer, "Found trainer does not match expected value.");
 
         verify(trainerRepository, times(1)).findByEmail("john.doe@example.com");
     }
@@ -121,22 +142,36 @@ class TrainerServiceImplTest {
         List<Trainer> result = trainerServiceImpl.searchTrainersByPartialUsername(partialUsername);
 
         assertEquals(1, result.size(), "Incorrect number of trainers returned.");
-        assertEquals("johndoe", result.get(0).getUsername(), "Trainer username does not match expected value.");
+        assertEquals(mockTrainer, result.get(0), "Trainer does not match expected value.");
+
+        verify(trainerRepository, times(1)).findByUsernameContainingIgnoreCase(partialUsername);
     }
 
     @Test
     void updateTrainer() {
+        Trainer updatedTrainerInfo = new Trainer(
+                1L,
+                "John",
+                "Doe",
+                "johndoe",
+                "john.doe@example.com",
+                35,
+                "Male",
+                "Increase Stamina",
+                "./images/trainer.jpg",
+                mockTrainer.getWorkoutsCreated(),
+                mockTrainer.getDietsCreated()
+        );
+
         when(trainerRepository.findByEmail("john.doe@example.com")).thenReturn(Optional.of(mockTrainer));
-        when(trainerRepository.update(mockTrainer)).thenReturn(mockTrainer);
+        when(trainerRepository.update(any(Trainer.class))).thenReturn(updatedTrainerInfo);
 
-        mockTrainer.setExpertise("Increase Stamina");
-
-        Trainer updatedTrainer = trainerServiceImpl.updateTrainer(mockTrainer);
+        Trainer updatedTrainer = trainerServiceImpl.updateTrainer(updatedTrainerInfo);
 
         assertNotNull(updatedTrainer, "Updated trainer should not be null.");
         assertEquals("Increase Stamina", updatedTrainer.getExpertise(), "Trainer expertise did not update correctly.");
 
         verify(trainerRepository, times(1)).findByEmail("john.doe@example.com");
-        verify(trainerRepository, times(1)).update(mockTrainer);
+        verify(trainerRepository, times(1)).update(updatedTrainerInfo);
     }
 }

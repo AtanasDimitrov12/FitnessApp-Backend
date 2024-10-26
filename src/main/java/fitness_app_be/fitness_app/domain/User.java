@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Setter;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 public class User {
@@ -15,4 +17,7 @@ public class User {
     private String fitnessGoal;
     private String dietPreference;
     private String pictureURL;
+    private List<Workout> workouts;
+    private List<Diet> diets;
+    private List<ProgressNote> notes;
 }

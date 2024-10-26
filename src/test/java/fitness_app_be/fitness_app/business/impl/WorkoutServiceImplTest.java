@@ -1,8 +1,9 @@
 package fitness_app_be.fitness_app.business.impl;
 
+import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.exceptionHandling.WorkoutNotFoundException;
-import fitness_app_be.fitness_app.persistence.Repositories.WorkoutRepository;
+import fitness_app_be.fitness_app.persistence.repositories.WorkoutRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -37,7 +38,12 @@ class WorkoutServiceImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        mockWorkout = new Workout(1L, "Strength Training", "Workout focused on building strength", "./images/user.jpg", Arrays.asList());
+        // Initialize mock data for exercises and users
+        List<String> exercises = Arrays.asList("Push Ups", "Pull Ups", "Squats");
+        List<User> users = Arrays.asList(new User(2L, "user123", "user123@example.com", "Build Muscle", "Vegan", "./images/user123.jpg", null, null, null));
+
+        // Create the mock workout
+        mockWorkout = new Workout(1L, 1L, "Strength Training", "Workout focused on building strength", "./images/workout.jpg", exercises, users);
     }
 
     @Test
@@ -50,6 +56,7 @@ class WorkoutServiceImplTest {
         assertNotNull(workoutList, "The returned list of workouts should not be null.");
         assertEquals(1, workoutList.size(), "The size of the workout list does not match.");
         assertEquals("Strength Training", workoutList.get(0).getName(), "The workout name does not match.");
+        assertEquals(mockWorkout.getExercises(), workoutList.get(0).getExercises(), "The exercises list does not match.");
 
         verify(workoutRepository, times(1)).getAll();
     }
@@ -62,6 +69,7 @@ class WorkoutServiceImplTest {
 
         assertNotNull(workout, "The returned workout should not be null.");
         assertEquals("Strength Training", workout.getName(), "The workout name does not match.");
+        assertEquals(mockWorkout.getExercises(), workout.getExercises(), "The exercises list does not match.");
 
         verify(workoutRepository, times(1)).getWorkoutById(1L);
     }

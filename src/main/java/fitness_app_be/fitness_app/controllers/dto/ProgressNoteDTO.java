@@ -4,20 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class WorkoutDTO {
-
+public class ProgressNoteDTO {
     private Long id;
-    private Long trainerId;
-    private String name;
-    private String description;
+    private Long userId;
+    private double weight;
+    private String note;
     private String pictureURL;
-    private List<String> exercises;
-    private List<UserDTO> users;
 }
-
-
