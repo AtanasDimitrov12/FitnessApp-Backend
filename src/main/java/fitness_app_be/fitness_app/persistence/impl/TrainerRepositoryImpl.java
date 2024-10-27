@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class TrainerRepositoryImpl implements TrainerRepository {
 
     private final JpaTrainerRepository jpaTrainerRepository;
-    private final TrainerEntityMapper trainerEntityMapper;
+    private final TrainerEntityMapper trainerEntityMapperImpl;
 
     @Override
     public boolean exists(long id) {
@@ -27,22 +27,22 @@ public class TrainerRepositoryImpl implements TrainerRepository {
     @Override
     public List<Trainer> getAll() {
         return jpaTrainerRepository.findAll().stream()
-                .map(trainerEntityMapper::toDomain)
+                .map(trainerEntityMapperImpl::toDomain)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Trainer create(Trainer trainer) {
-        TrainerEntity trainerEntity = trainerEntityMapper.toEntity(trainer);
+        TrainerEntity trainerEntity = trainerEntityMapperImpl.toEntity(trainer);
         TrainerEntity savedEntity = jpaTrainerRepository.save(trainerEntity);
-        return trainerEntityMapper.toDomain(savedEntity);
+        return trainerEntityMapperImpl.toDomain(savedEntity);
     }
 
     @Override
     public Trainer update(Trainer trainer) {
-        TrainerEntity trainerEntity = trainerEntityMapper.toEntity(trainer);
+        TrainerEntity trainerEntity = trainerEntityMapperImpl.toEntity(trainer);
         TrainerEntity updatedEntity = jpaTrainerRepository.save(trainerEntity);
-        return trainerEntityMapper.toDomain(updatedEntity);
+        return trainerEntityMapperImpl.toDomain(updatedEntity);
     }
 
     @Override
@@ -53,32 +53,32 @@ public class TrainerRepositoryImpl implements TrainerRepository {
     @Override
     public Optional<Trainer> getTrainerById(long trainerId) {
         return jpaTrainerRepository.findById(trainerId)
-                .map(trainerEntityMapper::toDomain);
+                .map(trainerEntityMapperImpl::toDomain);
     }
 
     @Override
     public Optional<Trainer> findByEmail(String email) {
         return jpaTrainerRepository.findByEmail(email)
-                .map(trainerEntityMapper::toDomain);
+                .map(trainerEntityMapperImpl::toDomain);
     }
 
     @Override
     public Optional<Trainer> findByUsername(String username) {
         return jpaTrainerRepository.findByUsername(username)
-                .map(trainerEntityMapper::toDomain);
+                .map(trainerEntityMapperImpl::toDomain);
     }
 
     @Override
     public List<Trainer> findByExpertise(String expertise) {
         return jpaTrainerRepository.findByExpertiseContainingIgnoreCase(expertise).stream()
-                .map(trainerEntityMapper::toDomain)
+                .map(trainerEntityMapperImpl::toDomain)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<Trainer> findByUsernameContainingIgnoreCase(String partialUsername) {
         return jpaTrainerRepository.findByUsernameContainingIgnoreCase(partialUsername).stream()
-                .map(trainerEntityMapper::toDomain)
+                .map(trainerEntityMapperImpl::toDomain)
                 .collect(Collectors.toList());
     }
 

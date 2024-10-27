@@ -2,6 +2,8 @@ package fitness_app_be.fitness_app.controllers.mapper;
 
 import fitness_app_be.fitness_app.controllers.dto.UserDTO;
 import fitness_app_be.fitness_app.domain.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
@@ -9,15 +11,18 @@ import java.util.stream.Collectors;
 @Component
 public class UserMapper {
 
-    private final WorkoutMapper workoutMapper;
-    private final DietMapper dietMapper;
-    private final ProgressNoteMapper progressNoteMapper;
+    private WorkoutMapper workoutMapper;
 
-    public UserMapper(WorkoutMapper workoutMapper, DietMapper dietMapper, ProgressNoteMapper progressNoteMapper) {
+    public UserMapper(@Lazy WorkoutMapper workoutMapper, DietMapper dietMapper, ProgressNoteMapper progressNoteMapper) {
         this.workoutMapper = workoutMapper;
         this.dietMapper = dietMapper;
         this.progressNoteMapper = progressNoteMapper;
     }
+
+    private DietMapper dietMapper;
+    private ProgressNoteMapper progressNoteMapper;
+
+
 
     public User toDomain(UserDTO userDTO) {
         return new User(userDTO.getId(), userDTO.getUsername(), userDTO.getEmail(),

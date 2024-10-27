@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class MealRepositoryImpl implements MealRepository {
 
     private final JpaMealRepository jpaMealRepository;
-    private final MealEntityMapper mealEntityMapper;
+    private final MealEntityMapper mealEntityMapperImpl;
 
     @Override
     public boolean exists(long id) {
@@ -27,22 +27,22 @@ public class MealRepositoryImpl implements MealRepository {
     @Override
     public List<Meal> getAll() {
         return jpaMealRepository.findAll().stream()
-                .map(mealEntityMapper::toDomain)
+                .map(mealEntityMapperImpl::toDomain)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Meal create(Meal meal) {
-        MealEntity mealEntity = mealEntityMapper.toEntity(meal);
+        MealEntity mealEntity = mealEntityMapperImpl.toEntity(meal);
         MealEntity savedEntity = jpaMealRepository.save(mealEntity);
-        return mealEntityMapper.toDomain(savedEntity);
+        return mealEntityMapperImpl.toDomain(savedEntity);
     }
 
     @Override
     public Meal update(Meal meal) {
-        MealEntity mealEntity = mealEntityMapper.toEntity(meal);
+        MealEntity mealEntity = mealEntityMapperImpl.toEntity(meal);
         MealEntity updatedEntity = jpaMealRepository.save(mealEntity);
-        return mealEntityMapper.toDomain(updatedEntity);
+        return mealEntityMapperImpl.toDomain(updatedEntity);
     }
 
     @Override
@@ -53,13 +53,13 @@ public class MealRepositoryImpl implements MealRepository {
     @Override
     public Optional<Meal> getMealById(long mealId) {
         return jpaMealRepository.findById(mealId)
-                .map(mealEntityMapper::toDomain);
+                .map(mealEntityMapperImpl::toDomain);
     }
 
     @Override
     public List<Meal> findByNameContainingIgnoreCase(String name) {
         return jpaMealRepository.findByNameContainingIgnoreCase(name).stream()
-                .map(mealEntityMapper::toDomain)
+                .map(mealEntityMapperImpl::toDomain)
                 .collect(Collectors.toList());
     }
 }

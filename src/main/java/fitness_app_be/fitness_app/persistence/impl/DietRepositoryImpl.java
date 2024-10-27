@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class DietRepositoryImpl implements DietRepository {
 
     private final JpaDietRepository jpaDietRepository;
-    private final DietEntityMapper dietEntityMapper;
+    private final DietEntityMapper dietEntityMapperImpl;
 
     @Override
     public boolean exists(long id) {
@@ -27,22 +27,22 @@ public class DietRepositoryImpl implements DietRepository {
     @Override
     public List<Diet> getAll() {
         return jpaDietRepository.findAll().stream()
-                .map(dietEntityMapper::toDomain)
+                .map(dietEntityMapperImpl::toDomain)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Diet create(Diet diet) {
-        DietEntity dietEntity = dietEntityMapper.toEntity(diet);
+        DietEntity dietEntity = dietEntityMapperImpl.toEntity(diet);
         DietEntity savedEntity = jpaDietRepository.save(dietEntity);
-        return dietEntityMapper.toDomain(savedEntity);
+        return dietEntityMapperImpl.toDomain(savedEntity);
     }
 
     @Override
     public Diet update(Diet diet) {
-        DietEntity dietEntity = dietEntityMapper.toEntity(diet);
+        DietEntity dietEntity = dietEntityMapperImpl.toEntity(diet);
         DietEntity updatedEntity = jpaDietRepository.save(dietEntity);
-        return dietEntityMapper.toDomain(updatedEntity);
+        return dietEntityMapperImpl.toDomain(updatedEntity);
     }
 
     @Override
@@ -53,19 +53,19 @@ public class DietRepositoryImpl implements DietRepository {
     @Override
     public Optional<Diet> getDietById(long dietId) {
         return jpaDietRepository.findById(dietId)
-                .map(dietEntityMapper::toDomain);
+                .map(dietEntityMapperImpl::toDomain);
     }
 
     @Override
     public Optional<Diet> findByName(String name) {
         return jpaDietRepository.findByName(name)
-                .map(dietEntityMapper::toDomain);
+                .map(dietEntityMapperImpl::toDomain);
     }
 
     @Override
     public List<Diet> findByDescriptionContainingIgnoreCase(String description) {
         return jpaDietRepository.findByDescriptionContainingIgnoreCase(description).stream()
-                .map(dietEntityMapper::toDomain)
+                .map(dietEntityMapperImpl::toDomain)
                 .collect(Collectors.toList());
     }
 }

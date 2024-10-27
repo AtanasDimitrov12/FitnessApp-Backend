@@ -2,20 +2,25 @@ package fitness_app_be.fitness_app.persistence.mapper;
 
 import fitness_app_be.fitness_app.domain.Trainer;
 import fitness_app_be.fitness_app.persistence.entity.TrainerEntity;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
 @Component
+@NoArgsConstructor
 public class TrainerEntityMapper {
 
-    private final WorkoutEntityMapper workoutEntityMapper;
-    private final DietEntityMapper dietEntityMapper;
-
-    public TrainerEntityMapper(WorkoutEntityMapper workoutEntityMapper, DietEntityMapper dietEntityMapper) {
-        this.workoutEntityMapper = workoutEntityMapper;
-        this.dietEntityMapper = dietEntityMapper;
+    public TrainerEntityMapper(@Lazy WorkoutEntityMapper workoutEntityMapperImpl, DietEntityMapper dietEntityMapperImpl) {
+        this.workoutEntityMapperImpl = workoutEntityMapperImpl;
+        this.dietEntityMapperImpl = dietEntityMapperImpl;
     }
+
+    private WorkoutEntityMapper workoutEntityMapperImpl;
+    private DietEntityMapper dietEntityMapperImpl;
+
 
     public Trainer toDomain(TrainerEntity trainerEntity) {
         if (trainerEntity == null) {
@@ -31,8 +36,8 @@ public class TrainerEntityMapper {
                 trainerEntity.getGender(),
                 trainerEntity.getExpertise(),
                 trainerEntity.getPictureURL(),
-                trainerEntity.getWorkoutsCreated().stream().map(workoutEntityMapper::toDomain).collect(Collectors.toList()),
-                trainerEntity.getDietsCreated().stream().map(dietEntityMapper::toDomain).collect(Collectors.toList())
+                trainerEntity.getWorkoutsCreated().stream().map(workoutEntityMapperImpl::toDomain).collect(Collectors.toList()),
+                trainerEntity.getDietsCreated().stream().map(dietEntityMapperImpl::toDomain).collect(Collectors.toList())
         );
     }
 
@@ -51,8 +56,8 @@ public class TrainerEntityMapper {
         trainerEntity.setGender(trainer.getGender());
         trainerEntity.setExpertise(trainer.getExpertise());
         trainerEntity.setPictureURL(trainer.getPictureURL());
-        trainerEntity.setWorkoutsCreated(trainer.getWorkoutsCreated().stream().map(workoutEntityMapper::toEntity).collect(Collectors.toList()));
-        trainerEntity.setDietsCreated(trainer.getDietsCreated().stream().map(dietEntityMapper::toEntity).collect(Collectors.toList()));
+        trainerEntity.setWorkoutsCreated(trainer.getWorkoutsCreated().stream().map(workoutEntityMapperImpl::toEntity).collect(Collectors.toList()));
+        trainerEntity.setDietsCreated(trainer.getDietsCreated().stream().map(dietEntityMapperImpl::toEntity).collect(Collectors.toList()));
 
         return trainerEntity;
     }

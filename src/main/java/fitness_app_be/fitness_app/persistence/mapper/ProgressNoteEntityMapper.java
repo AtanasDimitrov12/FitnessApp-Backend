@@ -2,9 +2,11 @@ package fitness_app_be.fitness_app.persistence.mapper;
 
 import fitness_app_be.fitness_app.domain.ProgressNote;
 import fitness_app_be.fitness_app.persistence.entity.ProgressNoteEntity;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@NoArgsConstructor
 public class ProgressNoteEntityMapper {
 
     public ProgressNote toDomain(ProgressNoteEntity progressNoteEntity) {

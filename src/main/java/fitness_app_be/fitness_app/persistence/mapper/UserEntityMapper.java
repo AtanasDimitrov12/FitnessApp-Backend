@@ -2,22 +2,29 @@ package fitness_app_be.fitness_app.persistence.mapper;
 
 import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.persistence.entity.UserEntity;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
 @Component
-public class UserEntityMapper {
+@NoArgsConstructor
+public class UserEntityMapper{
 
-    private final WorkoutEntityMapper workoutEntityMapper;
-    private final DietEntityMapper dietEntityMapper;
-    private final ProgressNoteEntityMapper progressNoteEntityMapper;
+    private WorkoutEntityMapper workoutEntityMapperImpl;
+    private DietEntityMapper dietEntityMapperImpl;
 
-    public UserEntityMapper(WorkoutEntityMapper workoutEntityMapper, DietEntityMapper dietEntityMapper, ProgressNoteEntityMapper progressNoteEntityMapper) {
-        this.workoutEntityMapper = workoutEntityMapper;
-        this.dietEntityMapper = dietEntityMapper;
-        this.progressNoteEntityMapper = progressNoteEntityMapper;
+    public UserEntityMapper(@Lazy WorkoutEntityMapper workoutEntityMapperImpl, DietEntityMapper dietEntityMapperImpl, ProgressNoteEntityMapper progressNoteEntityMapperImpl) {
+        this.workoutEntityMapperImpl = workoutEntityMapperImpl;
+        this.dietEntityMapperImpl = dietEntityMapperImpl;
+        this.progressNoteEntityMapperImpl = progressNoteEntityMapperImpl;
     }
+
+    private ProgressNoteEntityMapper progressNoteEntityMapperImpl;
+
+
 
     public User toDomain(UserEntity userEntity) {
         if (userEntity == null) {
@@ -30,9 +37,9 @@ public class UserEntityMapper {
                 userEntity.getFitnessGoal(),
                 userEntity.getDietPreference(),
                 userEntity.getPictureURL(),
-                userEntity.getWorkouts().stream().map(workoutEntityMapper::toDomain).collect(Collectors.toList()),
-                userEntity.getDiets().stream().map(dietEntityMapper::toDomain).collect(Collectors.toList()),
-                userEntity.getProgressNotes().stream().map(progressNoteEntityMapper::toDomain).collect(Collectors.toList())
+                userEntity.getWorkouts().stream().map(workoutEntityMapperImpl::toDomain).collect(Collectors.toList()),
+                userEntity.getDiets().stream().map(dietEntityMapperImpl::toDomain).collect(Collectors.toList()),
+                userEntity.getProgressNotes().stream().map(progressNoteEntityMapperImpl::toDomain).collect(Collectors.toList())
         );
     }
 
@@ -49,9 +56,9 @@ public class UserEntityMapper {
         userEntity.setDietPreference(user.getDietPreference());
         userEntity.setPictureURL(user.getPictureURL());
 
-        userEntity.setWorkouts(user.getWorkouts().stream().map(workoutEntityMapper::toEntity).collect(Collectors.toList()));
-        userEntity.setDiets(user.getDiets().stream().map(dietEntityMapper::toEntity).collect(Collectors.toList()));
-        userEntity.setProgressNotes(user.getNotes().stream().map(progressNoteEntityMapper::toEntity).collect(Collectors.toList()));
+        userEntity.setWorkouts(user.getWorkouts().stream().map(workoutEntityMapperImpl::toEntity).collect(Collectors.toList()));
+        userEntity.setDiets(user.getDiets().stream().map(dietEntityMapperImpl::toEntity).collect(Collectors.toList()));
+        userEntity.setProgressNotes(user.getNotes().stream().map(progressNoteEntityMapperImpl::toEntity).collect(Collectors.toList()));
 
         return userEntity;
     }

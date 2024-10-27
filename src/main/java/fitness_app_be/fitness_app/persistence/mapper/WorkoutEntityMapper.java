@@ -1,18 +1,30 @@
 package fitness_app_be.fitness_app.persistence.mapper;
 
 import fitness_app_be.fitness_app.domain.Workout;
+import fitness_app_be.fitness_app.persistence.entity.TrainerEntity;
 import fitness_app_be.fitness_app.persistence.entity.WorkoutEntity;
+import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaTrainerRepository;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Component
+@NoArgsConstructor
 public class WorkoutEntityMapper {
 
-    private final UserEntityMapper userEntityMapper;
+    private UserEntityMapper userEntityMapperImpl;
+    private TrainerEntityMapper trainerEntityMapperImpl;
+    private JpaTrainerRepository jpaTrainerRepository;
 
-    public WorkoutEntityMapper(UserEntityMapper userEntityMapper) {
-        this.userEntityMapper = userEntityMapper;
+    @Autowired
+    public WorkoutEntityMapper(@Lazy UserEntityMapper userEntityMapperImpl, @Lazy TrainerEntityMapper trainerEntityMapperImpl, JpaTrainerRepository jpaTrainerRepository) {
+        this.userEntityMapperImpl = userEntityMapperImpl;
+        this.trainerEntityMapperImpl = trainerEntityMapperImpl;
+        this.jpaTrainerRepository = jpaTrainerRepository;
     }
 
     public Workout toDomain(WorkoutEntity workoutEntity) {
@@ -26,7 +38,9 @@ public class WorkoutEntityMapper {
                 workoutEntity.getDescription(),
                 workoutEntity.getPictureURL(),
                 workoutEntity.getExercises(),
-                workoutEntity.getUsers().stream().map(userEntityMapper::toDomain).collect(Collectors.toList())
+                workoutEntity.getUsers().stream()
+                        .map(userEntityMapperImpl::toDomain)
+                        .collect(Collectors.toList())
         );
     }
 
@@ -41,8 +55,25 @@ public class WorkoutEntityMapper {
         workoutEntity.setDescription(workout.getDescription());
         workoutEntity.setPictureURL(workout.getPictureURL());
         workoutEntity.setExercises(workout.getExercises());
-        workoutEntity.setUsers(workout.getUsers().stream().map(userEntityMapper::toEntity).collect(Collectors.toList()));
+
+        // Initialize users list if null to prevent NullPointerException
+        if (workout.getUsers() != null) {
+            workoutEntity.setUsers(workout.getUsers().stream()
+                    .map(userEntityMapperImpl::toEntity)
+                    .collect(Collectors.toList()));
+        } else {
+            workoutEntity.setUsers(new ArrayList<>()); // Initialize to an empty list if null
+        }
+
+        if (workout.getTrainerId() != null) {
+            TrainerEntity trainerEntity = jpaTrainerRepository.findById(workout.getTrainerId())
+                    .orElseThrow(() -> new IllegalArgumentException("Trainer not found with ID: " + workout.getTrainerId()));
+            workoutEntity.setTrainer(trainerEntity);
+        } else {
+            throw new IllegalArgumentException("Trainer ID must not be null when creating a WorkoutEntity");
+        }
 
         return workoutEntity;
     }
+
 }

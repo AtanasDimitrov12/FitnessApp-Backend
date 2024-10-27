@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class ProgressNoteRepositoryImpl implements ProgressNoteRepository {
 
     private final JpaProgressNoteRepository jpaProgressNoteRepository;
-    private final ProgressNoteEntityMapper progressNoteEntityMapper;
+    private final ProgressNoteEntityMapper progressNoteEntityMapperImpl;
 
     @Override
     public boolean exists(long id) {
@@ -27,22 +27,22 @@ public class ProgressNoteRepositoryImpl implements ProgressNoteRepository {
     @Override
     public List<ProgressNote> getAll() {
         return jpaProgressNoteRepository.findAll().stream()
-                .map(progressNoteEntityMapper::toDomain)
+                .map(progressNoteEntityMapperImpl::toDomain)
                 .collect(Collectors.toList());
     }
 
     @Override
     public ProgressNote create(ProgressNote progressNote) {
-        ProgressNoteEntity progressNoteEntity = progressNoteEntityMapper.toEntity(progressNote);
+        ProgressNoteEntity progressNoteEntity = progressNoteEntityMapperImpl.toEntity(progressNote);
         ProgressNoteEntity savedEntity = jpaProgressNoteRepository.save(progressNoteEntity);
-        return progressNoteEntityMapper.toDomain(savedEntity);
+        return progressNoteEntityMapperImpl.toDomain(savedEntity);
     }
 
     @Override
     public ProgressNote update(ProgressNote progressNote) {
-        ProgressNoteEntity progressNoteEntity = progressNoteEntityMapper.toEntity(progressNote);
+        ProgressNoteEntity progressNoteEntity = progressNoteEntityMapperImpl.toEntity(progressNote);
         ProgressNoteEntity updatedEntity = jpaProgressNoteRepository.save(progressNoteEntity);
-        return progressNoteEntityMapper.toDomain(updatedEntity);
+        return progressNoteEntityMapperImpl.toDomain(updatedEntity);
     }
 
     @Override
@@ -53,13 +53,13 @@ public class ProgressNoteRepositoryImpl implements ProgressNoteRepository {
     @Override
     public Optional<ProgressNote> getProgressNoteById(long progressNoteId) {
         return jpaProgressNoteRepository.findById(progressNoteId)
-                .map(progressNoteEntityMapper::toDomain);
+                .map(progressNoteEntityMapperImpl::toDomain);
     }
 
     @Override
     public List<ProgressNote> findByUserId(Long userId) {
         return jpaProgressNoteRepository.findByUserId(userId).stream()
-                .map(progressNoteEntityMapper::toDomain)
+                .map(progressNoteEntityMapperImpl::toDomain)
                 .collect(Collectors.toList());
     }
 }
