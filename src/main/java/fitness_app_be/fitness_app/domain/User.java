@@ -14,10 +14,11 @@ public class User {
     private Long id;
     private String username;
     private String email;
+    private String password;
     private String fitnessGoal;
     private String dietPreference;
     private String pictureURL;
-    private List<Workout> workouts;
-    private List<Diet> diets;
+    private Long workoutPlanId;
+    private Long dietId;
     private List<ProgressNote> notes;
 }

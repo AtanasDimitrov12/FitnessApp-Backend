@@ -12,26 +12,22 @@ import java.util.stream.Collectors;
 @Component
 public class DietMapper {
 
-    public DietMapper(MealMapper mealMapper,@Lazy UserMapper userMapper) {
-        this.mealMapper = mealMapper;
-        this.userMapper = userMapper;
-    }
+    private final MealMapper mealMapper;
 
-    private MealMapper mealMapper;
-    private UserMapper userMapper;
+    public DietMapper(MealMapper mealMapper) {
+        this.mealMapper = mealMapper;
+    }
 
 
     public Diet toDomain(DietDTO dietDTO) {
-        return new Diet(dietDTO.getId(), dietDTO.getTrainerId(), dietDTO.getName(),
+        return new Diet(dietDTO.getId(), dietDTO.getName(),
                 dietDTO.getDescription(), dietDTO.getPictureURL(),
-                dietDTO.getMeals().stream().map(mealMapper::toDomain).collect(Collectors.toList()),
-                dietDTO.getUsers().stream().map(userMapper::toDomain).collect(Collectors.toList()));
+                dietDTO.getMeals().stream().map(mealMapper::toDomain).collect(Collectors.toList()));
     }
 
     public DietDTO domainToDto(Diet diet) {
-        return new DietDTO(diet.getId(), diet.getTrainerId(), diet.getName(),
+        return new DietDTO(diet.getId(), diet.getName(),
                 diet.getDescription(), diet.getPictureURL(),
-                diet.getMeals().stream().map(mealMapper::domainToDto).collect(Collectors.toList()),
-                diet.getUsers().stream().map(userMapper::domainToDto).collect(Collectors.toList()));
+                diet.getMeals().stream().map(mealMapper::domainToDto).collect(Collectors.toList()));
     }
 }

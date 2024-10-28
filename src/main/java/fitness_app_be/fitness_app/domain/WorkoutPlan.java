@@ -1,19 +1,17 @@
 package fitness_app_be.fitness_app.domain;
 
-
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Diet {
-
+public class WorkoutPlan {
     @Setter(AccessLevel.NONE)
     private Long id;
-    private String name;
-    private String description;
-    private String pictureURL;
-    private List<Meal> meals;
+    @Setter(AccessLevel.NONE)
+    private Long userId;
+    private List<Workout> workouts = new ArrayList<>();
 }

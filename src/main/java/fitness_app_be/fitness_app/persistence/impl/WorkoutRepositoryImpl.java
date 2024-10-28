@@ -57,12 +57,6 @@ public class WorkoutRepositoryImpl implements WorkoutRepository {
         return jpaWorkoutRepository.findById(workoutId).map(workoutMapper::toDomain);
     }
 
-    @Override
-    public List<Workout> getWorkoutsByTrainer(long trainerId) {
-        return jpaWorkoutRepository.findByTrainerId(trainerId).stream()
-                .map(workoutMapper::toDomain)
-                .collect(Collectors.toList());
-    }
 
     @Override
     public List<Workout> findByNameContainingIgnoreCase(String name) {

@@ -19,13 +19,6 @@ public class WorkoutEntity {
     @Column(name = "id")
     private Long id;
 
-    @NotNull
-    @ManyToOne
-    @JoinColumn(name = "trainer_id", nullable = false)
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    private TrainerEntity trainer;
-
     @Column(name = "name")
     @NotNull
     private String name;
@@ -41,11 +34,4 @@ public class WorkoutEntity {
     @Column(name = "exercise")
     private List<String> exercises;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_workouts",
-            joinColumns = @JoinColumn(name = "workout_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<UserEntity> users;
 }

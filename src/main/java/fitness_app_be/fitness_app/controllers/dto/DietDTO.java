@@ -11,10 +11,8 @@ import java.util.List;
 @NoArgsConstructor
 public class DietDTO {
     private Long id;
-    private Long trainerId;
     private String name;
     private String description;
     private String pictureURL;
     private List<MealDTO> meals;
-    private List<UserDTO> users;
 }

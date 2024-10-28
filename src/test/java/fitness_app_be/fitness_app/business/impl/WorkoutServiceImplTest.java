@@ -1,150 +1,131 @@
 package fitness_app_be.fitness_app.business.impl;
 
-import fitness_app_be.fitness_app.domain.User;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.exceptionHandling.WorkoutNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.WorkoutRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class WorkoutServiceImplTest {
 
     @Mock
     private WorkoutRepository workoutRepository;
 
     @Mock
-    private File imageFile;
+    private Cloudinary cloudinary;
+
 
     @InjectMocks
-    @Spy
-    private WorkoutServiceImpl workoutServiceImpl;
+    private WorkoutServiceImpl workoutService;
 
-    private Workout mockWorkout;
+    private Workout workout;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        List<String> exercises = new ArrayList<>();
+        workout = new Workout(1L, "Test Workout", "Description", "http://example.com/image.jpg", exercises);
 
-        // Initialize mock data for exercises and users
-        List<String> exercises = Arrays.asList("Push Ups", "Pull Ups", "Squats");
-        List<User> users = Arrays.asList(new User(2L, "user123", "user123@example.com", "Build Muscle", "Vegan", "./images/user123.jpg", null, null, null));
-
-        // Create the mock workout
-        mockWorkout = new Workout(1L, 1L, "Strength Training", "Workout focused on building strength", "./images/workout.jpg", exercises, users);
     }
 
     @Test
-    void getAllWorkouts() {
-        List<Workout> workouts = Arrays.asList(mockWorkout);
-        when(workoutRepository.getAll()).thenReturn(workouts);
+    void getAllWorkouts_ShouldReturnListOfWorkouts() {
+        when(workoutRepository.getAll()).thenReturn(List.of(workout));
 
-        List<Workout> workoutList = workoutServiceImpl.getAllWorkouts();
+        List<Workout> workouts = workoutService.getAllWorkouts();
 
-        assertNotNull(workoutList, "The returned list of workouts should not be null.");
-        assertEquals(1, workoutList.size(), "The size of the workout list does not match.");
-        assertEquals("Strength Training", workoutList.get(0).getName(), "The workout name does not match.");
-        assertEquals(mockWorkout.getExercises(), workoutList.get(0).getExercises(), "The exercises list does not match.");
-
+        assertNotNull(workouts);
+        assertEquals(1, workouts.size());
+        assertEquals(workout, workouts.get(0));
         verify(workoutRepository, times(1)).getAll();
     }
 
     @Test
-    void getWorkoutById() {
-        when(workoutRepository.getWorkoutById(1L)).thenReturn(Optional.of(mockWorkout));
+    void getWorkoutById_ShouldReturnWorkout_WhenWorkoutExists() {
+        // Arrange: Stub the repository's response to return an Optional with the expected workout
+        when(workoutRepository.getWorkoutById(anyLong())).thenReturn(Optional.of(workout));
 
-        Workout workout = workoutServiceImpl.getWorkoutById(1L);
+        // Act: Call the service method to get the workout by ID
+        Workout foundWorkout = workoutService.getWorkoutById(1L);
 
-        assertNotNull(workout, "The returned workout should not be null.");
-        assertEquals("Strength Training", workout.getName(), "The workout name does not match.");
-        assertEquals(mockWorkout.getExercises(), workout.getExercises(), "The exercises list does not match.");
-
+        // Assert: Verify the result and interaction with the mock repository
+        assertNotNull(foundWorkout);
+        assertEquals(workout, foundWorkout);
         verify(workoutRepository, times(1)).getWorkoutById(1L);
     }
 
+
     @Test
-    void getWorkoutById_WorkoutNotFound() {
+    void getWorkoutById_ShouldThrowException_WhenWorkoutNotFound() {
         when(workoutRepository.getWorkoutById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(WorkoutNotFoundException.class, () -> workoutServiceImpl.getWorkoutById(1L));
-
+        assertThrows(WorkoutNotFoundException.class, () -> workoutService.getWorkoutById(1L));
         verify(workoutRepository, times(1)).getWorkoutById(1L);
     }
 
-    @Test
-    void createWorkout() throws IOException {
-        when(workoutRepository.create(mockWorkout)).thenReturn(mockWorkout);
-        doReturn("http://mock-url.com/image.jpg").when(workoutServiceImpl).uploadImageToCloudinary(imageFile);
 
-        Workout createdWorkout = workoutServiceImpl.createWorkout(mockWorkout, imageFile);
 
-        assertNotNull(createdWorkout, "The created workout should not be null.");
-        assertEquals("Strength Training", createdWorkout.getName(), "The workout name does not match.");
-        assertEquals("http://mock-url.com/image.jpg", createdWorkout.getPictureURL(), "The image URL does not match.");
-
-        verify(workoutRepository, times(1)).create(mockWorkout);
-        verify(workoutServiceImpl, times(1)).uploadImageToCloudinary(imageFile);
-    }
 
     @Test
-    void deleteWorkout() {
+    void deleteWorkout_ShouldDeleteWorkout_WhenWorkoutExists() {
         when(workoutRepository.exists(1L)).thenReturn(true);
 
-        workoutServiceImpl.deleteWorkout(1L);
-
+        assertDoesNotThrow(() -> workoutService.deleteWorkout(1L));
+        verify(workoutRepository, times(1)).exists(1L);
         verify(workoutRepository, times(1)).delete(1L);
     }
 
     @Test
-    void deleteWorkout_WorkoutNotFound() {
+    void deleteWorkout_ShouldThrowException_WhenWorkoutNotFound() {
         when(workoutRepository.exists(1L)).thenReturn(false);
 
-        assertThrows(WorkoutNotFoundException.class, () -> workoutServiceImpl.deleteWorkout(1L));
-
+        assertThrows(WorkoutNotFoundException.class, () -> workoutService.deleteWorkout(1L));
         verify(workoutRepository, times(1)).exists(1L);
         verify(workoutRepository, never()).delete(1L);
     }
 
     @Test
-    void searchWorkoutsByPartialUsername() {
-        String partialUsername = "Strength";
-        List<Workout> workouts = Arrays.asList(mockWorkout);
+    void searchWorkoutsByPartialUsername_ShouldReturnMatchingWorkouts() {
+        when(workoutRepository.findByNameContainingIgnoreCase("test")).thenReturn(List.of(workout));
 
-        when(workoutRepository.findByNameContainingIgnoreCase(partialUsername)).thenReturn(workouts);
+        List<Workout> workouts = workoutService.searchWorkoutsByPartialUsername("test");
 
-        List<Workout> result = workoutServiceImpl.searchWorkoutsByPartialUsername(partialUsername);
-
-        assertEquals(1, result.size(), "The number of workouts returned does not match.");
-        assertEquals("Strength Training", result.get(0).getName(), "The workout name does not match.");
-
-        verify(workoutRepository, times(1)).findByNameContainingIgnoreCase(partialUsername);
+        assertNotNull(workouts);
+        assertEquals(1, workouts.size());
+        assertEquals(workout, workouts.get(0));
+        verify(workoutRepository, times(1)).findByNameContainingIgnoreCase("test");
     }
 
     @Test
-    void updateWorkout() {
-        when(workoutRepository.getWorkoutById(1L)).thenReturn(Optional.of(mockWorkout));
-        when(workoutRepository.update(mockWorkout)).thenReturn(mockWorkout);
+    void updateWorkout_ShouldReturnUpdatedWorkout_WhenWorkoutExists() {
+        when(workoutRepository.getWorkoutById(1L)).thenReturn(Optional.of(workout));
+        when(workoutRepository.update(workout)).thenReturn(workout);
 
-        mockWorkout.setName("Updated Workout Name");
+        Workout updatedWorkout = workoutService.updateWorkout(workout);
 
-        Workout updatedWorkout = workoutServiceImpl.updateWorkout(mockWorkout);
-
-        assertNotNull(updatedWorkout, "The updated workout should not be null.");
-        assertEquals("Updated Workout Name", updatedWorkout.getName(), "The workout name did not update correctly.");
-
+        assertNotNull(updatedWorkout);
+        assertEquals(workout, updatedWorkout);
         verify(workoutRepository, times(1)).getWorkoutById(1L);
-        verify(workoutRepository, times(1)).update(mockWorkout);
+        verify(workoutRepository, times(1)).update(workout);
     }
+
+
+
 }

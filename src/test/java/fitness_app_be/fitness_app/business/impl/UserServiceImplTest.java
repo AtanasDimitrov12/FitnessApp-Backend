@@ -1,172 +1,143 @@
 package fitness_app_be.fitness_app.business.impl;
 
-import fitness_app_be.fitness_app.domain.Diet;
 import fitness_app_be.fitness_app.domain.ProgressNote;
 import fitness_app_be.fitness_app.domain.User;
-import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.exceptionHandling.UserNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
 
     @InjectMocks
-    private UserServiceImpl userServiceImpl;
+    private UserServiceImpl userService;
 
-    private User mockUser;
+    private User user;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        List<ProgressNote> notes = new ArrayList<>();
+        user = new User(1L, "testUser", "test@example.com", "password", "muscle gain", "low carbs", "pictureURL", 1L, 1L, notes);
 
-        // Initialize sample workouts, diets, and notes for testing
-        List<Workout> workouts = new ArrayList<>(); // Add mock Workout objects if necessary
-        List<Diet> diets = new ArrayList<>(); // Add mock Diet objects if necessary
-        List<ProgressNote> notes = new ArrayList<>(); // Add mock ProgressNote objects if necessary
-
-        // Initialize mockUser with the workouts, diets, and notes
-        mockUser = new User(
-                1L,
-                "testUser",
-                "test@example.com",
-                "Gain muscle",
-                "Vegetarian",
-                "./images/user.jpg",
-                workouts,
-                diets,
-                notes
-        );
     }
 
     @Test
-    void getAllUsers() {
-        List<User> users = Arrays.asList(mockUser);
-        when(userRepository.getAll()).thenReturn(users);
+    void getAllUsers_ShouldReturnListOfUsers() {
+        when(userRepository.getAll()).thenReturn(List.of(user));
 
-        List<User> userList = userServiceImpl.getAllUsers();
+        List<User> users = userService.getAllUsers();
 
-        assertNotNull(userList, "The returned list of users should not be null.");
-        assertEquals(1, userList.size(), "The size of the user list does not match.");
-        assertEquals(mockUser, userList.get(0), "The user does not match expected value.");
-
+        assertNotNull(users);
+        assertEquals(1, users.size());
+        assertEquals(user, users.get(0));
         verify(userRepository, times(1)).getAll();
     }
 
     @Test
-    void getUserById() {
-        when(userRepository.getUserById(1L)).thenReturn(Optional.of(mockUser));
+    void getUserById_ShouldReturnUser_WhenUserExists() {
+        when(userRepository.getUserById(1L)).thenReturn(Optional.of(user));
 
-        User user = userServiceImpl.getUserById(1L);
+        User foundUser = userService.getUserById(1L);
 
-        assertNotNull(user, "The returned user should not be null.");
-        assertEquals(mockUser, user, "The user does not match expected value.");
-
+        assertNotNull(foundUser);
+        assertEquals(user, foundUser);
         verify(userRepository, times(1)).getUserById(1L);
     }
 
     @Test
-    void getUserById_UserNotFound() {
+    void getUserById_ShouldThrowException_WhenUserNotFound() {
         when(userRepository.getUserById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(UserNotFoundException.class, () -> userServiceImpl.getUserById(1L));
-
+        assertThrows(UserNotFoundException.class, () -> userService.getUserById(1L));
         verify(userRepository, times(1)).getUserById(1L);
     }
 
     @Test
-    void createUser() {
-        when(userRepository.create(mockUser)).thenReturn(mockUser);
+    void createUser_ShouldReturnCreatedUser() {
+        when(userRepository.create(any(User.class))).thenReturn(user);
 
-        User createdUser = userServiceImpl.createUser(mockUser);
+        User createdUser = userService.createUser(user);
 
-        assertNotNull(createdUser, "The created user should not be null.");
-        assertEquals(mockUser, createdUser, "The created user does not match expected value.");
-
-        verify(userRepository, times(1)).create(mockUser);
+        assertNotNull(createdUser);
+        assertEquals(user, createdUser);
+        verify(userRepository, times(1)).create(user);
     }
 
     @Test
-    void deleteUser() {
+    void deleteUser_ShouldDeleteUser_WhenUserExists() {
         when(userRepository.exists(1L)).thenReturn(true);
 
-        userServiceImpl.deleteUser(1L);
-
+        assertDoesNotThrow(() -> userService.deleteUser(1L));
+        verify(userRepository, times(1)).exists(1L);
         verify(userRepository, times(1)).delete(1L);
     }
 
     @Test
-    void deleteUser_UserNotFound() {
+    void deleteUser_ShouldThrowException_WhenUserNotFound() {
         when(userRepository.exists(1L)).thenReturn(false);
 
-        assertThrows(UserNotFoundException.class, () -> userServiceImpl.deleteUser(1L));
-
+        assertThrows(UserNotFoundException.class, () -> userService.deleteUser(1L));
         verify(userRepository, times(1)).exists(1L);
         verify(userRepository, never()).delete(1L);
     }
 
     @Test
-    void getUserByEmail() {
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUser));
+    void getUserByEmail_ShouldReturnUser_WhenUserExists() {
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
 
-        Optional<User> foundUser = userServiceImpl.getUserByEmail("test@example.com");
+        Optional<User> foundUser = userService.getUserByEmail("test@example.com");
 
-        assertTrue(foundUser.isPresent(), "The returned user should not be null.");
-        assertEquals(mockUser, foundUser.get(), "The found user does not match expected value.");
-
+        assertTrue(foundUser.isPresent());
+        assertEquals(user, foundUser.get());
         verify(userRepository, times(1)).findByEmail("test@example.com");
     }
 
     @Test
-    void searchUsersByPartialUsername() {
-        List<User> users = Arrays.asList(mockUser);
-        String partialUsername = "test";
+    void searchUsersByPartialUsername_ShouldReturnMatchingUsers() {
+        when(userRepository.findByUsernameContainingIgnoreCase("test")).thenReturn(List.of(user));
 
-        when(userRepository.findByUsernameContainingIgnoreCase(partialUsername)).thenReturn(users);
+        List<User> users = userService.searchUsersByPartialUsername("test");
 
-        List<User> result = userServiceImpl.searchUsersByPartialUsername(partialUsername);
-
-        assertEquals(1, result.size(), "The number of users returned does not match.");
-        assertEquals(mockUser, result.get(0), "The user does not match expected value.");
-
-        verify(userRepository, times(1)).findByUsernameContainingIgnoreCase(partialUsername);
+        assertNotNull(users);
+        assertEquals(1, users.size());
+        assertEquals(user, users.get(0));
+        verify(userRepository, times(1)).findByUsernameContainingIgnoreCase("test");
     }
 
     @Test
-    void updateUser() {
-        when(userRepository.exists(mockUser.getId())).thenReturn(true);
-        when(userRepository.update(mockUser)).thenReturn(mockUser);
+    void updateUser_ShouldReturnUpdatedUser_WhenUserExists() {
+        when(userRepository.exists(1L)).thenReturn(true);
+        when(userRepository.update(user)).thenReturn(user);
 
-        User updatedUser = userServiceImpl.updateUser(mockUser);
+        User updatedUser = userService.updateUser(user);
 
-        assertNotNull(updatedUser, "The updated user should not be null.");
-        assertEquals(mockUser, updatedUser, "The updated user does not match expected value.");
-
-        verify(userRepository, times(1)).exists(mockUser.getId());
-        verify(userRepository, times(1)).update(mockUser);
+        assertNotNull(updatedUser);
+        assertEquals(user, updatedUser);
+        verify(userRepository, times(1)).exists(1L);
+        verify(userRepository, times(1)).update(user);
     }
 
     @Test
-    void updateUser_UserNotFound() {
-        when(userRepository.exists(mockUser.getId())).thenReturn(false);
+    void updateUser_ShouldThrowException_WhenUserNotFound() {
+        when(userRepository.exists(1L)).thenReturn(false);
 
-        assertThrows(UserNotFoundException.class, () -> userServiceImpl.updateUser(mockUser));
-
-        verify(userRepository, times(1)).exists(mockUser.getId());
-        verify(userRepository, never()).update(mockUser);
+        assertThrows(UserNotFoundException.class, () -> userService.updateUser(user));
+        verify(userRepository, times(1)).exists(1L);
+        verify(userRepository, never()).update(user);
     }
 }

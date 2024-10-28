@@ -6,130 +6,146 @@ import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaMealRepository;
 import fitness_app_be.fitness_app.persistence.mapper.MealEntityMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class MealRepositoryImplTest {
 
     @Mock
     private JpaMealRepository jpaMealRepository;
 
     @Mock
-    private MealEntityMapper mealEntityMapper;
+    private MealEntityMapper mealEntityMapperImpl;
 
     @InjectMocks
-    private MealRepositoryImpl mealRepositoryImpl;
+    private MealRepositoryImpl mealRepository;
 
-    private Meal mockMeal;
-    private MealEntity mockMealEntity;
+    private Meal meal;
+    private MealEntity mealEntity;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mockMeal = new Meal(1L, 1L, "Salad", 200, 10, 5, 15.0);
-        mockMealEntity = new MealEntity(1L, null, "Salad", 200, 10, 5, 15.0);
+        meal = new Meal(1L, "Chicken Salad", 300, 25, 10, 15);
+
+
+        mealEntity = new MealEntity();
+        mealEntity.setId(1L);
+        mealEntity.setName("Salad");
     }
 
     @Test
-    void exists() {
+    void exists_ShouldReturnTrue_WhenMealExists() {
         when(jpaMealRepository.existsById(1L)).thenReturn(true);
 
-        boolean exists = mealRepositoryImpl.exists(1L);
-
-        assertTrue(exists, "Meal should exist with ID 1.");
+        assertTrue(mealRepository.exists(1L));
         verify(jpaMealRepository, times(1)).existsById(1L);
     }
 
     @Test
-    void getAll() {
-        when(jpaMealRepository.findAll()).thenReturn(Arrays.asList(mockMealEntity));
-        when(mealEntityMapper.toDomain(mockMealEntity)).thenReturn(mockMeal);
+    void exists_ShouldReturnFalse_WhenMealDoesNotExist() {
+        when(jpaMealRepository.existsById(1L)).thenReturn(false);
 
-        List<Meal> meals = mealRepositoryImpl.getAll();
+        assertFalse(mealRepository.exists(1L));
+        verify(jpaMealRepository, times(1)).existsById(1L);
+    }
 
-        assertNotNull(meals, "The list of meals should not be null.");
-        assertEquals(1, meals.size(), "The number of meals returned does not match.");
-        assertEquals("Salad", meals.get(0).getName(), "The meal name does not match.");
+    @Test
+    void getAll_ShouldReturnListOfMeals() {
+        when(jpaMealRepository.findAll()).thenReturn(List.of(mealEntity));
+        when(mealEntityMapperImpl.toDomain(mealEntity)).thenReturn(meal);
 
+        List<Meal> meals = mealRepository.getAll();
+
+        assertNotNull(meals);
+        assertEquals(1, meals.size());
+        assertEquals(meal, meals.get(0));
         verify(jpaMealRepository, times(1)).findAll();
-        verify(mealEntityMapper, times(1)).toDomain(mockMealEntity);
+        verify(mealEntityMapperImpl, times(1)).toDomain(mealEntity);
     }
 
     @Test
-    void create() {
-        when(mealEntityMapper.toEntity(mockMeal)).thenReturn(mockMealEntity);
-        when(jpaMealRepository.save(mockMealEntity)).thenReturn(mockMealEntity);
-        when(mealEntityMapper.toDomain(mockMealEntity)).thenReturn(mockMeal);
+    void create_ShouldReturnCreatedMeal() {
+        when(mealEntityMapperImpl.toEntity(meal)).thenReturn(mealEntity);
+        when(jpaMealRepository.save(mealEntity)).thenReturn(mealEntity);
+        when(mealEntityMapperImpl.toDomain(mealEntity)).thenReturn(meal);
 
-        Meal createdMeal = mealRepositoryImpl.create(mockMeal);
+        Meal createdMeal = mealRepository.create(meal);
 
-        assertNotNull(createdMeal, "The created meal should not be null.");
-        assertEquals("Salad", createdMeal.getName(), "The meal name does not match.");
-
-        verify(mealEntityMapper, times(1)).toEntity(mockMeal);
-        verify(jpaMealRepository, times(1)).save(mockMealEntity);
-        verify(mealEntityMapper, times(1)).toDomain(mockMealEntity);
+        assertNotNull(createdMeal);
+        assertEquals(meal, createdMeal);
+        verify(jpaMealRepository, times(1)).save(mealEntity);
+        verify(mealEntityMapperImpl, times(1)).toEntity(meal);
+        verify(mealEntityMapperImpl, times(1)).toDomain(mealEntity);
     }
 
     @Test
-    void update() {
-        when(mealEntityMapper.toEntity(mockMeal)).thenReturn(mockMealEntity);
-        when(jpaMealRepository.save(mockMealEntity)).thenReturn(mockMealEntity);
-        when(mealEntityMapper.toDomain(mockMealEntity)).thenReturn(mockMeal);
+    void update_ShouldReturnUpdatedMeal() {
+        when(mealEntityMapperImpl.toEntity(meal)).thenReturn(mealEntity);
+        when(jpaMealRepository.save(mealEntity)).thenReturn(mealEntity);
+        when(mealEntityMapperImpl.toDomain(mealEntity)).thenReturn(meal);
 
-        mockMeal.setCalories(250);
-        Meal updatedMeal = mealRepositoryImpl.update(mockMeal);
+        Meal updatedMeal = mealRepository.update(meal);
 
-        assertNotNull(updatedMeal, "The updated meal should not be null.");
-        assertEquals(250, updatedMeal.getCalories(), "The meal calories did not update correctly.");
-
-        verify(mealEntityMapper, times(1)).toEntity(mockMeal);
-        verify(jpaMealRepository, times(1)).save(mockMealEntity);
-        verify(mealEntityMapper, times(1)).toDomain(mockMealEntity);
+        assertNotNull(updatedMeal);
+        assertEquals(meal, updatedMeal);
+        verify(jpaMealRepository, times(1)).save(mealEntity);
+        verify(mealEntityMapperImpl, times(1)).toEntity(meal);
+        verify(mealEntityMapperImpl, times(1)).toDomain(mealEntity);
     }
 
     @Test
-    void delete() {
-        mealRepositoryImpl.delete(1L);
+    void delete_ShouldDeleteMealById() {
+        doNothing().when(jpaMealRepository).deleteById(1L);
+
+        mealRepository.delete(1L);
 
         verify(jpaMealRepository, times(1)).deleteById(1L);
     }
 
     @Test
-    void getMealById() {
-        when(jpaMealRepository.findById(1L)).thenReturn(Optional.of(mockMealEntity));
-        when(mealEntityMapper.toDomain(mockMealEntity)).thenReturn(mockMeal);
+    void getMealById_ShouldReturnMeal_WhenMealExists() {
+        when(jpaMealRepository.findById(1L)).thenReturn(Optional.of(mealEntity));
+        when(mealEntityMapperImpl.toDomain(mealEntity)).thenReturn(meal);
 
-        Optional<Meal> meal = mealRepositoryImpl.getMealById(1L);
+        Optional<Meal> foundMeal = mealRepository.getMealById(1L);
 
-        assertTrue(meal.isPresent(), "The meal should be present.");
-        assertEquals("Salad", meal.get().getName(), "The meal name does not match.");
-
+        assertTrue(foundMeal.isPresent());
+        assertEquals(meal, foundMeal.get());
         verify(jpaMealRepository, times(1)).findById(1L);
-        verify(mealEntityMapper, times(1)).toDomain(mockMealEntity);
+        verify(mealEntityMapperImpl, times(1)).toDomain(mealEntity);
     }
 
     @Test
-    void findByNameContainingIgnoreCase() {
-        String name = "Salad";
-        when(jpaMealRepository.findByNameContainingIgnoreCase(name)).thenReturn(Arrays.asList(mockMealEntity));
-        when(mealEntityMapper.toDomain(mockMealEntity)).thenReturn(mockMeal);
+    void getMealById_ShouldReturnEmpty_WhenMealDoesNotExist() {
+        when(jpaMealRepository.findById(1L)).thenReturn(Optional.empty());
 
-        List<Meal> meals = mealRepositoryImpl.findByNameContainingIgnoreCase(name);
+        Optional<Meal> foundMeal = mealRepository.getMealById(1L);
 
-        assertNotNull(meals, "The list of meals should not be null.");
-        assertEquals(1, meals.size(), "The number of meals returned does not match.");
-        assertEquals("Salad", meals.get(0).getName(), "The meal name does not match.");
+        assertTrue(foundMeal.isEmpty());
+        verify(jpaMealRepository, times(1)).findById(1L);
+        verify(mealEntityMapperImpl, never()).toDomain(any());
+    }
 
-        verify(jpaMealRepository, times(1)).findByNameContainingIgnoreCase(name);
-        verify(mealEntityMapper, times(1)).toDomain(mockMealEntity);
+    @Test
+    void findByNameContainingIgnoreCase_ShouldReturnListOfMeals() {
+        when(jpaMealRepository.findByNameContainingIgnoreCase("salad")).thenReturn(List.of(mealEntity));
+        when(mealEntityMapperImpl.toDomain(mealEntity)).thenReturn(meal);
+
+        List<Meal> meals = mealRepository.findByNameContainingIgnoreCase("salad");
+
+        assertNotNull(meals);
+        assertEquals(1, meals.size());
+        assertEquals(meal, meals.get(0));
+        verify(jpaMealRepository, times(1)).findByNameContainingIgnoreCase("salad");
+        verify(mealEntityMapperImpl, times(1)).toDomain(mealEntity);
     }
 }

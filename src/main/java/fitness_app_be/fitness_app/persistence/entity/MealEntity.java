@@ -17,13 +17,6 @@ public class MealEntity {
     @Column(name = "id")
     private Long id;
 
-    @NotNull
-    @ManyToOne
-    @JoinColumn(name = "trainer_id", nullable = false)
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    private TrainerEntity trainer;
-
     @Column(name = "name")
     @NotNull
     private String name;

@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
 public class MealMapper {
 
     public Meal toDomain(MealDTO mealDTO) {
-        return new Meal(mealDTO.getId(), mealDTO.getTrainerId(), mealDTO.getName(),
+        return new Meal(mealDTO.getId(), mealDTO.getName(),
                 mealDTO.getCalories(), mealDTO.getProtein(), mealDTO.getCarbs(),
                 mealDTO.getCookingTime());
     }
 
     public MealDTO domainToDto(Meal meal) {
-        return new MealDTO(meal.getId(), meal.getTrainerId(), meal.getName(),
+        return new MealDTO(meal.getId(), meal.getName(),
                 meal.getCalories(), meal.getProtein(), meal.getCarbs(),
                 meal.getCookingTime());
     }

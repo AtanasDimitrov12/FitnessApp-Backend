@@ -4,14 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MealDTO {
+public class WorkoutPlanDTO {
     private Long id;
-    private String name;
-    private int calories;
-    private int protein;
-    private int carbs;
-    private double cookingTime;
+    private Long userId;
+    private List<WorkoutDTO> workouts = new ArrayList<>();
 }

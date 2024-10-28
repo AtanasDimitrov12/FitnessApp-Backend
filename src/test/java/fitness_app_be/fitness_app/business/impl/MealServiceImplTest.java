@@ -5,124 +5,118 @@ import fitness_app_be.fitness_app.exceptionHandling.MealNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.MealRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class MealServiceImplTest {
 
     @Mock
     private MealRepository mealRepository;
 
     @InjectMocks
-    private MealServiceImpl mealServiceImpl;
+    private MealServiceImpl mealService;
 
-    private Meal mockMeal;
+    private Meal meal;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mockMeal = new Meal(1L, 1L, "Pasta", 400, 15, 50, 20.0);
+        meal = new Meal(1L, "Chicken Salad", 300, 25, 10, 15);
+
     }
 
     @Test
-    void getAllMeals() {
-        List<Meal> meals = Arrays.asList(mockMeal);
-        when(mealRepository.getAll()).thenReturn(meals);
+    void getAllMeals_ShouldReturnListOfMeals() {
+        when(mealRepository.getAll()).thenReturn(List.of(meal));
 
-        List<Meal> result = mealServiceImpl.getAllMeals();
+        List<Meal> meals = mealService.getAllMeals();
 
-        assertNotNull(result, "The list of meals should not be null.");
-        assertEquals(1, result.size(), "The size of the meal list does not match.");
-        assertEquals("Pasta", result.get(0).getName(), "The meal name does not match.");
-
+        assertNotNull(meals);
+        assertEquals(1, meals.size());
+        assertEquals(meal, meals.get(0));
         verify(mealRepository, times(1)).getAll();
     }
 
     @Test
-    void getMealById() {
-        when(mealRepository.getMealById(1L)).thenReturn(Optional.of(mockMeal));
+    void getMealById_ShouldReturnMeal_WhenMealExists() {
+        when(mealRepository.getMealById(1L)).thenReturn(Optional.of(meal));
 
-        Meal meal = mealServiceImpl.getMealById(1L);
+        Meal foundMeal = mealService.getMealById(1L);
 
-        assertNotNull(meal, "The meal should not be null.");
-        assertEquals("Pasta", meal.getName(), "The meal name does not match.");
-
+        assertNotNull(foundMeal);
+        assertEquals(meal, foundMeal);
         verify(mealRepository, times(1)).getMealById(1L);
     }
 
     @Test
-    void getMealById_MealNotFound() {
+    void getMealById_ShouldThrowException_WhenMealNotFound() {
         when(mealRepository.getMealById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(MealNotFoundException.class, () -> mealServiceImpl.getMealById(1L), "Expected MealNotFoundException");
-
+        assertThrows(MealNotFoundException.class, () -> mealService.getMealById(1L));
         verify(mealRepository, times(1)).getMealById(1L);
     }
 
     @Test
-    void createMeal() {
-        when(mealRepository.create(mockMeal)).thenReturn(mockMeal);
+    void createMeal_ShouldReturnCreatedMeal() {
+        when(mealRepository.create(any(Meal.class))).thenReturn(meal);
 
-        Meal createdMeal = mealServiceImpl.createMeal(mockMeal);
+        Meal createdMeal = mealService.createMeal(meal);
 
-        assertNotNull(createdMeal, "The created meal should not be null.");
-        assertEquals("Pasta", createdMeal.getName(), "The meal name does not match.");
-
-        verify(mealRepository, times(1)).create(mockMeal);
+        assertNotNull(createdMeal);
+        assertEquals(meal, createdMeal);
+        verify(mealRepository, times(1)).create(meal);
     }
 
     @Test
-    void deleteMeal() {
+    void deleteMeal_ShouldDeleteMeal_WhenMealExists() {
         when(mealRepository.exists(1L)).thenReturn(true);
 
-        mealServiceImpl.deleteMeal(1L);
-
+        assertDoesNotThrow(() -> mealService.deleteMeal(1L));
+        verify(mealRepository, times(1)).exists(1L);
         verify(mealRepository, times(1)).delete(1L);
     }
 
     @Test
-    void deleteMeal_MealNotFound() {
+    void deleteMeal_ShouldThrowException_WhenMealNotFound() {
         when(mealRepository.exists(1L)).thenReturn(false);
 
-        assertThrows(MealNotFoundException.class, () -> mealServiceImpl.deleteMeal(1L), "Expected MealNotFoundException");
-
+        assertThrows(MealNotFoundException.class, () -> mealService.deleteMeal(1L));
         verify(mealRepository, times(1)).exists(1L);
         verify(mealRepository, never()).delete(1L);
     }
 
     @Test
-    void updateMeal() {
-        when(mealRepository.getMealById(1L)).thenReturn(Optional.of(mockMeal));
-        when(mealRepository.update(mockMeal)).thenReturn(mockMeal);
+    void updateMeal_ShouldReturnUpdatedMeal_WhenMealExists() {
+        Meal updatedMeal = new Meal(1L, "Beef Salad", 300, 25, 10, 15);
 
-        mockMeal.setName("Updated Pasta");
+        when(mealRepository.getMealById(1L)).thenReturn(Optional.of(meal));
+        when(mealRepository.update(meal)).thenReturn(updatedMeal);
 
-        Meal updatedMeal = mealServiceImpl.updateMeal(mockMeal);
+        Meal result = mealService.updateMeal(updatedMeal);
 
-        assertNotNull(updatedMeal, "The updated meal should not be null.");
-        assertEquals("Updated Pasta", updatedMeal.getName(), "The meal name was not updated correctly.");
-
+        assertNotNull(result);
+        assertEquals("Beef Salad", result.getName());
+        assertEquals(300, result.getCalories());
         verify(mealRepository, times(1)).getMealById(1L);
-        verify(mealRepository, times(1)).update(mockMeal);
+        verify(mealRepository, times(1)).update(meal);
     }
 
     @Test
-    void updateMeal_MealNotFound() {
+    void updateMeal_ShouldThrowException_WhenMealNotFound() {
+        Meal updatedMeal = new Meal(1L, "Beef Salad", 300, 25, 10, 15);
+
         when(mealRepository.getMealById(1L)).thenReturn(Optional.empty());
 
-        mockMeal.setName("Updated Pasta");
-
-        assertThrows(MealNotFoundException.class, () -> mealServiceImpl.updateMeal(mockMeal), "Expected MealNotFoundException");
-
+        assertThrows(MealNotFoundException.class, () -> mealService.updateMeal(updatedMeal));
         verify(mealRepository, times(1)).getMealById(1L);
-        verify(mealRepository, never()).update(mockMeal);
+        verify(mealRepository, never()).update(any(Meal.class));
     }
 }

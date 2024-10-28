@@ -16,7 +16,6 @@ public class MealEntityMapper {
         }
         return new Meal(
                 mealEntity.getId(),
-                mealEntity.getTrainer().getId(),
                 mealEntity.getName(),
                 mealEntity.getCalories(),
                 mealEntity.getProtein(),

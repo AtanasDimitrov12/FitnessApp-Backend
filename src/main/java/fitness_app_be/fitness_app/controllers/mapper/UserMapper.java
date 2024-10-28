@@ -11,32 +11,24 @@ import java.util.stream.Collectors;
 @Component
 public class UserMapper {
 
-    private WorkoutMapper workoutMapper;
+    private final ProgressNoteMapper progressNoteMapper;
 
-    public UserMapper(@Lazy WorkoutMapper workoutMapper, DietMapper dietMapper, ProgressNoteMapper progressNoteMapper) {
-        this.workoutMapper = workoutMapper;
-        this.dietMapper = dietMapper;
+    public UserMapper( ProgressNoteMapper progressNoteMapper) {
         this.progressNoteMapper = progressNoteMapper;
     }
 
-    private DietMapper dietMapper;
-    private ProgressNoteMapper progressNoteMapper;
-
-
 
     public User toDomain(UserDTO userDTO) {
-        return new User(userDTO.getId(), userDTO.getUsername(), userDTO.getEmail(),
+        return new User(userDTO.getId(), userDTO.getUsername(), userDTO.getEmail(), userDTO.getPassword(),
                 userDTO.getFitnessGoal(), userDTO.getDietPreference(), userDTO.getPictureURL(),
-                userDTO.getWorkouts().stream().map(workoutMapper::toDomain).collect(Collectors.toList()),
-                userDTO.getDiets().stream().map(dietMapper::toDomain).collect(Collectors.toList()),
+                userDTO.getWorkoutPlanId(), userDTO.getDietId(),
                 userDTO.getNotes().stream().map(progressNoteMapper::toDomain).collect(Collectors.toList()));
     }
 
     public UserDTO domainToDto(User user) {
-        return new UserDTO(user.getId(), user.getUsername(), user.getEmail(),
+        return new UserDTO(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(),
                 user.getFitnessGoal(), user.getDietPreference(), user.getPictureURL(),
-                user.getWorkouts().stream().map(workoutMapper::domainToDto).collect(Collectors.toList()),
-                user.getDiets().stream().map(dietMapper::domainToDto).collect(Collectors.toList()),
+                user.getWorkoutPlanId(), user.getDietId(),
                 user.getNotes().stream().map(progressNoteMapper::domainToDto).collect(Collectors.toList()));
     }
 }

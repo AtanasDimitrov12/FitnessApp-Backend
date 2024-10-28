@@ -13,16 +13,13 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class UserEntityMapper{
 
-    private WorkoutEntityMapper workoutEntityMapperImpl;
-    private DietEntityMapper dietEntityMapperImpl;
+    private ProgressNoteEntityMapper progressNoteEntityMapperImpl;
 
-    public UserEntityMapper(@Lazy WorkoutEntityMapper workoutEntityMapperImpl, DietEntityMapper dietEntityMapperImpl, ProgressNoteEntityMapper progressNoteEntityMapperImpl) {
-        this.workoutEntityMapperImpl = workoutEntityMapperImpl;
-        this.dietEntityMapperImpl = dietEntityMapperImpl;
+    @Autowired
+    public UserEntityMapper( ProgressNoteEntityMapper progressNoteEntityMapperImpl) {
         this.progressNoteEntityMapperImpl = progressNoteEntityMapperImpl;
     }
 
-    private ProgressNoteEntityMapper progressNoteEntityMapperImpl;
 
 
 
@@ -34,12 +31,13 @@ public class UserEntityMapper{
                 userEntity.getId(),
                 userEntity.getUsername(),
                 userEntity.getEmail(),
+                userEntity.getPassword(),
                 userEntity.getFitnessGoal(),
                 userEntity.getDietPreference(),
                 userEntity.getPictureURL(),
-                userEntity.getWorkouts().stream().map(workoutEntityMapperImpl::toDomain).collect(Collectors.toList()),
-                userEntity.getDiets().stream().map(dietEntityMapperImpl::toDomain).collect(Collectors.toList()),
-                userEntity.getProgressNotes().stream().map(progressNoteEntityMapperImpl::toDomain).collect(Collectors.toList())
+                userEntity.getWorkoutPlanId(),
+                userEntity.getDietId(),
+                userEntity.getNotes().stream().map(progressNoteEntityMapperImpl::toDomain).collect(Collectors.toList())
         );
     }
 
@@ -48,18 +46,19 @@ public class UserEntityMapper{
             return null;
         }
 
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId(user.getId());
-        userEntity.setUsername(user.getUsername());
-        userEntity.setEmail(user.getEmail());
-        userEntity.setFitnessGoal(user.getFitnessGoal());
-        userEntity.setDietPreference(user.getDietPreference());
-        userEntity.setPictureURL(user.getPictureURL());
+        return new UserEntity(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getPassword(),
+                user.getFitnessGoal(),
+                user.getDietPreference(),
+                user.getPictureURL(),
+                user.getWorkoutPlanId(),
+                user.getDietId(),
+                user.getNotes().stream().map(progressNoteEntityMapperImpl::toEntity).collect(Collectors.toList()));
 
-        userEntity.setWorkouts(user.getWorkouts().stream().map(workoutEntityMapperImpl::toEntity).collect(Collectors.toList()));
-        userEntity.setDiets(user.getDiets().stream().map(dietEntityMapperImpl::toEntity).collect(Collectors.toList()));
-        userEntity.setProgressNotes(user.getNotes().stream().map(progressNoteEntityMapperImpl::toEntity).collect(Collectors.toList()));
 
-        return userEntity;
+
     }
 }

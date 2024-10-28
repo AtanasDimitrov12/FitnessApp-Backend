@@ -13,11 +13,12 @@ public class UserDTO {
     private Long id;
     private String username;
     private String email;
+    private String password;
     private String fitnessGoal;
     private String dietPreference;
     private String pictureURL;
-    private List<WorkoutDTO> workouts;
-    private List<DietDTO> diets;
+    private Long workoutPlanId;
+    private Long dietId;
     private List<ProgressNoteDTO> notes;
 }
 

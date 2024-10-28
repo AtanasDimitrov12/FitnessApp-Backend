@@ -1,128 +1,127 @@
 package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.domain.Diet;
+import fitness_app_be.fitness_app.domain.Meal;
 import fitness_app_be.fitness_app.exceptionHandling.DietNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.DietRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class DietServiceImplTest {
 
     @Mock
     private DietRepository dietRepository;
 
     @InjectMocks
-    private DietServiceImpl dietServiceImpl;
+    private DietServiceImpl dietService;
 
-    private Diet mockDiet;
+    private Diet diet;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mockDiet = new Diet(1L, 2L, "Vegan Diet", "A diet with plant-based meals", "./images/diet.jpg", Arrays.asList(), Arrays.asList());
+        List<Meal> meals = new ArrayList<Meal>();
+        diet = new Diet(1L, "Keto Diet", "High fat, low carb", "picturePath", meals);
     }
 
     @Test
-    void getAllDiets() {
-        List<Diet> diets = Arrays.asList(mockDiet);
-        when(dietRepository.getAll()).thenReturn(diets);
+    void getAllDiets_ShouldReturnListOfDiets() {
+        when(dietRepository.getAll()).thenReturn(List.of(diet));
 
-        List<Diet> result = dietServiceImpl.getAllDiets();
+        List<Diet> diets = dietService.getAllDiets();
 
-        assertNotNull(result, "The list of diets should not be null.");
-        assertEquals(1, result.size(), "The size of the diet list does not match.");
-        assertEquals("Vegan Diet", result.get(0).getName(), "The diet name does not match.");
-
+        assertNotNull(diets);
+        assertEquals(1, diets.size());
+        assertEquals(diet, diets.get(0));
         verify(dietRepository, times(1)).getAll();
     }
 
     @Test
-    void getDietById() {
-        when(dietRepository.getDietById(1L)).thenReturn(Optional.of(mockDiet));
+    void getDietById_ShouldReturnDiet_WhenDietExists() {
+        when(dietRepository.getDietById(1L)).thenReturn(Optional.of(diet));
 
-        Diet diet = dietServiceImpl.getDietById(1L);
+        Diet foundDiet = dietService.getDietById(1L);
 
-        assertNotNull(diet, "The diet should not be null.");
-        assertEquals("Vegan Diet", diet.getName(), "The diet name does not match.");
-
+        assertNotNull(foundDiet);
+        assertEquals(diet, foundDiet);
         verify(dietRepository, times(1)).getDietById(1L);
     }
 
     @Test
-    void getDietById_DietNotFound() {
+    void getDietById_ShouldThrowException_WhenDietNotFound() {
         when(dietRepository.getDietById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(DietNotFoundException.class, () -> dietServiceImpl.getDietById(1L), "Expected DietNotFoundException");
-
+        assertThrows(DietNotFoundException.class, () -> dietService.getDietById(1L));
         verify(dietRepository, times(1)).getDietById(1L);
     }
 
     @Test
-    void createDiet() {
-        when(dietRepository.create(mockDiet)).thenReturn(mockDiet);
+    void createDiet_ShouldReturnCreatedDiet() {
+        when(dietRepository.create(any(Diet.class))).thenReturn(diet);
 
-        Diet createdDiet = dietServiceImpl.createDiet(mockDiet);
+        Diet createdDiet = dietService.createDiet(diet);
 
-        assertNotNull(createdDiet, "The created diet should not be null.");
-        assertEquals("Vegan Diet", createdDiet.getName(), "The diet name does not match.");
-
-        verify(dietRepository, times(1)).create(mockDiet);
+        assertNotNull(createdDiet);
+        assertEquals(diet, createdDiet);
+        verify(dietRepository, times(1)).create(diet);
     }
 
     @Test
-    void deleteDiet() {
+    void deleteDiet_ShouldDeleteDiet_WhenDietExists() {
         when(dietRepository.exists(1L)).thenReturn(true);
 
-        dietServiceImpl.deleteDiet(1L);
-
+        assertDoesNotThrow(() -> dietService.deleteDiet(1L));
+        verify(dietRepository, times(1)).exists(1L);
         verify(dietRepository, times(1)).delete(1L);
     }
 
     @Test
-    void deleteDiet_DietNotFound() {
+    void deleteDiet_ShouldThrowException_WhenDietNotFound() {
         when(dietRepository.exists(1L)).thenReturn(false);
 
-        assertThrows(DietNotFoundException.class, () -> dietServiceImpl.deleteDiet(1L), "Expected DietNotFoundException");
-
+        assertThrows(DietNotFoundException.class, () -> dietService.deleteDiet(1L));
         verify(dietRepository, times(1)).exists(1L);
         verify(dietRepository, never()).delete(1L);
     }
 
     @Test
-    void updateDiet() {
-        when(dietRepository.getDietById(1L)).thenReturn(Optional.of(mockDiet));
-        when(dietRepository.update(mockDiet)).thenReturn(mockDiet);
+    void updateDiet_ShouldReturnUpdatedDiet_WhenDietExists() {
+        List<Meal> meals = new ArrayList<Meal>();
+        Diet updatedDiet = new Diet(1L, "Vegan Diet", "Plant-based diet", "picturePath", meals);
 
-        mockDiet.setName("Updated Vegan Diet");
 
-        Diet updatedDiet = dietServiceImpl.updateDiet(mockDiet);
+        when(dietRepository.getDietById(1L)).thenReturn(Optional.of(diet));
+        when(dietRepository.update(diet)).thenReturn(updatedDiet);
 
-        assertNotNull(updatedDiet, "The updated diet should not be null.");
-        assertEquals("Updated Vegan Diet", updatedDiet.getName(), "The diet name was not updated correctly.");
+        Diet result = dietService.updateDiet(updatedDiet);
 
+        assertNotNull(result);
+        assertEquals("Vegan Diet", result.getName());
+        assertEquals("Plant-based diet", result.getDescription());
         verify(dietRepository, times(1)).getDietById(1L);
-        verify(dietRepository, times(1)).update(mockDiet);
+        verify(dietRepository, times(1)).update(diet);
     }
 
     @Test
-    void updateDiet_DietNotFound() {
+    void updateDiet_ShouldThrowException_WhenDietNotFound() {
+        List<Meal> meals = new ArrayList<Meal>();
+        Diet updatedDiet = new Diet(1L, "Vegan Diet", "Plant-based diet", "picturePath", meals);
+
         when(dietRepository.getDietById(1L)).thenReturn(Optional.empty());
 
-        mockDiet.setName("Updated Vegan Diet");
-
-        assertThrows(DietNotFoundException.class, () -> dietServiceImpl.updateDiet(mockDiet), "Expected DietNotFoundException");
-
+        assertThrows(DietNotFoundException.class, () -> dietService.updateDiet(updatedDiet));
         verify(dietRepository, times(1)).getDietById(1L);
-        verify(dietRepository, never()).update(mockDiet);
+        verify(dietRepository, never()).update(any(Diet.class));
     }
 }

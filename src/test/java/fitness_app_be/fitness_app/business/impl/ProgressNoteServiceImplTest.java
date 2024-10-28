@@ -5,127 +5,120 @@ import fitness_app_be.fitness_app.exceptionHandling.ProgressNoteNotFoundExceptio
 import fitness_app_be.fitness_app.persistence.repositories.ProgressNoteRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class ProgressNoteServiceImplTest {
 
     @Mock
     private ProgressNoteRepository progressNoteRepository;
 
     @InjectMocks
-    private ProgressNoteServiceImpl progressNoteServiceImpl;
+    private ProgressNoteServiceImpl progressNoteService;
 
-    private ProgressNote mockProgressNote;
+    private ProgressNote progressNote;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mockProgressNote = new ProgressNote(1L, 1L, 75.5, "Weekly progress", "./images/progress.jpg");
+        progressNote = new ProgressNote(1L, 1L, 75.5, "Weekly progress", "http://example.com/image.jpg");
+
     }
 
     @Test
-    void getAllProgressNotes() {
-        List<ProgressNote> notes = Arrays.asList(mockProgressNote);
-        when(progressNoteRepository.getAll()).thenReturn(notes);
+    void getAllProgressNotes_ShouldReturnListOfProgressNotes() {
+        when(progressNoteRepository.getAll()).thenReturn(List.of(progressNote));
 
-        List<ProgressNote> result = progressNoteServiceImpl.getAllProgressNotes();
+        List<ProgressNote> notes = progressNoteService.getAllProgressNotes();
 
-        assertNotNull(result, "The list of progress notes should not be null.");
-        assertEquals(1, result.size(), "The size of the progress note list does not match.");
-        assertEquals("Weekly progress", result.get(0).getNote(), "The progress note description does not match.");
-
+        assertNotNull(notes);
+        assertEquals(1, notes.size());
+        assertEquals(progressNote, notes.get(0));
         verify(progressNoteRepository, times(1)).getAll();
     }
 
     @Test
-    void getProgressNoteById() {
-        when(progressNoteRepository.getProgressNoteById(1L)).thenReturn(Optional.of(mockProgressNote));
+    void getProgressNoteById_ShouldReturnProgressNote_WhenNoteExists() {
+        when(progressNoteRepository.getProgressNoteById(1L)).thenReturn(Optional.of(progressNote));
 
-        ProgressNote note = progressNoteServiceImpl.getProgressNoteById(1L);
+        ProgressNote foundNote = progressNoteService.getProgressNoteById(1L);
 
-        assertNotNull(note, "The progress note should not be null.");
-        assertEquals("Weekly progress", note.getNote(), "The progress note description does not match.");
-
+        assertNotNull(foundNote);
+        assertEquals(progressNote, foundNote);
         verify(progressNoteRepository, times(1)).getProgressNoteById(1L);
     }
 
     @Test
-    void getProgressNoteById_ProgressNoteNotFound() {
+    void getProgressNoteById_ShouldThrowException_WhenNoteNotFound() {
         when(progressNoteRepository.getProgressNoteById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(ProgressNoteNotFoundException.class, () -> progressNoteServiceImpl.getProgressNoteById(1L), "Expected ProgressNoteNotFoundException");
-
+        assertThrows(ProgressNoteNotFoundException.class, () -> progressNoteService.getProgressNoteById(1L));
         verify(progressNoteRepository, times(1)).getProgressNoteById(1L);
     }
 
     @Test
-    void createProgressNote() {
-        when(progressNoteRepository.create(mockProgressNote)).thenReturn(mockProgressNote);
+    void createProgressNote_ShouldReturnCreatedProgressNote() {
+        when(progressNoteRepository.create(any(ProgressNote.class))).thenReturn(progressNote);
 
-        ProgressNote createdNote = progressNoteServiceImpl.createProgressNote(mockProgressNote);
+        ProgressNote createdNote = progressNoteService.createProgressNote(progressNote);
 
-        assertNotNull(createdNote, "The created progress note should not be null.");
-        assertEquals("Weekly progress", createdNote.getNote(), "The progress note description does not match.");
-
-        verify(progressNoteRepository, times(1)).create(mockProgressNote);
+        assertNotNull(createdNote);
+        assertEquals(progressNote, createdNote);
+        verify(progressNoteRepository, times(1)).create(progressNote);
     }
 
     @Test
-    void deleteProgressNote() {
+    void deleteProgressNote_ShouldDeleteProgressNote_WhenNoteExists() {
         when(progressNoteRepository.exists(1L)).thenReturn(true);
 
-        progressNoteServiceImpl.deleteProgressNote(1L);
-
+        assertDoesNotThrow(() -> progressNoteService.deleteProgressNote(1L));
+        verify(progressNoteRepository, times(1)).exists(1L);
         verify(progressNoteRepository, times(1)).delete(1L);
     }
 
     @Test
-    void deleteProgressNote_ProgressNoteNotFound() {
+    void deleteProgressNote_ShouldThrowException_WhenNoteNotFound() {
         when(progressNoteRepository.exists(1L)).thenReturn(false);
 
-        assertThrows(ProgressNoteNotFoundException.class, () -> progressNoteServiceImpl.deleteProgressNote(1L), "Expected ProgressNoteNotFoundException");
-
+        assertThrows(ProgressNoteNotFoundException.class, () -> progressNoteService.deleteProgressNote(1L));
         verify(progressNoteRepository, times(1)).exists(1L);
         verify(progressNoteRepository, never()).delete(1L);
     }
 
     @Test
-    void updateProgressNote() {
-        when(progressNoteRepository.getProgressNoteById(1L)).thenReturn(Optional.of(mockProgressNote));
-        when(progressNoteRepository.update(mockProgressNote)).thenReturn(mockProgressNote);
+    void updateProgressNote_ShouldReturnUpdatedProgressNote_WhenNoteExists() {
+        ProgressNote updatedNote = new ProgressNote(1L, 1L, 76, "Updated progress", "http://example.com/updated_image.jpg");
 
-        mockProgressNote.setWeight(80.0);
-        mockProgressNote.setNote("Updated progress");
 
-        ProgressNote updatedNote = progressNoteServiceImpl.updateProgressNote(mockProgressNote);
+        when(progressNoteRepository.getProgressNoteById(1L)).thenReturn(Optional.of(progressNote));
+        when(progressNoteRepository.update(progressNote)).thenReturn(updatedNote);
 
-        assertNotNull(updatedNote, "The updated progress note should not be null.");
-        assertEquals("Updated progress", updatedNote.getNote(), "The progress note description was not updated correctly.");
-        assertEquals(80.0, updatedNote.getWeight(), "The weight value did not update correctly.");
+        ProgressNote result = progressNoteService.updateProgressNote(updatedNote);
 
+        assertNotNull(result);
+        assertEquals("Updated progress", result.getNote());
+        assertEquals(76.0, result.getWeight());
         verify(progressNoteRepository, times(1)).getProgressNoteById(1L);
-        verify(progressNoteRepository, times(1)).update(mockProgressNote);
+        verify(progressNoteRepository, times(1)).update(progressNote);
     }
 
     @Test
-    void updateProgressNote_ProgressNoteNotFound() {
+    void updateProgressNote_ShouldThrowException_WhenNoteNotFound() {
+        ProgressNote updatedNote = new ProgressNote(1L, 1L, 76, "Updated progress", "http://example.com/updated_image.jpg");
+
+
         when(progressNoteRepository.getProgressNoteById(1L)).thenReturn(Optional.empty());
 
-        mockProgressNote.setWeight(80.0);
-        mockProgressNote.setNote("Updated progress");
-
-        assertThrows(ProgressNoteNotFoundException.class, () -> progressNoteServiceImpl.updateProgressNote(mockProgressNote), "Expected ProgressNoteNotFoundException");
-
+        assertThrows(ProgressNoteNotFoundException.class, () -> progressNoteService.updateProgressNote(updatedNote));
         verify(progressNoteRepository, times(1)).getProgressNoteById(1L);
-        verify(progressNoteRepository, never()).update(mockProgressNote);
+        verify(progressNoteRepository, never()).update(any(ProgressNote.class));
     }
 }

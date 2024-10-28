@@ -15,6 +15,5 @@ public interface JpaWorkoutRepository extends JpaRepository<WorkoutEntity, Long>
 
     List<WorkoutEntity> findByDescriptionContainingIgnoreCase(String keyword);
 
-    List<WorkoutEntity> findByTrainerId(Long trainerId);
 
 }

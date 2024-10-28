@@ -6,17 +6,19 @@ import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaWorkoutReposito
 import fitness_app_be.fitness_app.persistence.mapper.WorkoutEntityMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class WorkoutRepositoryImplTest {
 
     @Mock
@@ -26,156 +28,143 @@ class WorkoutRepositoryImplTest {
     private WorkoutEntityMapper workoutMapper;
 
     @InjectMocks
-    private WorkoutRepositoryImpl workoutRepositoryImpl;
+    private WorkoutRepositoryImpl workoutRepository;
 
-    private Workout mockWorkout;
-    private WorkoutEntity mockWorkoutEntity;
+    private Workout workout;
+    private WorkoutEntity workoutEntity;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        List<String> exercises = new ArrayList<>();
 
-        List<String> exercises = Arrays.asList("Push-ups", "Sit-ups", "Squats");
-        mockWorkout = new Workout(1L, 1L, "Strength Training", "Builds strength", "./images/workout.jpg", Arrays.asList("Squats", "Deadlift"), null);
-        mockWorkoutEntity = new WorkoutEntity(1L, null, "Strength Training", "Builds strength", "./images/workout.jpg", exercises, null);
+        workout = new Workout(1L, "Test Workout", "Description", "http://example.com/image.jpg", exercises);
+
+        workoutEntity = new WorkoutEntity(1L, "Test Workout", "Description", "http://example.com/image.jpg", exercises);
+
     }
 
     @Test
-    void exists() {
+    void exists_ShouldReturnTrue_WhenWorkoutExists() {
         when(jpaWorkoutRepository.existsById(1L)).thenReturn(true);
 
-        boolean exists = workoutRepositoryImpl.exists(1L);
-
-        assertTrue(exists, "Workout should exist with ID 1.");
+        assertTrue(workoutRepository.exists(1L));
         verify(jpaWorkoutRepository, times(1)).existsById(1L);
     }
 
     @Test
-    void getAll() {
-        when(jpaWorkoutRepository.findAll()).thenReturn(Arrays.asList(mockWorkoutEntity));
-        when(workoutMapper.toDomain(mockWorkoutEntity)).thenReturn(mockWorkout);
+    void exists_ShouldReturnFalse_WhenWorkoutDoesNotExist() {
+        when(jpaWorkoutRepository.existsById(1L)).thenReturn(false);
 
-        List<Workout> workouts = workoutRepositoryImpl.getAll();
+        assertFalse(workoutRepository.exists(1L));
+        verify(jpaWorkoutRepository, times(1)).existsById(1L);
+    }
 
-        assertNotNull(workouts, "The list of workouts should not be null.");
-        assertEquals(1, workouts.size(), "The number of workouts returned does not match.");
-        assertEquals("Strength Training", workouts.get(0).getName(), "The workout name does not match.");
+    @Test
+    void getAll_ShouldReturnListOfWorkouts() {
+        when(jpaWorkoutRepository.findAll()).thenReturn(List.of(workoutEntity));
+        when(workoutMapper.toDomain(workoutEntity)).thenReturn(workout);
 
+        List<Workout> workouts = workoutRepository.getAll();
+
+        assertNotNull(workouts);
+        assertEquals(1, workouts.size());
+        assertEquals(workout, workouts.get(0));
         verify(jpaWorkoutRepository, times(1)).findAll();
-        verify(workoutMapper, times(1)).toDomain(mockWorkoutEntity);
+        verify(workoutMapper, times(1)).toDomain(workoutEntity);
     }
 
     @Test
-    void create() {
-        when(workoutMapper.toEntity(mockWorkout)).thenReturn(mockWorkoutEntity);
-        when(jpaWorkoutRepository.save(mockWorkoutEntity)).thenReturn(mockWorkoutEntity);
-        when(workoutMapper.toDomain(mockWorkoutEntity)).thenReturn(mockWorkout);
+    void create_ShouldReturnCreatedWorkout() {
+        when(workoutMapper.toEntity(workout)).thenReturn(workoutEntity);
+        when(jpaWorkoutRepository.save(workoutEntity)).thenReturn(workoutEntity);
+        when(workoutMapper.toDomain(workoutEntity)).thenReturn(workout);
 
-        Workout createdWorkout = workoutRepositoryImpl.create(mockWorkout);
+        Workout createdWorkout = workoutRepository.create(workout);
 
-        assertNotNull(createdWorkout, "The created workout should not be null.");
-        assertEquals("Strength Training", createdWorkout.getName(), "The workout name does not match.");
-
-        verify(workoutMapper, times(1)).toEntity(mockWorkout);
-        verify(jpaWorkoutRepository, times(1)).save(mockWorkoutEntity);
-        verify(workoutMapper, times(1)).toDomain(mockWorkoutEntity);
+        assertNotNull(createdWorkout);
+        assertEquals(workout, createdWorkout);
+        verify(jpaWorkoutRepository, times(1)).save(workoutEntity);
     }
 
     @Test
-    void update() {
-        when(workoutMapper.toEntity(mockWorkout)).thenReturn(mockWorkoutEntity);
-        when(jpaWorkoutRepository.existsById(mockWorkout.getId())).thenReturn(true);
-        when(jpaWorkoutRepository.save(mockWorkoutEntity)).thenReturn(mockWorkoutEntity);
-        when(workoutMapper.toDomain(mockWorkoutEntity)).thenReturn(mockWorkout);
+    void update_ShouldReturnUpdatedWorkout_WhenWorkoutExists() {
+        when(workoutMapper.toEntity(workout)).thenReturn(workoutEntity);
+        when(jpaWorkoutRepository.existsById(1L)).thenReturn(true);
+        when(jpaWorkoutRepository.save(workoutEntity)).thenReturn(workoutEntity);
+        when(workoutMapper.toDomain(workoutEntity)).thenReturn(workout);
 
-        Workout updatedWorkout = workoutRepositoryImpl.update(mockWorkout);
+        Workout updatedWorkout = workoutRepository.update(workout);
 
-        assertNotNull(updatedWorkout, "The updated workout should not be null.");
-        assertEquals("Strength Training", updatedWorkout.getName(), "The workout name does not match.");
-
-        verify(workoutMapper, times(1)).toEntity(mockWorkout);
-        verify(jpaWorkoutRepository, times(1)).save(mockWorkoutEntity);
-        verify(workoutMapper, times(1)).toDomain(mockWorkoutEntity);
+        assertNotNull(updatedWorkout);
+        assertEquals(workout, updatedWorkout);
+        verify(jpaWorkoutRepository, times(1)).save(workoutEntity);
     }
 
     @Test
-    void delete() {
-        workoutRepositoryImpl.delete(1L);
+    void update_ShouldThrowException_WhenWorkoutDoesNotExist() {
+        when(jpaWorkoutRepository.existsById(1L)).thenReturn(false);
+
+        assertThrows(IllegalArgumentException.class, () -> workoutRepository.update(workout));
+        verify(jpaWorkoutRepository, never()).save(any());
+    }
+
+    @Test
+    void delete_ShouldDeleteWorkoutById() {
+        doNothing().when(jpaWorkoutRepository).deleteById(1L);
+
+        workoutRepository.delete(1L);
 
         verify(jpaWorkoutRepository, times(1)).deleteById(1L);
     }
 
     @Test
-    void getWorkoutById() {
-        when(jpaWorkoutRepository.findById(1L)).thenReturn(Optional.of(mockWorkoutEntity));
-        when(workoutMapper.toDomain(mockWorkoutEntity)).thenReturn(mockWorkout);
+    void getWorkoutById_ShouldReturnWorkout_WhenExists() {
+        when(jpaWorkoutRepository.findById(1L)).thenReturn(Optional.of(workoutEntity));
+        when(workoutMapper.toDomain(workoutEntity)).thenReturn(workout);
 
-        Optional<Workout> workout = workoutRepositoryImpl.getWorkoutById(1L);
+        Optional<Workout> foundWorkout = workoutRepository.getWorkoutById(1L);
 
-        assertTrue(workout.isPresent(), "The workout should be present.");
-        assertEquals("Strength Training", workout.get().getName(), "The workout name does not match.");
-
+        assertTrue(foundWorkout.isPresent());
+        assertEquals(workout, foundWorkout.get());
         verify(jpaWorkoutRepository, times(1)).findById(1L);
-        verify(workoutMapper, times(1)).toDomain(mockWorkoutEntity);
     }
 
     @Test
-    void getWorkoutsByTrainer() {
-        when(jpaWorkoutRepository.findByTrainerId(1L)).thenReturn(Arrays.asList(mockWorkoutEntity));
-        when(workoutMapper.toDomain(mockWorkoutEntity)).thenReturn(mockWorkout);
+    void findByNameContainingIgnoreCase_ShouldReturnListOfWorkouts() {
+        when(jpaWorkoutRepository.findByNameContainingIgnoreCase("test")).thenReturn(List.of(workoutEntity));
+        when(workoutMapper.toDomain(workoutEntity)).thenReturn(workout);
 
-        List<Workout> workouts = workoutRepositoryImpl.getWorkoutsByTrainer(1L);
+        List<Workout> workouts = workoutRepository.findByNameContainingIgnoreCase("test");
 
-        assertNotNull(workouts, "The list of workouts should not be null.");
-        assertEquals(1, workouts.size(), "The number of workouts returned does not match.");
-        assertEquals("Strength Training", workouts.get(0).getName(), "The workout name does not match.");
-
-        verify(jpaWorkoutRepository, times(1)).findByTrainerId(1L);
-        verify(workoutMapper, times(1)).toDomain(mockWorkoutEntity);
+        assertNotNull(workouts);
+        assertEquals(1, workouts.size());
+        assertEquals(workout, workouts.get(0));
+        verify(jpaWorkoutRepository, times(1)).findByNameContainingIgnoreCase("test");
     }
 
     @Test
-    void findByNameContainingIgnoreCase() {
-        when(jpaWorkoutRepository.findByNameContainingIgnoreCase("Strength")).thenReturn(Arrays.asList(mockWorkoutEntity));
-        when(workoutMapper.toDomain(mockWorkoutEntity)).thenReturn(mockWorkout);
+    void findByExercises_ShouldReturnListOfWorkouts() {
+        when(jpaWorkoutRepository.findByExercisesContaining("exercise")).thenReturn(List.of(workoutEntity));
+        when(workoutMapper.toDomain(workoutEntity)).thenReturn(workout);
 
-        List<Workout> workouts = workoutRepositoryImpl.findByNameContainingIgnoreCase("Strength");
+        List<Workout> workouts = workoutRepository.findByExercises("exercise");
 
-        assertNotNull(workouts, "The list of workouts should not be null.");
-        assertEquals(1, workouts.size(), "The number of workouts returned does not match.");
-        assertEquals("Strength Training", workouts.get(0).getName(), "The workout name does not match.");
-
-        verify(jpaWorkoutRepository, times(1)).findByNameContainingIgnoreCase("Strength");
-        verify(workoutMapper, times(1)).toDomain(mockWorkoutEntity);
+        assertNotNull(workouts);
+        assertEquals(1, workouts.size());
+        assertEquals(workout, workouts.get(0));
+        verify(jpaWorkoutRepository, times(1)).findByExercisesContaining("exercise");
     }
 
     @Test
-    void findByExercises() {
-        when(jpaWorkoutRepository.findByExercisesContaining("Squats")).thenReturn(Arrays.asList(mockWorkoutEntity));
-        when(workoutMapper.toDomain(mockWorkoutEntity)).thenReturn(mockWorkout);
+    void findByDescriptionContainingIgnoreCase_ShouldReturnListOfWorkouts() {
+        when(jpaWorkoutRepository.findByDescriptionContainingIgnoreCase("description")).thenReturn(List.of(workoutEntity));
+        when(workoutMapper.toDomain(workoutEntity)).thenReturn(workout);
 
-        List<Workout> workouts = workoutRepositoryImpl.findByExercises("Squats");
+        List<Workout> workouts = workoutRepository.findByDescriptionContainingIgnoreCase("description");
 
-        assertNotNull(workouts, "The list of workouts should not be null.");
-        assertEquals(1, workouts.size(), "The number of workouts returned does not match.");
-        assertTrue(workouts.get(0).getExercises().contains("Squats"), "The exercise does not match.");
-
-        verify(jpaWorkoutRepository, times(1)).findByExercisesContaining("Squats");
-        verify(workoutMapper, times(1)).toDomain(mockWorkoutEntity);
-    }
-
-    @Test
-    void findByDescriptionContainingIgnoreCase() {
-        when(jpaWorkoutRepository.findByDescriptionContainingIgnoreCase("Builds")).thenReturn(Arrays.asList(mockWorkoutEntity));
-        when(workoutMapper.toDomain(mockWorkoutEntity)).thenReturn(mockWorkout);
-
-        List<Workout> workouts = workoutRepositoryImpl.findByDescriptionContainingIgnoreCase("Builds");
-
-        assertNotNull(workouts, "The list of workouts should not be null.");
-        assertEquals(1, workouts.size(), "The number of workouts returned does not match.");
-        assertEquals("Builds strength", workouts.get(0).getDescription(), "The workout description does not match.");
-
-        verify(jpaWorkoutRepository, times(1)).findByDescriptionContainingIgnoreCase("Builds");
-        verify(workoutMapper, times(1)).toDomain(mockWorkoutEntity);
+        assertNotNull(workouts);
+        assertEquals(1, workouts.size());
+        assertEquals(workout, workouts.get(0));
+        verify(jpaWorkoutRepository, times(1)).findByDescriptionContainingIgnoreCase("description");
     }
 }

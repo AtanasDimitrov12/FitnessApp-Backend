@@ -3,6 +3,7 @@ package fitness_app_be.fitness_app.persistence.mapper;
 import fitness_app_be.fitness_app.domain.Diet;
 import fitness_app_be.fitness_app.persistence.entity.DietEntity;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -15,11 +16,10 @@ public class DietEntityMapper {
 
 
     private MealEntityMapper mealEntityMapperImpl;
-    private UserEntityMapper userEntityMapperImpl;
 
-    public DietEntityMapper(MealEntityMapper mealEntityMapperImpl,@Lazy UserEntityMapper userEntityMapperImpl) {
+    @Autowired
+    public DietEntityMapper(MealEntityMapper mealEntityMapperImpl) {
         this.mealEntityMapperImpl = mealEntityMapperImpl;
-        this.userEntityMapperImpl = userEntityMapperImpl;
     }
 
 
@@ -29,12 +29,10 @@ public class DietEntityMapper {
         }
         return new Diet(
                 dietEntity.getId(),
-                dietEntity.getTrainer().getId(),
                 dietEntity.getName(),
                 dietEntity.getDescription(),
                 dietEntity.getPictureURL(),
-                dietEntity.getMeals().stream().map(mealEntityMapperImpl::toDomain).collect(Collectors.toList()),
-                dietEntity.getUsers().stream().map(userEntityMapperImpl::toDomain).collect(Collectors.toList())
+                dietEntity.getMeals().stream().map(mealEntityMapperImpl::toDomain).collect(Collectors.toList())
         );
     }
 
@@ -49,7 +47,6 @@ public class DietEntityMapper {
         dietEntity.setDescription(diet.getDescription());
         dietEntity.setPictureURL(diet.getPictureURL());
         dietEntity.setMeals(diet.getMeals().stream().map(mealEntityMapperImpl::toEntity).collect(Collectors.toList()));
-        dietEntity.setUsers(diet.getUsers().stream().map(userEntityMapperImpl::toEntity).collect(Collectors.toList()));
 
         return dietEntity;
     }

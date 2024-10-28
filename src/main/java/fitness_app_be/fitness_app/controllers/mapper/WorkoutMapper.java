@@ -11,24 +11,16 @@ import java.util.stream.Collectors;
 @Component
 public class WorkoutMapper {
 
-    public WorkoutMapper(@Lazy UserMapper userMapper) {
-        this.userMapper = userMapper;
-    }
-
-    private UserMapper userMapper;
-
 
     public Workout toDomain(WorkoutDTO workoutDTO) {
-        return new Workout(workoutDTO.getId(), workoutDTO.getTrainerId(), workoutDTO.getName(),
+        return new Workout(workoutDTO.getId(), workoutDTO.getName(),
                 workoutDTO.getDescription(), workoutDTO.getPictureURL(),
-                workoutDTO.getExercises(),
-                workoutDTO.getUsers().stream().map(userMapper::toDomain).collect(Collectors.toList()));
+                workoutDTO.getExercises());
     }
 
     public WorkoutDTO domainToDto(Workout workout) {
-        return new WorkoutDTO(workout.getId(), workout.getTrainerId(), workout.getName(),
+        return new WorkoutDTO(workout.getId(), workout.getName(),
                 workout.getDescription(), workout.getPictureURL(),
-                workout.getExercises(),
-                workout.getUsers().stream().map(userMapper::domainToDto).collect(Collectors.toList()));
+                workout.getExercises());
     }
 }

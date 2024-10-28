@@ -1,22 +1,26 @@
 package fitness_app_be.fitness_app.persistence.impl;
 
+import fitness_app_be.fitness_app.domain.ProgressNote;
 import fitness_app_be.fitness_app.domain.User;
+import fitness_app_be.fitness_app.persistence.entity.ProgressNoteEntity;
 import fitness_app_be.fitness_app.persistence.entity.UserEntity;
 import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaUserRepository;
 import fitness_app_be.fitness_app.persistence.mapper.UserEntityMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class UserRepositoryImplTest {
 
     @Mock
@@ -26,162 +30,148 @@ class UserRepositoryImplTest {
     private UserEntityMapper userMapper;
 
     @InjectMocks
-    private UserRepositoryImpl userRepositoryImpl;
+    private UserRepositoryImpl userRepository;
 
-    private User mockUser;
-    private UserEntity mockUserEntity;
+    private User user;
+    private UserEntity userEntity;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        List<ProgressNote> notes = new ArrayList<>();
 
-        mockUser = new User(1L, "testUser", "test@example.com", "Gain muscle", "Vegetarian", "./images/user.jpg", null, null, null);
-        mockUserEntity = new UserEntity(1L, "testUser", "test@example.com", "Gain muscle", "Vegetarian", "./images/user.jpg", null, null, null);
+        user = new User(1L, "testUser", "test@example.com", "password", "muscle gain", "low carbs", "pictureURL", 1L, 1L, notes);
+        List<ProgressNoteEntity> notesEntity = new ArrayList<>();
+        userEntity = new UserEntity(1L, "testUser", "test@example.com", "password", "muscle gain", "low carbs", "pictureURL", 1L, 1L, notesEntity);
+
     }
 
     @Test
-    void exists() {
+    void exists_ShouldReturnTrue_WhenUserExists() {
         when(jpaUserRepository.existsById(1L)).thenReturn(true);
 
-        boolean exists = userRepositoryImpl.exists(1L);
-
-        assertTrue(exists, "User should exist with ID 1.");
+        assertTrue(userRepository.exists(1L));
         verify(jpaUserRepository, times(1)).existsById(1L);
     }
 
     @Test
-    void getAll() {
-        when(jpaUserRepository.findAll()).thenReturn(Arrays.asList(mockUserEntity));
-        when(userMapper.toDomain(mockUserEntity)).thenReturn(mockUser);
+    void exists_ShouldReturnFalse_WhenUserDoesNotExist() {
+        when(jpaUserRepository.existsById(1L)).thenReturn(false);
 
-        List<User> users = userRepositoryImpl.getAll();
+        assertFalse(userRepository.exists(1L));
+        verify(jpaUserRepository, times(1)).existsById(1L);
+    }
 
-        assertNotNull(users, "The list of users should not be null.");
-        assertEquals(1, users.size(), "The number of users returned does not match.");
-        assertEquals("testUser", users.get(0).getUsername(), "The username does not match.");
+    @Test
+    void getAll_ShouldReturnListOfUsers() {
+        when(jpaUserRepository.findAll()).thenReturn(List.of(userEntity));
+        when(userMapper.toDomain(userEntity)).thenReturn(user);
 
+        List<User> users = userRepository.getAll();
+
+        assertNotNull(users);
+        assertEquals(1, users.size());
+        assertEquals(user, users.get(0));
         verify(jpaUserRepository, times(1)).findAll();
-        verify(userMapper, times(1)).toDomain(mockUserEntity);
+        verify(userMapper, times(1)).toDomain(userEntity);
     }
 
     @Test
-    void create() {
-        when(userMapper.toEntity(mockUser)).thenReturn(mockUserEntity);
-        when(jpaUserRepository.save(mockUserEntity)).thenReturn(mockUserEntity);
-        when(userMapper.toDomain(mockUserEntity)).thenReturn(mockUser);
+    void create_ShouldReturnCreatedUser() {
+        when(userMapper.toEntity(user)).thenReturn(userEntity);
+        when(jpaUserRepository.save(userEntity)).thenReturn(userEntity);
+        when(userMapper.toDomain(userEntity)).thenReturn(user);
 
-        User createdUser = userRepositoryImpl.create(mockUser);
+        User createdUser = userRepository.create(user);
 
-        assertNotNull(createdUser, "The created user should not be null.");
-        assertEquals("testUser", createdUser.getUsername(), "The username does not match.");
-
-        verify(userMapper, times(1)).toEntity(mockUser);
-        verify(jpaUserRepository, times(1)).save(mockUserEntity);
-        verify(userMapper, times(1)).toDomain(mockUserEntity);
+        assertNotNull(createdUser);
+        assertEquals(user, createdUser);
+        verify(jpaUserRepository, times(1)).save(userEntity);
+        verify(userMapper, times(1)).toEntity(user);
+        verify(userMapper, times(1)).toDomain(userEntity);
     }
 
     @Test
-    void update() {
-        when(userMapper.toEntity(mockUser)).thenReturn(mockUserEntity);
-        when(jpaUserRepository.save(mockUserEntity)).thenReturn(mockUserEntity);
-        when(userMapper.toDomain(mockUserEntity)).thenReturn(mockUser);
+    void update_ShouldReturnUpdatedUser() {
+        when(userMapper.toEntity(user)).thenReturn(userEntity);
+        when(jpaUserRepository.save(userEntity)).thenReturn(userEntity);
+        when(userMapper.toDomain(userEntity)).thenReturn(user);
 
-        User updatedUser = userRepositoryImpl.update(mockUser);
+        User updatedUser = userRepository.update(user);
 
-        assertNotNull(updatedUser, "The updated user should not be null.");
-        assertEquals("testUser", updatedUser.getUsername(), "The username does not match.");
-
-        verify(userMapper, times(1)).toEntity(mockUser);
-        verify(jpaUserRepository, times(1)).save(mockUserEntity);
-        verify(userMapper, times(1)).toDomain(mockUserEntity);
+        assertNotNull(updatedUser);
+        assertEquals(user, updatedUser);
+        verify(jpaUserRepository, times(1)).save(userEntity);
+        verify(userMapper, times(1)).toEntity(user);
+        verify(userMapper, times(1)).toDomain(userEntity);
     }
 
     @Test
-    void delete() {
-        userRepositoryImpl.delete(1L);
+    void delete_ShouldDeleteUserById() {
+        doNothing().when(jpaUserRepository).deleteById(1L);
+
+        userRepository.delete(1L);
 
         verify(jpaUserRepository, times(1)).deleteById(1L);
     }
 
     @Test
-    void getUserById() {
-        when(jpaUserRepository.findById(1L)).thenReturn(Optional.of(mockUserEntity));
-        when(userMapper.toDomain(mockUserEntity)).thenReturn(mockUser);
+    void getUserById_ShouldReturnUser_WhenExists() {
+        when(jpaUserRepository.findById(1L)).thenReturn(Optional.of(userEntity));
+        when(userMapper.toDomain(userEntity)).thenReturn(user);
 
-        Optional<User> user = userRepositoryImpl.getUserById(1L);
+        Optional<User> foundUser = userRepository.getUserById(1L);
 
-        assertTrue(user.isPresent(), "The user should be present.");
-        assertEquals("testUser", user.get().getUsername(), "The username does not match.");
-
+        assertTrue(foundUser.isPresent());
+        assertEquals(user, foundUser.get());
         verify(jpaUserRepository, times(1)).findById(1L);
-        verify(userMapper, times(1)).toDomain(mockUserEntity);
+        verify(userMapper, times(1)).toDomain(userEntity);
     }
 
     @Test
-    void findByEmail() {
-        when(jpaUserRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUserEntity));
-        when(userMapper.toDomain(mockUserEntity)).thenReturn(mockUser);
+    void getUserById_ShouldReturnEmpty_WhenDoesNotExist() {
+        when(jpaUserRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Optional<User> user = userRepositoryImpl.findByEmail("test@example.com");
+        Optional<User> foundUser = userRepository.getUserById(1L);
 
-        assertTrue(user.isPresent(), "The user should be present.");
-        assertEquals("test@example.com", user.get().getEmail(), "The email does not match.");
+        assertTrue(foundUser.isEmpty());
+        verify(jpaUserRepository, times(1)).findById(1L);
+        verify(userMapper, never()).toDomain(any());
+    }
 
+    @Test
+    void findByEmail_ShouldReturnUser_WhenExists() {
+        when(jpaUserRepository.findByEmail("test@example.com")).thenReturn(Optional.of(userEntity));
+        when(userMapper.toDomain(userEntity)).thenReturn(user);
+
+        Optional<User> foundUser = userRepository.findByEmail("test@example.com");
+
+        assertTrue(foundUser.isPresent());
+        assertEquals(user, foundUser.get());
         verify(jpaUserRepository, times(1)).findByEmail("test@example.com");
-        verify(userMapper, times(1)).toDomain(mockUserEntity);
+        verify(userMapper, times(1)).toDomain(userEntity);
     }
 
     @Test
-    void findByUsername() {
-        when(jpaUserRepository.findByUsername("testUser")).thenReturn(Optional.of(mockUserEntity));
-        when(userMapper.toDomain(mockUserEntity)).thenReturn(mockUser);
+    void findByUsernameContainingIgnoreCase_ShouldReturnListOfUsers() {
+        when(jpaUserRepository.findByUsernameContainingIgnoreCase("test")).thenReturn(List.of(userEntity));
+        when(userMapper.toDomain(userEntity)).thenReturn(user);
 
-        Optional<User> user = userRepositoryImpl.findByUsername("testUser");
+        List<User> users = userRepository.findByUsernameContainingIgnoreCase("test");
 
-        assertTrue(user.isPresent(), "The user should be present.");
-        assertEquals("testUser", user.get().getUsername(), "The username does not match.");
-
-        verify(jpaUserRepository, times(1)).findByUsername("testUser");
-        verify(userMapper, times(1)).toDomain(mockUserEntity);
-    }
-
-    @Test
-    void findByFitnessGoal() {
-        when(jpaUserRepository.findByFitnessGoal("Gain muscle")).thenReturn(Arrays.asList(mockUserEntity));
-        when(userMapper.toDomain(mockUserEntity)).thenReturn(mockUser);
-
-        List<User> users = userRepositoryImpl.findByFitnessGoal("Gain muscle");
-
-        assertNotNull(users, "The list of users should not be null.");
-        assertEquals(1, users.size(), "The number of users returned does not match.");
-        assertEquals("Gain muscle", users.get(0).getFitnessGoal(), "The fitness goal does not match.");
-
-        verify(jpaUserRepository, times(1)).findByFitnessGoal("Gain muscle");
-        verify(userMapper, times(1)).toDomain(mockUserEntity);
-    }
-
-    @Test
-    void findByUsernameContainingIgnoreCase() {
-        when(jpaUserRepository.findByUsernameContainingIgnoreCase("test")).thenReturn(Arrays.asList(mockUserEntity));
-        when(userMapper.toDomain(mockUserEntity)).thenReturn(mockUser);
-
-        List<User> users = userRepositoryImpl.findByUsernameContainingIgnoreCase("test");
-
-        assertNotNull(users, "The list of users should not be null.");
-        assertEquals(1, users.size(), "The number of users returned does not match.");
-        assertEquals("testUser", users.get(0).getUsername(), "The username does not match.");
-
+        assertNotNull(users);
+        assertEquals(1, users.size());
+        assertEquals(user, users.get(0));
         verify(jpaUserRepository, times(1)).findByUsernameContainingIgnoreCase("test");
-        verify(userMapper, times(1)).toDomain(mockUserEntity);
+        verify(userMapper, times(1)).toDomain(userEntity);
     }
 
     @Test
-    void countByEmail() {
+    void countByEmail_ShouldReturnCountOfUsersWithGivenEmail() {
         when(jpaUserRepository.countByEmail("test@example.com")).thenReturn(1L);
 
-        long count = userRepositoryImpl.countByEmail("test@example.com");
+        long count = userRepository.countByEmail("test@example.com");
 
-        assertEquals(1L, count, "The count of users with the email does not match.");
+        assertEquals(1L, count);
         verify(jpaUserRepository, times(1)).countByEmail("test@example.com");
     }
 }

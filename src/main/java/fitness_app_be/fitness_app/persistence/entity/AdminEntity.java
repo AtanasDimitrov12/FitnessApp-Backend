@@ -3,32 +3,29 @@ package fitness_app_be.fitness_app.persistence.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
 import java.util.List;
 
 @Entity
-@Table(name = "diet")
+@Table(name = "trainer")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DietEntity {
+public class AdminEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "email")
     @NotNull
-    private String name;
+    private String email;
 
-    @Column(name = "description")
-    private String description;
+    @Column(name = "password")
+    @NotNull
+    private String Password;
 
-    @Column(name = "picture_url")
-    private String pictureURL;
-
-    @OneToMany(mappedBy = "diet")
-    private List<MealEntity> meals;
 
 }

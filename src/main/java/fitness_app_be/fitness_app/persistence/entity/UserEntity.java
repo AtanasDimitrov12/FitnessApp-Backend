@@ -1,49 +1,47 @@
 package fitness_app_be.fitness_app.persistence.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
-@Table(name = "app_user")
+@Table(name = "users")
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Setter(AccessLevel.NONE)
     private Long id;
 
-    @Column(name = "username")
-    @NotNull
+    @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(name = "email")
-    @NotNull
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "fitness_goal")
-    private String fitnessGoal;
+    @Column(nullable = false)
+    private String password;
 
-    @Column(name = "diet_preference")
+    private String fitnessGoal;
     private String dietPreference;
 
     @Column(name = "picture_url")
     private String pictureURL;
 
-    @ManyToMany(mappedBy = "users")
-    private List<WorkoutEntity> workouts;
+    @Column(name = "workout_plan_id")
+    private Long workoutPlanId;
 
-    @ManyToMany(mappedBy = "users")
-    private List<DietEntity> diets;
+    @Column(name = "diet_id")
+    private Long dietId;
 
-    @OneToMany(mappedBy = "user")
-    private List<ProgressNoteEntity> progressNotes;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    private List<ProgressNoteEntity> notes;
 }
-
-

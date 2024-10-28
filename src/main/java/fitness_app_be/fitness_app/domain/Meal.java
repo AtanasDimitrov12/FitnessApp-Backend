@@ -8,8 +8,6 @@ import lombok.*;
 public class Meal {
     @Setter(AccessLevel.NONE)
     private Long id;
-    @Setter(AccessLevel.NONE)
-    private Long trainerId;
     private String name;
     private int calories;
     private int protein;
