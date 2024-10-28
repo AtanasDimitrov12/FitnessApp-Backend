@@ -1,4 +1,4 @@
-package fitness_app_be.fitness_app.persistence.impl;
+package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 
 import fitness_app_be.fitness_app.domain.Workout;
@@ -67,7 +67,7 @@ public class WorkoutRepositoryImpl implements WorkoutRepository {
 
     @Override
     public List<Workout> findByExercises(String exercise) {
-        return jpaWorkoutRepository.findByExercisesContaining(exercise).stream()
+        return jpaWorkoutRepository.findByExercises_NameContaining(exercise).stream()
                 .map(workoutMapper::toDomain)
                 .collect(Collectors.toList());
     }

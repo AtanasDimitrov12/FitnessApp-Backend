@@ -1,4 +1,4 @@
-package fitness_app_be.fitness_app.persistence.impl;
+package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.persistence.entity.UserEntity;
@@ -65,12 +65,6 @@ public class UserRepositoryImpl implements UserRepository {
         return jpaUserRepository.findByUsername(username).map(userMapper::toDomain);
     }
 
-    @Override
-    public List<User> findByFitnessGoal(String fitnessGoal) {
-        return jpaUserRepository.findByFitnessGoal(fitnessGoal).stream()
-                .map(userMapper::toDomain)
-                .toList();
-    }
 
     @Override
     public List<User> findByUsernameContainingIgnoreCase(String partialUsername) {

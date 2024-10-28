@@ -30,8 +30,13 @@ public class UserEntity {
     @Column(nullable = false)
     private String password;
 
-    private String fitnessGoal;
-    private String dietPreference;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "diet_preference_id")
+    private UserDietPreferenceEntity dietPreference;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "workout_preference_id")
+    private UserWorkoutPreferenceEntity workoutPreference;
 
     @Column(name = "picture_url")
     private String pictureURL;

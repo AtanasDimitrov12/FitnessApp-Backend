@@ -14,4 +14,6 @@ public class WorkoutPlanDTO {
     private Long id;
     private Long userId;
     private List<WorkoutDTO> workouts = new ArrayList<>();
+    private List<String> fitnessGoals = new ArrayList<>();
+    private List<String> trainingStyle = new ArrayList<>();
 }

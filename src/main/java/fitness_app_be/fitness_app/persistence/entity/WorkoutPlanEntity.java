@@ -18,11 +18,21 @@ public class WorkoutPlanEntity {
     @Setter(AccessLevel.NONE)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "workout_plan_id")
     private List<WorkoutEntity> workouts = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(name = "workout_plan_fitness_goals", joinColumns = @JoinColumn(name = "workout_plan_id"))
+    @Column(name = "fitness_goal")
+    private List<String> fitnessGoals = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(name = "workout_plan_training_styles", joinColumns = @JoinColumn(name = "workout_plan_id"))
+    @Column(name = "training_style")
+    private List<String> trainingStyle = new ArrayList<>();
 }

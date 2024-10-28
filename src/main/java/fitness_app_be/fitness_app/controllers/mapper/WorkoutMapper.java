@@ -11,16 +11,46 @@ import java.util.stream.Collectors;
 @Component
 public class WorkoutMapper {
 
+    private final ExerciseMapper exerciseMapper;
+
+    @Autowired
+    public WorkoutMapper(@Lazy ExerciseMapper exerciseMapper) {
+        this.exerciseMapper = exerciseMapper;
+    }
 
     public Workout toDomain(WorkoutDTO workoutDTO) {
-        return new Workout(workoutDTO.getId(), workoutDTO.getName(),
-                workoutDTO.getDescription(), workoutDTO.getPictureURL(),
-                workoutDTO.getExercises());
+        if (workoutDTO == null) {
+            return null;
+        }
+
+        return new Workout(
+                workoutDTO.getId(),
+                workoutDTO.getName(),
+                workoutDTO.getDescription(),
+                workoutDTO.getPictureURL(),
+                workoutDTO.getExercises() != null
+                        ? workoutDTO.getExercises().stream()
+                        .map(exerciseMapper::toDomain)
+                        .collect(Collectors.toList())
+                        : null
+        );
     }
 
     public WorkoutDTO domainToDto(Workout workout) {
-        return new WorkoutDTO(workout.getId(), workout.getName(),
-                workout.getDescription(), workout.getPictureURL(),
-                workout.getExercises());
+        if (workout == null) {
+            return null;
+        }
+
+        return new WorkoutDTO(
+                workout.getId(),
+                workout.getName(),
+                workout.getDescription(),
+                workout.getPictureURL(),
+                workout.getExercises() != null
+                        ? workout.getExercises().stream()
+                        .map(exerciseMapper::toDto)
+                        .collect(Collectors.toList())
+                        : null
+        );
     }
 }

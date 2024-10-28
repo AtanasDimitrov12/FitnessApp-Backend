@@ -12,23 +12,61 @@ import java.util.stream.Collectors;
 public class UserMapper {
 
     private final ProgressNoteMapper progressNoteMapper;
+    private final UserDietPreferenceMapper userDietPreferenceMapper;
+    private final UserWorkoutPreferenceMapper userWorkoutPreferenceMapper;
 
-    public UserMapper( ProgressNoteMapper progressNoteMapper) {
+    @Autowired
+    public UserMapper(@Lazy ProgressNoteMapper progressNoteMapper,
+                      @Lazy UserDietPreferenceMapper userDietPreferenceMapper,
+                      @Lazy UserWorkoutPreferenceMapper userWorkoutPreferenceMapper) {
         this.progressNoteMapper = progressNoteMapper;
+        this.userDietPreferenceMapper = userDietPreferenceMapper;
+        this.userWorkoutPreferenceMapper = userWorkoutPreferenceMapper;
     }
 
-
     public User toDomain(UserDTO userDTO) {
-        return new User(userDTO.getId(), userDTO.getUsername(), userDTO.getEmail(), userDTO.getPassword(),
-                userDTO.getFitnessGoal(), userDTO.getDietPreference(), userDTO.getPictureURL(),
-                userDTO.getWorkoutPlanId(), userDTO.getDietId(),
-                userDTO.getNotes().stream().map(progressNoteMapper::toDomain).collect(Collectors.toList()));
+        if (userDTO == null) {
+            return null;
+        }
+
+        return new User(
+                userDTO.getId(),
+                userDTO.getUsername(),
+                userDTO.getEmail(),
+                userDTO.getPassword(),
+                userDietPreferenceMapper.toDomain(userDTO.getDietPreference()),
+                userWorkoutPreferenceMapper.toDomain(userDTO.getWorkoutPreference()),
+                userDTO.getPictureURL(),
+                userDTO.getWorkoutPlanId(),
+                userDTO.getDietId(),
+                userDTO.getNotes() != null
+                        ? userDTO.getNotes().stream()
+                        .map(progressNoteMapper::toDomain)
+                        .collect(Collectors.toList())
+                        : null
+        );
     }
 
     public UserDTO domainToDto(User user) {
-        return new UserDTO(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(),
-                user.getFitnessGoal(), user.getDietPreference(), user.getPictureURL(),
-                user.getWorkoutPlanId(), user.getDietId(),
-                user.getNotes().stream().map(progressNoteMapper::domainToDto).collect(Collectors.toList()));
+        if (user == null) {
+            return null;
+        }
+
+        return new UserDTO(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getPassword(),
+                userDietPreferenceMapper.toDto(user.getDietPreference()),
+                userWorkoutPreferenceMapper.toDto(user.getWorkoutPreference()),
+                user.getPictureURL(),
+                user.getWorkoutPlanId(),
+                user.getDietId(),
+                user.getNotes() != null
+                        ? user.getNotes().stream()
+                        .map(progressNoteMapper::domainToDto)
+                        .collect(Collectors.toList())
+                        : null
+        );
     }
 }

@@ -18,7 +18,7 @@ public class DietEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     @NotNull
     private String name;
 
@@ -28,7 +28,11 @@ public class DietEntity {
     @Column(name = "picture_url")
     private String pictureURL;
 
-    @OneToMany(mappedBy = "diet")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
+
+    @OneToMany(mappedBy = "diet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MealEntity> meals;
 
 }

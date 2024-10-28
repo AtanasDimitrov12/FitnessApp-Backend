@@ -1,9 +1,7 @@
 package fitness_app_be.fitness_app.persistence.mapper;
 
-import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.domain.WorkoutPlan;
 import fitness_app_be.fitness_app.persistence.entity.UserEntity;
-import fitness_app_be.fitness_app.persistence.entity.WorkoutEntity;
 import fitness_app_be.fitness_app.persistence.entity.WorkoutPlanEntity;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +24,15 @@ public class WorkoutPlanEntityMapper {
         if (workoutPlanEntity == null) {
             return null;
         }
+
         return new WorkoutPlan(
                 workoutPlanEntity.getId(),
-                workoutPlanEntity.getUser().getId(), // Use user entity’s ID
-                workoutPlanEntity.getWorkouts().stream().map(workoutEntityMapper::toDomain).collect(Collectors.toList())
+                workoutPlanEntity.getUser().getId(),
+                workoutPlanEntity.getWorkouts().stream()
+                        .map(workoutEntityMapper::toDomain)
+                        .collect(Collectors.toList()),
+                workoutPlanEntity.getFitnessGoals(),
+                workoutPlanEntity.getTrainingStyle()
         );
     }
 
@@ -38,6 +41,16 @@ public class WorkoutPlanEntityMapper {
             return null;
         }
 
-        return new WorkoutPlanEntity(workoutPlan.getId(), userEntity, workoutPlan.getWorkouts().stream().map(workoutEntityMapper::toEntity).collect(Collectors.toList()));
+        WorkoutPlanEntity workoutPlanEntity = new WorkoutPlanEntity(
+                workoutPlan.getId(),
+                userEntity,
+                workoutPlan.getWorkouts().stream()
+                        .map(workoutEntityMapper::toEntity)
+                        .collect(Collectors.toList()),
+                workoutPlan.getFitnessGoals(),
+                workoutPlan.getTrainingStyle()
+        );
+
+        return workoutPlanEntity;
     }
 }

@@ -1,4 +1,4 @@
-package fitness_app_be.fitness_app.persistence.impl;
+package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.Diet;
 import fitness_app_be.fitness_app.persistence.entity.DietEntity;

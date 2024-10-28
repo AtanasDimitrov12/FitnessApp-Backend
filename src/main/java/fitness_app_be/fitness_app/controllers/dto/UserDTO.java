@@ -1,5 +1,7 @@
 package fitness_app_be.fitness_app.controllers.dto;
 
+import fitness_app_be.fitness_app.domain.UserDietPreference;
+import fitness_app_be.fitness_app.domain.UserWorkoutPreference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,8 +16,8 @@ public class UserDTO {
     private String username;
     private String email;
     private String password;
-    private String fitnessGoal;
-    private String dietPreference;
+    private UserDietPreferenceDTO dietPreference;
+    private UserWorkoutPreferenceDTO workoutPreference;
     private String pictureURL;
     private Long workoutPlanId;
     private Long dietId;

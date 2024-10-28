@@ -16,5 +16,5 @@ public class Workout {
     private String name;
     private String description;
     private String pictureURL;
-    private List<String> exercises = new ArrayList<>();
+    private List<Exercise> exercises = new ArrayList<>();
 }

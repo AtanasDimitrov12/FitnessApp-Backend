@@ -6,6 +6,7 @@ import fitness_app_be.fitness_app.persistence.entity.ProgressNoteEntity;
 import fitness_app_be.fitness_app.persistence.entity.UserEntity;
 import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaUserRepository;
 import fitness_app_be.fitness_app.persistence.mapper.UserEntityMapper;
+import fitness_app_be.fitness_app.persistence.repositories.impl.UserRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

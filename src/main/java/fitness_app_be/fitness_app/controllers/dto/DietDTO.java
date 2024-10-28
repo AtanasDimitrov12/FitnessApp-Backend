@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class DietDTO {
     private Long id;
+    private Long userId;
     private String name;
     private String description;
     private String pictureURL;

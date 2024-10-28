@@ -14,4 +14,6 @@ public class WorkoutPlan {
     @Setter(AccessLevel.NONE)
     private Long userId;
     private List<Workout> workouts = new ArrayList<>();
+    private List<String> fitnessGoals = new ArrayList<>();
+    private List<String> trainingStyle = new ArrayList<>();
 }

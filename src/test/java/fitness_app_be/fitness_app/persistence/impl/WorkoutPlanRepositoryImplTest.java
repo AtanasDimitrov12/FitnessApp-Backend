@@ -6,6 +6,7 @@ import fitness_app_be.fitness_app.persistence.entity.WorkoutPlanEntity;
 import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaUserRepository;
 import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaWorkoutPlanRepository;
 import fitness_app_be.fitness_app.persistence.mapper.WorkoutPlanEntityMapper;
+import fitness_app_be.fitness_app.persistence.repositories.impl.WorkoutPlanRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

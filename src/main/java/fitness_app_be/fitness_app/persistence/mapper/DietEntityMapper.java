@@ -9,31 +9,31 @@ import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
-
 @Component
 @NoArgsConstructor
 public class DietEntityMapper {
 
-
     private MealEntityMapper mealEntityMapperImpl;
 
     @Autowired
-    public DietEntityMapper(MealEntityMapper mealEntityMapperImpl) {
+    public DietEntityMapper(@Lazy MealEntityMapper mealEntityMapperImpl) {
         this.mealEntityMapperImpl = mealEntityMapperImpl;
     }
-
 
     public Diet toDomain(DietEntity dietEntity) {
         if (dietEntity == null) {
             return null;
         }
-        return new Diet(
-                dietEntity.getId(),
-                dietEntity.getName(),
-                dietEntity.getDescription(),
-                dietEntity.getPictureURL(),
-                dietEntity.getMeals().stream().map(mealEntityMapperImpl::toDomain).collect(Collectors.toList())
-        );
+
+        return Diet.builder()
+                .id(dietEntity.getId())
+                .name(dietEntity.getName())
+                .description(dietEntity.getDescription())
+                .pictureURL(dietEntity.getPictureURL())
+                .meals(dietEntity.getMeals() != null
+                        ? dietEntity.getMeals().stream().map(mealEntityMapperImpl::toDomain).collect(Collectors.toList())
+                        : null)
+                .build();
     }
 
     public DietEntity toEntity(Diet diet) {
@@ -46,7 +46,12 @@ public class DietEntityMapper {
         dietEntity.setName(diet.getName());
         dietEntity.setDescription(diet.getDescription());
         dietEntity.setPictureURL(diet.getPictureURL());
-        dietEntity.setMeals(diet.getMeals().stream().map(mealEntityMapperImpl::toEntity).collect(Collectors.toList()));
+
+        if (diet.getMeals() != null) {
+            dietEntity.setMeals(diet.getMeals().stream()
+                    .map(mealEntityMapperImpl::toEntity)
+                    .collect(Collectors.toList()));
+        }
 
         return dietEntity;
     }

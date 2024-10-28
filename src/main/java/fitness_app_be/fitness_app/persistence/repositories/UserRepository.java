@@ -23,8 +23,6 @@ public interface UserRepository {
 
     Optional<User> findByUsername(String username);
 
-    List<User> findByFitnessGoal(String fitnessGoal);
-
     List<User> findByUsernameContainingIgnoreCase(String partialUsername);
 
     long countByEmail(String email);

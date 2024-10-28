@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,9 +30,7 @@ public class WorkoutEntity {
     @Column(name = "picture_url")
     private String pictureURL;
 
-    @ElementCollection
-    @CollectionTable(name = "workout_exercises", joinColumns = @JoinColumn(name = "workout_id"))
-    @Column(name = "exercise")
-    private List<String> exercises;
+    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ExerciseEntity> exercises = new ArrayList<>();
 
 }
