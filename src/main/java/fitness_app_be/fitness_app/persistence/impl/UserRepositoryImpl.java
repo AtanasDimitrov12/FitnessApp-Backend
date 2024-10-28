@@ -5,20 +5,19 @@ import fitness_app_be.fitness_app.persistence.entity.UserEntity;
 import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaUserRepository;
 import fitness_app_be.fitness_app.persistence.mapper.UserEntityMapper;
 import fitness_app_be.fitness_app.persistence.repositories.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
+@RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
 
     private final JpaUserRepository jpaUserRepository;
     private final UserEntityMapper userMapper;
 
-    public UserRepositoryImpl(JpaUserRepository jpaUserRepository, UserEntityMapper userMapper) {
-        this.jpaUserRepository = jpaUserRepository;
-        this.userMapper = userMapper;
-    }
+
 
     @Override
     public boolean exists(long id) {

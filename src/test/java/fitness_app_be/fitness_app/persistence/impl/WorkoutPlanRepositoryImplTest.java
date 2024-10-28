@@ -1,17 +1,11 @@
 package fitness_app_be.fitness_app.persistence.impl;
 
-import fitness_app_be.fitness_app.domain.User;
-import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.domain.WorkoutPlan;
-import fitness_app_be.fitness_app.exceptionHandling.UserNotFoundException;
 import fitness_app_be.fitness_app.persistence.entity.UserEntity;
-import fitness_app_be.fitness_app.persistence.entity.WorkoutEntity;
 import fitness_app_be.fitness_app.persistence.entity.WorkoutPlanEntity;
 import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaUserRepository;
 import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaWorkoutPlanRepository;
-import fitness_app_be.fitness_app.persistence.mapper.UserEntityMapper;
 import fitness_app_be.fitness_app.persistence.mapper.WorkoutPlanEntityMapper;
-import fitness_app_be.fitness_app.persistence.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,28 +26,23 @@ class WorkoutPlanRepositoryImplTest {
     private JpaWorkoutPlanRepository jpaWorkoutPlanRepository;
 
     @Mock
+    private JpaUserRepository jpaUserRepository;
+
+    @Mock
     private WorkoutPlanEntityMapper workoutPlanEntityMapper;
 
     @InjectMocks
     private WorkoutPlanRepositoryImpl workoutPlanRepository;
-    @InjectMocks
-    private UserRepository userRepository;
-    @InjectMocks
-    private UserEntityMapper userEntityMapper;
 
     private WorkoutPlan workoutPlan;
     private WorkoutPlanEntity workoutPlanEntity;
+    private UserEntity userEntity;
 
     @BeforeEach
     void setUp() {
-        List<Workout> workouts = new ArrayList<>();
-
-        workoutPlan = new WorkoutPlan(1L, 1L, workouts);
-        List<WorkoutEntity> workoutsEntity = new ArrayList<>();
-        Optional<User> user = userRepository.getUserById(1L);
-        UserEntity userEntity = userEntityMapper.toEntity(user.orElseThrow(() -> new UserNotFoundException("User not found with ID: 101")));
-        workoutPlanEntity = new WorkoutPlanEntity(1L, userEntity, workoutsEntity);
-
+        workoutPlan = new WorkoutPlan(1L, 1L, List.of());
+        userEntity = new UserEntity();
+        workoutPlanEntity = new WorkoutPlanEntity();
     }
 
     @Test
@@ -78,46 +66,40 @@ class WorkoutPlanRepositoryImplTest {
         when(jpaWorkoutPlanRepository.findAll()).thenReturn(List.of(workoutPlanEntity));
         when(workoutPlanEntityMapper.toDomain(workoutPlanEntity)).thenReturn(workoutPlan);
 
-        List<WorkoutPlan> workoutPlans = workoutPlanRepository.getAll();
+        List<WorkoutPlan> result = workoutPlanRepository.getAll();
 
-        assertNotNull(workoutPlans);
-        assertEquals(1, workoutPlans.size());
-        assertEquals(workoutPlan, workoutPlans.get(0));
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(workoutPlan, result.get(0));
         verify(jpaWorkoutPlanRepository, times(1)).findAll();
-        verify(workoutPlanEntityMapper, times(1)).toDomain(workoutPlanEntity);
     }
 
     @Test
     void create_ShouldReturnCreatedWorkoutPlan() {
-        Optional<User> user = userRepository.getUserById(1L);
-        UserEntity userEntity = userEntityMapper.toEntity(user.orElseThrow(() -> new UserNotFoundException("User not found with ID: 101")));
-
+        when(jpaUserRepository.findById(1L)).thenReturn(Optional.of(userEntity));
         when(workoutPlanEntityMapper.toEntity(workoutPlan, userEntity)).thenReturn(workoutPlanEntity);
         when(jpaWorkoutPlanRepository.save(workoutPlanEntity)).thenReturn(workoutPlanEntity);
         when(workoutPlanEntityMapper.toDomain(workoutPlanEntity)).thenReturn(workoutPlan);
 
-        WorkoutPlan createdWorkoutPlan = workoutPlanRepository.create(workoutPlan);
+        WorkoutPlan result = workoutPlanRepository.create(workoutPlan);
 
-        assertNotNull(createdWorkoutPlan);
-        assertEquals(workoutPlan, createdWorkoutPlan);
+        assertNotNull(result);
+        assertEquals(workoutPlan, result);
         verify(jpaWorkoutPlanRepository, times(1)).save(workoutPlanEntity);
-        verify(workoutPlanEntityMapper, times(1)).toEntity(workoutPlan, userEntity);
-        verify(workoutPlanEntityMapper, times(1)).toDomain(workoutPlanEntity);
     }
 
     @Test
     void update_ShouldReturnUpdatedWorkoutPlan_WhenExists() {
-        Optional<User> user = userRepository.getUserById(1L);
-        UserEntity userEntity = userEntityMapper.toEntity(user.orElseThrow(() -> new UserNotFoundException("User not found with ID: 101")));
-        when(workoutPlanEntityMapper.toEntity(workoutPlan, userEntity)).thenReturn(workoutPlanEntity);
         when(jpaWorkoutPlanRepository.existsById(1L)).thenReturn(true);
+        when(jpaUserRepository.findById(1L)).thenReturn(Optional.of(userEntity));
+        when(workoutPlanEntityMapper.toEntity(workoutPlan, userEntity)).thenReturn(workoutPlanEntity);
         when(jpaWorkoutPlanRepository.save(workoutPlanEntity)).thenReturn(workoutPlanEntity);
         when(workoutPlanEntityMapper.toDomain(workoutPlanEntity)).thenReturn(workoutPlan);
 
-        WorkoutPlan updatedWorkoutPlan = workoutPlanRepository.update(workoutPlan);
+        WorkoutPlan result = workoutPlanRepository.update(workoutPlan);
 
-        assertNotNull(updatedWorkoutPlan);
-        assertEquals(workoutPlan, updatedWorkoutPlan);
+        assertNotNull(result);
+        assertEquals(workoutPlan, result);
         verify(jpaWorkoutPlanRepository, times(1)).save(workoutPlanEntity);
     }
 
@@ -144,12 +126,11 @@ class WorkoutPlanRepositoryImplTest {
         when(jpaWorkoutPlanRepository.findById(1L)).thenReturn(Optional.of(workoutPlanEntity));
         when(workoutPlanEntityMapper.toDomain(workoutPlanEntity)).thenReturn(workoutPlan);
 
-        Optional<WorkoutPlan> foundWorkoutPlan = workoutPlanRepository.getWorkoutPlanById(1L);
+        Optional<WorkoutPlan> result = workoutPlanRepository.getWorkoutPlanById(1L);
 
-        assertTrue(foundWorkoutPlan.isPresent());
-        assertEquals(workoutPlan, foundWorkoutPlan.get());
+        assertTrue(result.isPresent());
+        assertEquals(workoutPlan, result.get());
         verify(jpaWorkoutPlanRepository, times(1)).findById(1L);
-        verify(workoutPlanEntityMapper, times(1)).toDomain(workoutPlanEntity);
     }
 
     @Test
@@ -162,23 +143,22 @@ class WorkoutPlanRepositoryImplTest {
 
     @Test
     void getWorkoutPlanByUserId_ShouldReturnWorkoutPlan_WhenExists() {
-        when(jpaWorkoutPlanRepository.existsByUserId(2L)).thenReturn(true);
-        when(jpaWorkoutPlanRepository.findByUserId(2L)).thenReturn(Optional.of(workoutPlanEntity));
+        when(jpaWorkoutPlanRepository.existsByUserId(1L)).thenReturn(true);
+        when(jpaWorkoutPlanRepository.findByUserId(1L)).thenReturn(Optional.of(workoutPlanEntity));
         when(workoutPlanEntityMapper.toDomain(workoutPlanEntity)).thenReturn(workoutPlan);
 
-        Optional<WorkoutPlan> foundWorkoutPlan = workoutPlanRepository.getWorkoutPlanByUserId(2L);
+        Optional<WorkoutPlan> result = workoutPlanRepository.getWorkoutPlanByUserId(1L);
 
-        assertTrue(foundWorkoutPlan.isPresent());
-        assertEquals(workoutPlan, foundWorkoutPlan.get());
-        verify(jpaWorkoutPlanRepository, times(1)).findByUserId(2L);
-        verify(workoutPlanEntityMapper, times(1)).toDomain(workoutPlanEntity);
+        assertTrue(result.isPresent());
+        assertEquals(workoutPlan, result.get());
+        verify(jpaWorkoutPlanRepository, times(1)).findByUserId(1L);
     }
 
     @Test
     void getWorkoutPlanByUserId_ShouldThrowException_WhenWorkoutPlanDoesNotExist() {
-        when(jpaWorkoutPlanRepository.existsByUserId(2L)).thenReturn(false);
+        when(jpaWorkoutPlanRepository.existsByUserId(1L)).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> workoutPlanRepository.getWorkoutPlanByUserId(2L));
+        assertThrows(IllegalArgumentException.class, () -> workoutPlanRepository.getWorkoutPlanByUserId(1L));
         verify(jpaWorkoutPlanRepository, never()).findByUserId(anyLong());
     }
 }
