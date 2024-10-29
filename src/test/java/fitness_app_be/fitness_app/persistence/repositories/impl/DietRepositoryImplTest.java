@@ -37,15 +37,16 @@ class DietRepositoryImplTest {
 
     @BeforeEach
     void setUp() {
-        List<Meal> meals = new ArrayList<Meal>();
-        List<User> users = new ArrayList<User>();
-        Diet updatedDiet = new Diet(1L, "Vegan Diet", "Plant-based diet", "picturePath", users, meals);
+        List<Meal> meals = new ArrayList<>();
+        List<User> users = new ArrayList<>();
 
+        diet = new Diet(1L, "Keto", "Low-carb diet", "picturePath", users, meals);
 
         dietEntity = new DietEntity();
         dietEntity.setId(1L);
         dietEntity.setName("Keto");
     }
+
 
     @Test
     void exists_ShouldReturnTrue_WhenDietExists() {
@@ -79,18 +80,20 @@ class DietRepositoryImplTest {
 
     @Test
     void create_ShouldReturnCreatedDiet() {
+        // Ensure the mapping and repository save are correctly mocked
         when(dietEntityMapperImpl.toEntity(diet)).thenReturn(dietEntity);
         when(jpaDietRepository.save(dietEntity)).thenReturn(dietEntity);
         when(dietEntityMapperImpl.toDomain(dietEntity)).thenReturn(diet);
 
         Diet createdDiet = dietRepository.create(diet);
 
-        assertNotNull(createdDiet);
+        assertNotNull(createdDiet, "Diet should not be null after creation");
         assertEquals(diet, createdDiet);
         verify(jpaDietRepository, times(1)).save(dietEntity);
         verify(dietEntityMapperImpl, times(1)).toEntity(diet);
         verify(dietEntityMapperImpl, times(1)).toDomain(dietEntity);
     }
+
 
     @Test
     void update_ShouldReturnUpdatedDiet() {

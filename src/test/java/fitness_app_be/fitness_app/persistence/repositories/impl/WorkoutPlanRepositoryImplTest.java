@@ -76,7 +76,6 @@ class WorkoutPlanRepositoryImplTest {
 
     @Test
     void create_ShouldReturnCreatedWorkoutPlan() {
-        when(jpaUserRepository.findById(1L)).thenReturn(Optional.of(userEntity));
         when(workoutPlanEntityMapper.toEntity(workoutPlan)).thenReturn(workoutPlanEntity);
         when(jpaWorkoutPlanRepository.save(workoutPlanEntity)).thenReturn(workoutPlanEntity);
         when(workoutPlanEntityMapper.toDomain(workoutPlanEntity)).thenReturn(workoutPlan);
@@ -88,10 +87,10 @@ class WorkoutPlanRepositoryImplTest {
         verify(jpaWorkoutPlanRepository, times(1)).save(workoutPlanEntity);
     }
 
+
     @Test
     void update_ShouldReturnUpdatedWorkoutPlan_WhenExists() {
         when(jpaWorkoutPlanRepository.existsById(1L)).thenReturn(true);
-        when(jpaUserRepository.findById(1L)).thenReturn(Optional.of(userEntity));
         when(workoutPlanEntityMapper.toEntity(workoutPlan)).thenReturn(workoutPlanEntity);
         when(jpaWorkoutPlanRepository.save(workoutPlanEntity)).thenReturn(workoutPlanEntity);
         when(workoutPlanEntityMapper.toDomain(workoutPlanEntity)).thenReturn(workoutPlan);
@@ -102,6 +101,7 @@ class WorkoutPlanRepositoryImplTest {
         assertEquals(workoutPlan, result);
         verify(jpaWorkoutPlanRepository, times(1)).save(workoutPlanEntity);
     }
+
 
     @Test
     void update_ShouldThrowException_WhenWorkoutPlanDoesNotExist() {
