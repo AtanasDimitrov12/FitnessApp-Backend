@@ -1,10 +1,10 @@
 package fitness_app_be.fitness_app.persistence.mapper;
 
 import fitness_app_be.fitness_app.domain.WorkoutPlan;
-import fitness_app_be.fitness_app.persistence.entity.UserEntity;
 import fitness_app_be.fitness_app.persistence.entity.WorkoutPlanEntity;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
@@ -14,10 +14,12 @@ import java.util.stream.Collectors;
 public class WorkoutPlanEntityMapper {
 
     private WorkoutEntityMapper workoutEntityMapper;
+    private UserEntityMapper userEntityMapper;
 
     @Autowired
-    public WorkoutPlanEntityMapper(WorkoutEntityMapper workoutEntityMapper) {
+    public WorkoutPlanEntityMapper(@Lazy WorkoutEntityMapper workoutEntityMapper, @Lazy UserEntityMapper userEntityMapper) {
         this.workoutEntityMapper = workoutEntityMapper;
+        this.userEntityMapper = userEntityMapper;
     }
 
     public WorkoutPlan toDomain(WorkoutPlanEntity workoutPlanEntity) {
@@ -27,29 +29,48 @@ public class WorkoutPlanEntityMapper {
 
         return new WorkoutPlan(
                 workoutPlanEntity.getId(),
-                workoutPlanEntity.getUser().getId(),
-                workoutPlanEntity.getWorkouts().stream()
+                workoutPlanEntity.getUsers() != null
+                        ? workoutPlanEntity.getUsers().stream()
+                        .map(userEntityMapper::toDomain)
+                        .collect(Collectors.toList())
+                        : null,
+                workoutPlanEntity.getWorkouts() != null
+                        ? workoutPlanEntity.getWorkouts().stream()
                         .map(workoutEntityMapper::toDomain)
-                        .collect(Collectors.toList()),
+                        .collect(Collectors.toList())
+                        : null,
                 workoutPlanEntity.getFitnessGoals(),
                 workoutPlanEntity.getTrainingStyle()
         );
     }
 
-    public WorkoutPlanEntity toEntity(WorkoutPlan workoutPlan, UserEntity userEntity) {
+    public WorkoutPlanEntity toEntity(WorkoutPlan workoutPlan) {
         if (workoutPlan == null) {
             return null;
         }
 
-        WorkoutPlanEntity workoutPlanEntity = new WorkoutPlanEntity(
-                workoutPlan.getId(),
-                userEntity,
-                workoutPlan.getWorkouts().stream()
-                        .map(workoutEntityMapper::toEntity)
-                        .collect(Collectors.toList()),
-                workoutPlan.getFitnessGoals(),
-                workoutPlan.getTrainingStyle()
-        );
+        WorkoutPlanEntity workoutPlanEntity = new WorkoutPlanEntity();
+        workoutPlanEntity.setId(workoutPlan.getId());
+
+        // Convert the list of users and workouts
+        if (workoutPlan.getUsers() != null) {
+            workoutPlanEntity.setUsers(
+                    workoutPlan.getUsers().stream()
+                            .map(userEntityMapper::toEntity)
+                            .collect(Collectors.toList())
+            );
+        }
+
+        if (workoutPlan.getWorkouts() != null) {
+            workoutPlanEntity.setWorkouts(
+                    workoutPlan.getWorkouts().stream()
+                            .map(workoutEntityMapper::toEntity)
+                            .collect(Collectors.toList())
+            );
+        }
+
+        workoutPlanEntity.setFitnessGoals(workoutPlan.getFitnessGoals());
+        workoutPlanEntity.setTrainingStyle(workoutPlan.getTrainingStyles());
 
         return workoutPlanEntity;
     }

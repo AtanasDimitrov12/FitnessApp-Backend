@@ -1,5 +1,6 @@
 package fitness_app_be.fitness_app.business.impl;
 
+import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.domain.WorkoutPlan;
 import fitness_app_be.fitness_app.exceptionHandling.WorkoutPlanNotFoundException;
@@ -32,7 +33,10 @@ class WorkoutPlanServiceImplTest {
     @BeforeEach
     void setUp() {
         List<Workout> workouts = new ArrayList<>();
-        workoutPlan = new WorkoutPlan(1L, 100L, workouts);
+        List<User> users = new ArrayList<>();
+        List<String> goal = new ArrayList<>();
+        List<String> style = new ArrayList<>();
+        workoutPlan = new WorkoutPlan(1L, users, workouts, goal, style);
 
     }
 

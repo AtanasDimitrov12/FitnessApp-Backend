@@ -11,9 +11,8 @@ import java.util.List;
 public class WorkoutPlan {
     @Setter(AccessLevel.NONE)
     private Long id;
-    @Setter(AccessLevel.NONE)
-    private Long userId;
+    private List<User> users = new ArrayList<>();
     private List<Workout> workouts = new ArrayList<>();
     private List<String> fitnessGoals = new ArrayList<>();
-    private List<String> trainingStyle = new ArrayList<>();
+    private List<String> trainingStyles = new ArrayList<>();
 }

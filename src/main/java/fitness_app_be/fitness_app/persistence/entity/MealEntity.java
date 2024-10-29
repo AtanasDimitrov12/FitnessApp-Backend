@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "meal")
 @Data
@@ -33,7 +36,6 @@ public class MealEntity {
     @Column(name = "cooking_time")
     private double cookingTime;
 
-    @ManyToOne
-    @JoinColumn(name = "diet_id")
-    private DietEntity diet;
+    @ManyToMany(mappedBy = "meals")
+    private List<DietEntity> diets = new ArrayList<>();
 }

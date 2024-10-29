@@ -1,11 +1,11 @@
 package fitness_app_be.fitness_app.controllers.dto;
 
-import fitness_app_be.fitness_app.domain.UserDietPreference;
-import fitness_app_be.fitness_app.domain.UserWorkoutPreference;
+import fitness_app_be.fitness_app.domain.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -19,8 +19,8 @@ public class UserDTO {
     private UserDietPreferenceDTO dietPreference;
     private UserWorkoutPreferenceDTO workoutPreference;
     private String pictureURL;
-    private Long workoutPlanId;
-    private Long dietId;
-    private List<ProgressNoteDTO> notes;
+    private WorkoutPlanDTO workoutPlan;
+    private List<DietDTO> diets = new ArrayList<>();
+    private List<ProgressNoteDTO> notes = new ArrayList<>();
 }
 

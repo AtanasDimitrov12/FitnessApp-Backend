@@ -1,5 +1,7 @@
 package fitness_app_be.fitness_app.controllers.dto;
 
+import fitness_app_be.fitness_app.domain.Exercise;
+import fitness_app_be.fitness_app.domain.WorkoutPlan;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +19,7 @@ public class WorkoutDTO {
     private String description;
     private String pictureURL;
     private List<ExerciseDTO> exercises = new ArrayList<>();
+    private List<WorkoutPlanDTO> workoutPlans = new ArrayList<>();
 }
 
 

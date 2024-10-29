@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "workout")
+@Table(name = "workouts")
 @Data
 @Builder
 @AllArgsConstructor
@@ -30,7 +30,14 @@ public class WorkoutEntity {
     @Column(name = "picture_url")
     private String pictureURL;
 
-    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "workout_exercise",
+            joinColumns = @JoinColumn(name = "workout_id"),
+            inverseJoinColumns = @JoinColumn(name = "exercise_id")
+    )
     private List<ExerciseEntity> exercises = new ArrayList<>();
 
+    @ManyToMany(mappedBy = "workouts")
+    private List<WorkoutPlanEntity> workoutPlans = new ArrayList<>();
 }

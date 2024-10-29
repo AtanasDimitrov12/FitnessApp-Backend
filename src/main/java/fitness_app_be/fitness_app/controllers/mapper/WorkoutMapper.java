@@ -12,10 +12,12 @@ import java.util.stream.Collectors;
 public class WorkoutMapper {
 
     private final ExerciseMapper exerciseMapper;
+    private final WorkoutPlanMapper workoutPlanMapper;
 
     @Autowired
-    public WorkoutMapper(@Lazy ExerciseMapper exerciseMapper) {
+    public WorkoutMapper(@Lazy ExerciseMapper exerciseMapper, @Lazy WorkoutPlanMapper workoutPlanMapper) {
         this.exerciseMapper = exerciseMapper;
+        this.workoutPlanMapper = workoutPlanMapper;
     }
 
     public Workout toDomain(WorkoutDTO workoutDTO) {
@@ -31,6 +33,11 @@ public class WorkoutMapper {
                 workoutDTO.getExercises() != null
                         ? workoutDTO.getExercises().stream()
                         .map(exerciseMapper::toDomain)
+                        .collect(Collectors.toList())
+                        : null,
+                workoutDTO.getWorkoutPlans() != null
+                        ? workoutDTO.getWorkoutPlans().stream()
+                        .map(workoutPlanMapper::toDomain)
                         .collect(Collectors.toList())
                         : null
         );
@@ -49,6 +56,11 @@ public class WorkoutMapper {
                 workout.getExercises() != null
                         ? workout.getExercises().stream()
                         .map(exerciseMapper::toDto)
+                        .collect(Collectors.toList())
+                        : null,
+                workout.getWorkoutPlans() != null
+                        ? workout.getWorkoutPlans().stream()
+                        .map(workoutPlanMapper::domainToDto)
                         .collect(Collectors.toList())
                         : null
         );

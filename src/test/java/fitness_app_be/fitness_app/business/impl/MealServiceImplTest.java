@@ -1,5 +1,6 @@
 package fitness_app_be.fitness_app.business.impl;
 
+import fitness_app_be.fitness_app.domain.Diet;
 import fitness_app_be.fitness_app.domain.Meal;
 import fitness_app_be.fitness_app.exceptionHandling.MealNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.MealRepository;
@@ -10,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +31,8 @@ class MealServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        meal = new Meal(1L, "Chicken Salad", 300, 25, 10, 15);
+        List<Diet> diets = new ArrayList<>();
+        meal = new Meal(1L, "Chicken Salad", 300, 25, 10, 15, diets);
 
     }
 
@@ -95,7 +98,8 @@ class MealServiceImplTest {
 
     @Test
     void updateMeal_ShouldReturnUpdatedMeal_WhenMealExists() {
-        Meal updatedMeal = new Meal(1L, "Beef Salad", 300, 25, 10, 15);
+        List<Diet> diets = new ArrayList<>();
+        Meal updatedMeal = new Meal(1L, "Beef Salad", 300, 25, 10, 15, diets);
 
         when(mealRepository.getMealById(1L)).thenReturn(Optional.of(meal));
         when(mealRepository.update(meal)).thenReturn(updatedMeal);
@@ -111,7 +115,8 @@ class MealServiceImplTest {
 
     @Test
     void updateMeal_ShouldThrowException_WhenMealNotFound() {
-        Meal updatedMeal = new Meal(1L, "Beef Salad", 300, 25, 10, 15);
+        List<Diet> diets = new ArrayList<>();
+        Meal updatedMeal = new Meal(1L, "Beef Salad", 300, 25, 10, 15, diets);
 
         when(mealRepository.getMealById(1L)).thenReturn(Optional.empty());
 

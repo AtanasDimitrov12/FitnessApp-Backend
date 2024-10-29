@@ -15,15 +15,17 @@ public class WorkoutPlanEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    @OneToMany(mappedBy = "workoutPlan", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<UserEntity> users = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "workout_plan_id")
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "plan_workout",
+            joinColumns = @JoinColumn(name = "workout_plan_id"),
+            inverseJoinColumns = @JoinColumn(name = "workout_id")
+    )
     private List<WorkoutEntity> workouts = new ArrayList<>();
 
     @ElementCollection

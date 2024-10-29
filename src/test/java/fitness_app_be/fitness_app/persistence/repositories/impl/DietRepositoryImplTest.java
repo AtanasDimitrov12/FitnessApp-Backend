@@ -1,11 +1,11 @@
-package fitness_app_be.fitness_app.persistence.impl;
+package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.Diet;
 import fitness_app_be.fitness_app.domain.Meal;
+import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.persistence.entity.DietEntity;
 import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaDietRepository;
 import fitness_app_be.fitness_app.persistence.mapper.DietEntityMapper;
-import fitness_app_be.fitness_app.persistence.repositories.impl.DietRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +38,8 @@ class DietRepositoryImplTest {
     @BeforeEach
     void setUp() {
         List<Meal> meals = new ArrayList<Meal>();
-        diet = new Diet(1L, "Keto Diet", "High fat, low carb", "picturePath", meals);
+        List<User> users = new ArrayList<User>();
+        Diet updatedDiet = new Diet(1L, "Vegan Diet", "Plant-based diet", "picturePath", users, meals);
 
 
         dietEntity = new DietEntity();

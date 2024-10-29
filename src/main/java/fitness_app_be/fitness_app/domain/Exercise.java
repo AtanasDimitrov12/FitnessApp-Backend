@@ -2,6 +2,9 @@ package fitness_app_be.fitness_app.domain;
 
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,4 +14,5 @@ public class Exercise {
     private String name;
     private int sets;
     private int reps;
+    private List<Workout> workouts = new ArrayList<>();
 }

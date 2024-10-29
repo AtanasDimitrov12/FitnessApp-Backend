@@ -1,13 +1,9 @@
-package fitness_app_be.fitness_app.persistence.impl;
+package fitness_app_be.fitness_app.persistence.repositories.impl;
 
-import fitness_app_be.fitness_app.domain.ProgressNote;
+import fitness_app_be.fitness_app.domain.*;
 import fitness_app_be.fitness_app.persistence.entity.ProgressNoteEntity;
-import fitness_app_be.fitness_app.persistence.entity.UserEntity;
 import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaProgressNoteRepository;
 import fitness_app_be.fitness_app.persistence.mapper.ProgressNoteEntityMapper;
-import fitness_app_be.fitness_app.persistence.mapper.UserEntityMapper;
-import fitness_app_be.fitness_app.persistence.repositories.impl.ProgressNoteRepositoryImpl;
-import fitness_app_be.fitness_app.persistence.repositories.impl.UserRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,26 +26,16 @@ class ProgressNoteRepositoryImplTest {
     @Mock
     private ProgressNoteEntityMapper progressNoteEntityMapperImpl;
 
-
     @InjectMocks
     private ProgressNoteRepositoryImpl progressNoteRepository;
-
-    @InjectMocks
-    private UserRepositoryImpl userRepository;
-
-    @InjectMocks
-    private UserEntityMapper userEntityMapper;
 
     private ProgressNote progressNote;
     private ProgressNoteEntity progressNoteEntity;
 
     @BeforeEach
     void setUp() {
-        List<ProgressNoteEntity> notesEntity = new ArrayList<>();
-
-        UserEntity userEntity = new UserEntity(101L, "testUser", "test@example.com", "password", "muscle gain", "low carbs", "pictureURL", 1L, 1L, notesEntity);
         progressNote = new ProgressNote(1L, 101L, 85, "Weekly progress", "pictureURL");
-        progressNoteEntity = new ProgressNoteEntity(1L, userEntity, 85, "Weekly progress", "pictureURL");
+        progressNoteEntity = new ProgressNoteEntity(1L, null, 85, "Weekly progress", "pictureURL"); // Simplified UserEntity for brevity
     }
 
 

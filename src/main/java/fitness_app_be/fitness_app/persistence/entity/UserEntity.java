@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,7 +19,6 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -41,12 +41,13 @@ public class UserEntity {
     @Column(name = "picture_url")
     private String pictureURL;
 
-    @Column(name = "workout_plan_id")
-    private Long workoutPlanId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workout_plan_id")
+    private WorkoutPlanEntity workoutPlan;
 
-    @Column(name = "diet_id")
-    private Long dietId;
+    @ManyToMany(mappedBy = "users")
+    private List<DietEntity> diets = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
-    private List<ProgressNoteEntity> notes;
+    private List<ProgressNoteEntity> notes = new ArrayList<>();
 }

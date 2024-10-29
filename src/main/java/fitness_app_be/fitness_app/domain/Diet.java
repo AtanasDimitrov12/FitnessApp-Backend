@@ -14,10 +14,9 @@ public class Diet {
 
     @Setter(AccessLevel.NONE)
     private Long id;
-    @Setter(AccessLevel.NONE)
-    private Long userId;
     private String name;
     private String description;
     private String pictureURL;
+    private List<User> users = new ArrayList<>();
     private List<Meal> meals = new ArrayList<>();
 }

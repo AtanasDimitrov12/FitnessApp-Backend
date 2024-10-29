@@ -3,11 +3,22 @@ package fitness_app_be.fitness_app.persistence.mapper;
 import fitness_app_be.fitness_app.domain.Exercise;
 import fitness_app_be.fitness_app.persistence.entity.ExerciseEntity;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+
+import java.util.stream.Collectors;
 
 @Component
 @NoArgsConstructor
 public class ExerciseEntityMapper {
+
+    private WorkoutEntityMapper workoutEntityMapper;
+
+    @Autowired
+    public ExerciseEntityMapper(@Lazy WorkoutEntityMapper workoutEntityMapper) {
+        this.workoutEntityMapper = workoutEntityMapper;
+    }
 
     public Exercise toDomain(ExerciseEntity exerciseEntity) {
         if (exerciseEntity == null) {
@@ -18,7 +29,12 @@ public class ExerciseEntityMapper {
                 exerciseEntity.getId(),
                 exerciseEntity.getName(),
                 exerciseEntity.getSets(),
-                exerciseEntity.getReps()
+                exerciseEntity.getReps(),
+                exerciseEntity.getWorkouts() != null
+                        ? exerciseEntity.getWorkouts().stream()
+                        .map(workoutEntityMapper::toDomain)
+                        .collect(Collectors.toList())
+                        : null
         );
     }
 
@@ -27,11 +43,21 @@ public class ExerciseEntityMapper {
             return null;
         }
 
-        return ExerciseEntity.builder()
+        ExerciseEntity exerciseEntity = ExerciseEntity.builder()
                 .id(exercise.getId())
                 .name(exercise.getName())
                 .sets(exercise.getSets())
                 .reps(exercise.getReps())
                 .build();
+
+        if (exercise.getWorkouts() != null) {
+            exerciseEntity.setWorkouts(
+                    exercise.getWorkouts().stream()
+                            .map(workoutEntityMapper::toEntity)
+                            .collect(Collectors.toList())
+            );
+        }
+
+        return exerciseEntity;
     }
 }

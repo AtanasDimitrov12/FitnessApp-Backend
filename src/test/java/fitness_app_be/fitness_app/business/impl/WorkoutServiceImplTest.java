@@ -2,7 +2,9 @@ package fitness_app_be.fitness_app.business.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import fitness_app_be.fitness_app.domain.Exercise;
 import fitness_app_be.fitness_app.domain.Workout;
+import fitness_app_be.fitness_app.domain.WorkoutPlan;
 import fitness_app_be.fitness_app.exceptionHandling.WorkoutNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.WorkoutRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,8 +42,9 @@ class WorkoutServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        List<String> exercises = new ArrayList<>();
-        workout = new Workout(1L, "Test Workout", "Description", "http://example.com/image.jpg", exercises);
+        List<Exercise> exercises = new ArrayList<>();
+        List<WorkoutPlan> plans = new ArrayList<>();
+        workout = new Workout(1L, "Test Workout", "Description", "http://example.com/image.jpg", exercises, plans);
 
     }
 

@@ -2,6 +2,7 @@ package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.domain.Diet;
 import fitness_app_be.fitness_app.domain.Meal;
+import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.exceptionHandling.DietNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.DietRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +33,8 @@ class DietServiceImplTest {
     @BeforeEach
     void setUp() {
         List<Meal> meals = new ArrayList<Meal>();
-        diet = new Diet(1L, "Keto Diet", "High fat, low carb", "picturePath", meals);
+        List<User> users = new ArrayList<User>();
+        diet = new Diet(1L, "Keto Diet", "High fat, low carb", "picturePath",users,  meals);
     }
 
     @Test
@@ -98,7 +100,8 @@ class DietServiceImplTest {
     @Test
     void updateDiet_ShouldReturnUpdatedDiet_WhenDietExists() {
         List<Meal> meals = new ArrayList<Meal>();
-        Diet updatedDiet = new Diet(1L, "Vegan Diet", "Plant-based diet", "picturePath", meals);
+        List<User> users = new ArrayList<User>();
+        Diet updatedDiet = new Diet(1L, "Vegan Diet", "Plant-based diet", "picturePath", users, meals);
 
 
         when(dietRepository.getDietById(1L)).thenReturn(Optional.of(diet));
@@ -116,7 +119,8 @@ class DietServiceImplTest {
     @Test
     void updateDiet_ShouldThrowException_WhenDietNotFound() {
         List<Meal> meals = new ArrayList<Meal>();
-        Diet updatedDiet = new Diet(1L, "Vegan Diet", "Plant-based diet", "picturePath", meals);
+        List<User> users = new ArrayList<User>();
+        Diet updatedDiet = new Diet(1L, "Vegan Diet", "Plant-based diet", "picturePath", users, meals);
 
         when(dietRepository.getDietById(1L)).thenReturn(Optional.empty());
 

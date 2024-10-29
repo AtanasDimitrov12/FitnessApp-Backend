@@ -14,10 +14,12 @@ import java.util.stream.Collectors;
 public class WorkoutEntityMapper {
 
     private ExerciseEntityMapper exerciseEntityMapper;
+    private WorkoutPlanEntityMapper workoutPlanEntityMapper;
 
     @Autowired
-    public WorkoutEntityMapper(@Lazy ExerciseEntityMapper exerciseEntityMapper) {
+    public WorkoutEntityMapper(@Lazy ExerciseEntityMapper exerciseEntityMapper, @Lazy WorkoutPlanEntityMapper workoutPlanEntityMapper) {
         this.exerciseEntityMapper = exerciseEntityMapper;
+        this.workoutPlanEntityMapper = workoutPlanEntityMapper;
     }
 
     public Workout toDomain(WorkoutEntity workoutEntity) {
@@ -32,6 +34,11 @@ public class WorkoutEntityMapper {
                 workoutEntity.getExercises() != null
                         ? workoutEntity.getExercises().stream()
                         .map(exerciseEntityMapper::toDomain)
+                        .collect(Collectors.toList())
+                        : null,
+                workoutEntity.getWorkoutPlans() != null
+                        ? workoutEntity.getWorkoutPlans().stream()
+                        .map(workoutPlanEntityMapper::toDomain)
                         .collect(Collectors.toList())
                         : null
         );
@@ -51,6 +58,12 @@ public class WorkoutEntityMapper {
         if (workout.getExercises() != null) {
             workoutEntity.setExercises(workout.getExercises().stream()
                     .map(exerciseEntityMapper::toEntity)
+                    .collect(Collectors.toList()));
+        }
+
+        if (workout.getWorkoutPlans() != null) {
+            workoutEntity.setWorkoutPlans(workout.getWorkoutPlans().stream()
+                    .map(workoutPlanEntityMapper::toEntity)
                     .collect(Collectors.toList()));
         }
 

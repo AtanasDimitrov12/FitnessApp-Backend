@@ -1,10 +1,9 @@
-package fitness_app_be.fitness_app.persistence.impl;
+package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.persistence.entity.WorkoutEntity;
 import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaWorkoutRepository;
 import fitness_app_be.fitness_app.persistence.mapper.WorkoutEntityMapper;
-import fitness_app_be.fitness_app.persistence.repositories.impl.WorkoutRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,11 +34,10 @@ class WorkoutRepositoryImplTest {
 
     @BeforeEach
     void setUp() {
-        List<String> exercises = new ArrayList<>();
 
-        workout = new Workout(1L, "Test Workout", "Description", "http://example.com/image.jpg", exercises);
+        workout = new Workout(1L, "Test Workout", "Description", "http://example.com/image.jpg", List.of(), List.of());
 
-        workoutEntity = new WorkoutEntity(1L, "Test Workout", "Description", "http://example.com/image.jpg", exercises);
+        workoutEntity = new WorkoutEntity(1L, "Test Workout", "Description", "http://example.com/image.jpg",List.of(), List.of());
 
     }
 
@@ -145,7 +142,7 @@ class WorkoutRepositoryImplTest {
 
     @Test
     void findByExercises_ShouldReturnListOfWorkouts() {
-        when(jpaWorkoutRepository.findByExercisesContaining("exercise")).thenReturn(List.of(workoutEntity));
+        when(jpaWorkoutRepository.findByExercises_NameContaining("exercise")).thenReturn(List.of(workoutEntity));
         when(workoutMapper.toDomain(workoutEntity)).thenReturn(workout);
 
         List<Workout> workouts = workoutRepository.findByExercises("exercise");
@@ -153,7 +150,7 @@ class WorkoutRepositoryImplTest {
         assertNotNull(workouts);
         assertEquals(1, workouts.size());
         assertEquals(workout, workouts.get(0));
-        verify(jpaWorkoutRepository, times(1)).findByExercisesContaining("exercise");
+        verify(jpaWorkoutRepository, times(1)).findByExercises_NameContaining("exercise");
     }
 
     @Test

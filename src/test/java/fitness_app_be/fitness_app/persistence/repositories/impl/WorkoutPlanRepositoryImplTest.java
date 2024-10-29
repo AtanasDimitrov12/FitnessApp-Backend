@@ -1,4 +1,4 @@
-package fitness_app_be.fitness_app.persistence.impl;
+package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.WorkoutPlan;
 import fitness_app_be.fitness_app.persistence.entity.UserEntity;
@@ -6,7 +6,6 @@ import fitness_app_be.fitness_app.persistence.entity.WorkoutPlanEntity;
 import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaUserRepository;
 import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaWorkoutPlanRepository;
 import fitness_app_be.fitness_app.persistence.mapper.WorkoutPlanEntityMapper;
-import fitness_app_be.fitness_app.persistence.repositories.impl.WorkoutPlanRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +40,7 @@ class WorkoutPlanRepositoryImplTest {
 
     @BeforeEach
     void setUp() {
-        workoutPlan = new WorkoutPlan(1L, 1L, List.of());
+        workoutPlan = new WorkoutPlan(1L, List.of(), List.of(),List.of(),List.of());
         userEntity = new UserEntity();
         workoutPlanEntity = new WorkoutPlanEntity();
     }
@@ -78,7 +77,7 @@ class WorkoutPlanRepositoryImplTest {
     @Test
     void create_ShouldReturnCreatedWorkoutPlan() {
         when(jpaUserRepository.findById(1L)).thenReturn(Optional.of(userEntity));
-        when(workoutPlanEntityMapper.toEntity(workoutPlan, userEntity)).thenReturn(workoutPlanEntity);
+        when(workoutPlanEntityMapper.toEntity(workoutPlan)).thenReturn(workoutPlanEntity);
         when(jpaWorkoutPlanRepository.save(workoutPlanEntity)).thenReturn(workoutPlanEntity);
         when(workoutPlanEntityMapper.toDomain(workoutPlanEntity)).thenReturn(workoutPlan);
 
@@ -93,7 +92,7 @@ class WorkoutPlanRepositoryImplTest {
     void update_ShouldReturnUpdatedWorkoutPlan_WhenExists() {
         when(jpaWorkoutPlanRepository.existsById(1L)).thenReturn(true);
         when(jpaUserRepository.findById(1L)).thenReturn(Optional.of(userEntity));
-        when(workoutPlanEntityMapper.toEntity(workoutPlan, userEntity)).thenReturn(workoutPlanEntity);
+        when(workoutPlanEntityMapper.toEntity(workoutPlan)).thenReturn(workoutPlanEntity);
         when(jpaWorkoutPlanRepository.save(workoutPlanEntity)).thenReturn(workoutPlanEntity);
         when(workoutPlanEntityMapper.toDomain(workoutPlanEntity)).thenReturn(workoutPlan);
 
@@ -144,22 +143,22 @@ class WorkoutPlanRepositoryImplTest {
 
     @Test
     void getWorkoutPlanByUserId_ShouldReturnWorkoutPlan_WhenExists() {
-        when(jpaWorkoutPlanRepository.existsByUserId(1L)).thenReturn(true);
-        when(jpaWorkoutPlanRepository.findByUserId(1L)).thenReturn(Optional.of(workoutPlanEntity));
+        when(jpaWorkoutPlanRepository.existsByUsers_Id(1L)).thenReturn(true);
+        when(jpaWorkoutPlanRepository.findByUsers_Id(1L)).thenReturn(Optional.of(workoutPlanEntity));
         when(workoutPlanEntityMapper.toDomain(workoutPlanEntity)).thenReturn(workoutPlan);
 
         Optional<WorkoutPlan> result = workoutPlanRepository.getWorkoutPlanByUserId(1L);
 
         assertTrue(result.isPresent());
         assertEquals(workoutPlan, result.get());
-        verify(jpaWorkoutPlanRepository, times(1)).findByUserId(1L);
+        verify(jpaWorkoutPlanRepository, times(1)).findByUsers_Id(1L);
     }
 
     @Test
     void getWorkoutPlanByUserId_ShouldThrowException_WhenWorkoutPlanDoesNotExist() {
-        when(jpaWorkoutPlanRepository.existsByUserId(1L)).thenReturn(false);
+        when(jpaWorkoutPlanRepository.existsByUsers_Id(1L)).thenReturn(false);
 
         assertThrows(IllegalArgumentException.class, () -> workoutPlanRepository.getWorkoutPlanByUserId(1L));
-        verify(jpaWorkoutPlanRepository, never()).findByUserId(anyLong());
+        verify(jpaWorkoutPlanRepository, never()).findByUsers_Id(anyLong());
     }
 }

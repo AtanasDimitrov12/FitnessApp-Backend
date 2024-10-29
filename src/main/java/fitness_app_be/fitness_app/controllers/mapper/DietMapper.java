@@ -2,20 +2,25 @@ package fitness_app_be.fitness_app.controllers.mapper;
 
 import fitness_app_be.fitness_app.controllers.dto.DietDTO;
 import fitness_app_be.fitness_app.domain.Diet;
+import fitness_app_be.fitness_app.domain.Meal;
+import fitness_app_be.fitness_app.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Component
 public class DietMapper {
 
     private final MealMapper mealMapper;
+    private final UserMapper userMapper;
 
     @Autowired
-    public DietMapper(@Lazy MealMapper mealMapper) {
+    public DietMapper(@Lazy MealMapper mealMapper, @Lazy UserMapper userMapper) {
         this.mealMapper = mealMapper;
+        this.userMapper = userMapper;
     }
 
     public Diet toDomain(DietDTO dietDTO) {
@@ -25,15 +30,19 @@ public class DietMapper {
 
         return new Diet(
                 dietDTO.getId(),
-                dietDTO.getUserId(),
                 dietDTO.getName(),
                 dietDTO.getDescription(),
                 dietDTO.getPictureURL(),
+                dietDTO.getUsers() != null
+                        ? dietDTO.getUsers().stream()
+                        .map(userMapper::toDomain)
+                        .collect(Collectors.toList())
+                        : new ArrayList<>(),
                 dietDTO.getMeals() != null
                         ? dietDTO.getMeals().stream()
                         .map(mealMapper::toDomain)
                         .collect(Collectors.toList())
-                        : null
+                        : new ArrayList<>()
         );
     }
 
@@ -44,15 +53,19 @@ public class DietMapper {
 
         return new DietDTO(
                 diet.getId(),
-                diet.getUserId(),
                 diet.getName(),
                 diet.getDescription(),
                 diet.getPictureURL(),
+                diet.getUsers() != null
+                        ? diet.getUsers().stream()
+                        .map(userMapper::domainToDto)
+                        .collect(Collectors.toList())
+                        : new ArrayList<>(),
                 diet.getMeals() != null
                         ? diet.getMeals().stream()
                         .map(mealMapper::domainToDto)
                         .collect(Collectors.toList())
-                        : null
+                        : new ArrayList<>()
         );
     }
 }

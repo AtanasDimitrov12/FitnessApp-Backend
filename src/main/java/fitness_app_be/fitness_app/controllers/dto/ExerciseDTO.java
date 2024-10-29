@@ -1,8 +1,12 @@
 package fitness_app_be.fitness_app.controllers.dto;
 
+import fitness_app_be.fitness_app.domain.Workout;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -12,5 +16,6 @@ public class ExerciseDTO {
     private String name;
     private int sets;
     private int reps;
+    private List<WorkoutDTO> workouts = new ArrayList<>();
 }
 

@@ -1,4 +1,4 @@
-package fitness_app_be.fitness_app.persistence.impl;
+package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.ProgressNote;
 import fitness_app_be.fitness_app.domain.User;
@@ -6,7 +6,6 @@ import fitness_app_be.fitness_app.persistence.entity.ProgressNoteEntity;
 import fitness_app_be.fitness_app.persistence.entity.UserEntity;
 import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaUserRepository;
 import fitness_app_be.fitness_app.persistence.mapper.UserEntityMapper;
-import fitness_app_be.fitness_app.persistence.repositories.impl.UserRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,9 +39,9 @@ class UserRepositoryImplTest {
     void setUp() {
         List<ProgressNote> notes = new ArrayList<>();
 
-        user = new User(1L, "testUser", "test@example.com", "password", "muscle gain", "low carbs", "pictureURL", 1L, 1L, notes);
+        user = new User(1L, "testUser", "test@example.com", "password", null, null, "pictureURL", null, null, notes);
         List<ProgressNoteEntity> notesEntity = new ArrayList<>();
-        userEntity = new UserEntity(1L, "testUser", "test@example.com", "password", "muscle gain", "low carbs", "pictureURL", 1L, 1L, notesEntity);
+        userEntity = new UserEntity(1L, "testUser", "test@example.com", "password", null, null, "pictureURL", null, null, notesEntity);
 
     }
 

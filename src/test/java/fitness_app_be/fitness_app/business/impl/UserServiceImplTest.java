@@ -1,7 +1,6 @@
 package fitness_app_be.fitness_app.business.impl;
 
-import fitness_app_be.fitness_app.domain.ProgressNote;
-import fitness_app_be.fitness_app.domain.User;
+import fitness_app_be.fitness_app.domain.*;
 import fitness_app_be.fitness_app.exceptionHandling.UserNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,8 +30,16 @@ class UserServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        List<Diet> diets = new ArrayList<>();
+        List<Workout> workouts = new ArrayList<>();
+        List<User> users = new ArrayList<>();
+        List<String> goal = new ArrayList<>();
+        List<String> style = new ArrayList<>();
+        WorkoutPlan workoutPlan = new WorkoutPlan(1L, users, workouts, goal, style);
         List<ProgressNote> notes = new ArrayList<>();
-        user = new User(1L, "testUser", "test@example.com", "password", "muscle gain", "low carbs", "pictureURL", 1L, 1L, notes);
+        UserDietPreference userDietPreference = new UserDietPreference(1L, 1L, 2500, 3);
+        UserWorkoutPreference userWorkoutPreference = new UserWorkoutPreference(1L, 1L, "Strength", "Beginner", "Evening", 4);
+        user = new User(1L, "testUser", "test@example.com", "password", userDietPreference, userWorkoutPreference, "pictureURL", workoutPlan, diets, notes);
 
     }
 

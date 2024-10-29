@@ -1,10 +1,10 @@
-package fitness_app_be.fitness_app.persistence.impl;
+package fitness_app_be.fitness_app.persistence.repositories.impl;
 
+import fitness_app_be.fitness_app.domain.Diet;
 import fitness_app_be.fitness_app.domain.Meal;
 import fitness_app_be.fitness_app.persistence.entity.MealEntity;
 import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaMealRepository;
 import fitness_app_be.fitness_app.persistence.mapper.MealEntityMapper;
-import fitness_app_be.fitness_app.persistence.repositories.impl.MealRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +36,8 @@ class MealRepositoryImplTest {
 
     @BeforeEach
     void setUp() {
-        meal = new Meal(1L, "Chicken Salad", 300, 25, 10, 15);
+        List<Diet> diets = new ArrayList<>();
+        meal = new Meal(1L, "Chicken Salad", 300, 25, 10, 15, diets);
 
 
         mealEntity = new MealEntity();

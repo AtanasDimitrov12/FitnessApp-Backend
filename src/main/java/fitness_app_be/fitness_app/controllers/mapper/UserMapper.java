@@ -14,14 +14,20 @@ public class UserMapper {
     private final ProgressNoteMapper progressNoteMapper;
     private final UserDietPreferenceMapper userDietPreferenceMapper;
     private final UserWorkoutPreferenceMapper userWorkoutPreferenceMapper;
+    private final DietMapper dietMapper;
+    private final WorkoutPlanMapper workoutPlanMapper;
 
     @Autowired
     public UserMapper(@Lazy ProgressNoteMapper progressNoteMapper,
                       @Lazy UserDietPreferenceMapper userDietPreferenceMapper,
-                      @Lazy UserWorkoutPreferenceMapper userWorkoutPreferenceMapper) {
+                      @Lazy UserWorkoutPreferenceMapper userWorkoutPreferenceMapper,
+                      @Lazy DietMapper dietMapper,
+                      @Lazy WorkoutPlanMapper workoutPlanMapper) {
         this.progressNoteMapper = progressNoteMapper;
         this.userDietPreferenceMapper = userDietPreferenceMapper;
         this.userWorkoutPreferenceMapper = userWorkoutPreferenceMapper;
+        this.dietMapper = dietMapper;
+        this.workoutPlanMapper = workoutPlanMapper;
     }
 
     public User toDomain(UserDTO userDTO) {
@@ -37,8 +43,12 @@ public class UserMapper {
                 userDietPreferenceMapper.toDomain(userDTO.getDietPreference()),
                 userWorkoutPreferenceMapper.toDomain(userDTO.getWorkoutPreference()),
                 userDTO.getPictureURL(),
-                userDTO.getWorkoutPlanId(),
-                userDTO.getDietId(),
+                workoutPlanMapper.toDomain(userDTO.getWorkoutPlan()),
+                userDTO.getDiets() != null
+                        ? userDTO.getDiets().stream()
+                        .map(dietMapper::toDomain)
+                        .collect(Collectors.toList())
+                        : null,
                 userDTO.getNotes() != null
                         ? userDTO.getNotes().stream()
                         .map(progressNoteMapper::toDomain)
@@ -60,8 +70,12 @@ public class UserMapper {
                 userDietPreferenceMapper.toDto(user.getDietPreference()),
                 userWorkoutPreferenceMapper.toDto(user.getWorkoutPreference()),
                 user.getPictureURL(),
-                user.getWorkoutPlanId(),
-                user.getDietId(),
+                workoutPlanMapper.domainToDto(user.getWorkoutPlan()),
+                user.getDiets() != null
+                        ? user.getDiets().stream()
+                        .map(dietMapper::domainToDto)
+                        .collect(Collectors.toList())
+                        : null,
                 user.getNotes() != null
                         ? user.getNotes().stream()
                         .map(progressNoteMapper::domainToDto)

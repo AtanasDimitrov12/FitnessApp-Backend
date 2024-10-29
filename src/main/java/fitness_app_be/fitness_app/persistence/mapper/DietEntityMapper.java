@@ -14,10 +14,12 @@ import java.util.stream.Collectors;
 public class DietEntityMapper {
 
     private MealEntityMapper mealEntityMapperImpl;
+    private UserEntityMapper userEntityMapper;
 
     @Autowired
-    public DietEntityMapper(@Lazy MealEntityMapper mealEntityMapperImpl) {
+    public DietEntityMapper(@Lazy MealEntityMapper mealEntityMapperImpl, @Lazy UserEntityMapper userEntityMapper) {
         this.mealEntityMapperImpl = mealEntityMapperImpl;
+        this.userEntityMapper = userEntityMapper;
     }
 
     public Diet toDomain(DietEntity dietEntity) {
@@ -31,7 +33,14 @@ public class DietEntityMapper {
                 .description(dietEntity.getDescription())
                 .pictureURL(dietEntity.getPictureURL())
                 .meals(dietEntity.getMeals() != null
-                        ? dietEntity.getMeals().stream().map(mealEntityMapperImpl::toDomain).collect(Collectors.toList())
+                        ? dietEntity.getMeals().stream()
+                        .map(mealEntityMapperImpl::toDomain)
+                        .collect(Collectors.toList())
+                        : null)
+                .users(dietEntity.getUsers() != null
+                        ? dietEntity.getUsers().stream()
+                        .map(userEntityMapper::toDomain)
+                        .collect(Collectors.toList())
                         : null)
                 .build();
     }
@@ -50,6 +59,12 @@ public class DietEntityMapper {
         if (diet.getMeals() != null) {
             dietEntity.setMeals(diet.getMeals().stream()
                     .map(mealEntityMapperImpl::toEntity)
+                    .collect(Collectors.toList()));
+        }
+
+        if (diet.getUsers() != null) {
+            dietEntity.setUsers(diet.getUsers().stream()
+                    .map(userEntityMapper::toEntity)
                     .collect(Collectors.toList()));
         }
 

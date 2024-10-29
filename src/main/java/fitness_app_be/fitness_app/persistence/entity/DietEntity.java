@@ -3,6 +3,8 @@ package fitness_app_be.fitness_app.persistence.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -28,11 +30,20 @@ public class DietEntity {
     @Column(name = "picture_url")
     private String pictureURL;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    @ManyToMany
+    @JoinTable(
+            name = "user_diet",
+            joinColumns = @JoinColumn(name = "diet_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<UserEntity> users = new ArrayList<>();
 
-    @OneToMany(mappedBy = "diet", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MealEntity> meals;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "diet_meal",
+            joinColumns = @JoinColumn(name = "diet_id"),
+            inverseJoinColumns = @JoinColumn(name = "meal_id")
+    )
+    private List<MealEntity> meals = new ArrayList<>();
 
 }

@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 public class WorkoutPlanRepositoryImpl implements WorkoutPlanRepository {
 
     private final JpaWorkoutPlanRepository jpaWorkoutPlanRepository;
-    private final JpaUserRepository jpaUserRepository;
     private final WorkoutPlanEntityMapper workoutPlanEntityMapper;
 
 
@@ -38,8 +37,7 @@ public class WorkoutPlanRepositoryImpl implements WorkoutPlanRepository {
 
     @Override
     public WorkoutPlan create(WorkoutPlan workoutPlan) {
-        UserEntity user = jpaUserRepository.findById(workoutPlan.getUserId()).orElse(null);
-        WorkoutPlanEntity savedEntity = jpaWorkoutPlanRepository.save(workoutPlanEntityMapper.toEntity(workoutPlan, user));
+        WorkoutPlanEntity savedEntity = jpaWorkoutPlanRepository.save(workoutPlanEntityMapper.toEntity(workoutPlan));
         return workoutPlanEntityMapper.toDomain(savedEntity);
     }
 
@@ -48,8 +46,7 @@ public class WorkoutPlanRepositoryImpl implements WorkoutPlanRepository {
         if (!exists(workoutPlan.getId())) {
             throw new IllegalArgumentException("Workout plan not found");
         }
-        UserEntity user = jpaUserRepository.findById(workoutPlan.getUserId()).orElse(null);
-        WorkoutPlanEntity updatedEntity = jpaWorkoutPlanRepository.save(workoutPlanEntityMapper.toEntity(workoutPlan, user));
+        WorkoutPlanEntity updatedEntity = jpaWorkoutPlanRepository.save(workoutPlanEntityMapper.toEntity(workoutPlan));
         return workoutPlanEntityMapper.toDomain(updatedEntity);
     }
 
@@ -70,10 +67,10 @@ public class WorkoutPlanRepositoryImpl implements WorkoutPlanRepository {
 
     @Override
     public Optional<WorkoutPlan> getWorkoutPlanByUserId(long userId) {
-        if (!jpaWorkoutPlanRepository.existsByUserId(userId)) {
+        if (!jpaWorkoutPlanRepository.existsByUsers_Id(userId)) {
             throw new IllegalArgumentException("Workout plan not found");
         }
-        return jpaWorkoutPlanRepository.findByUserId(userId)
+        return jpaWorkoutPlanRepository.findByUsers_Id(userId)
                 .map(workoutPlanEntityMapper::toDomain);
     }
 }
