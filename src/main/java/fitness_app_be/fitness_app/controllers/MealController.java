@@ -1,6 +1,5 @@
 package fitness_app_be.fitness_app.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fitness_app_be.fitness_app.business.MealService;
 import fitness_app_be.fitness_app.controllers.dto.MealDTO;
 import fitness_app_be.fitness_app.controllers.mapper.MealMapper;
@@ -8,10 +7,7 @@ import fitness_app_be.fitness_app.domain.Meal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -1,7 +1,5 @@
 package fitness_app_be.fitness_app.controllers.dto;
 
-import fitness_app_be.fitness_app.domain.Exercise;
-import fitness_app_be.fitness_app.domain.WorkoutPlan;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,6 +1,5 @@
 package fitness_app_be.fitness_app.persistence.repositories.impl;
 
-import fitness_app_be.fitness_app.controllers.mapper.UserMapper;
 import fitness_app_be.fitness_app.domain.UserDietPreference;
 import fitness_app_be.fitness_app.persistence.entity.UserDietPreferenceEntity;
 import fitness_app_be.fitness_app.persistence.entity.UserEntity;

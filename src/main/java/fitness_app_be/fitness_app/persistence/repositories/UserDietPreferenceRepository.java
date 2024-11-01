@@ -1,9 +1,8 @@
 package fitness_app_be.fitness_app.persistence.repositories;
 
-import fitness_app_be.fitness_app.domain.Exercise;
+
 import fitness_app_be.fitness_app.domain.UserDietPreference;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface UserDietPreferenceRepository {

@@ -1,6 +1,5 @@
 package fitness_app_be.fitness_app.persistence.repositories;
 
-import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.domain.WorkoutPlan;
 
 import java.util.List;

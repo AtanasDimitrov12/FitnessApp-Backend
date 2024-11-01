@@ -1,10 +1,8 @@
 package fitness_app_be.fitness_app.persistence.repositories.impl;
 
-import fitness_app_be.fitness_app.domain.User;
+
 import fitness_app_be.fitness_app.domain.WorkoutPlan;
-import fitness_app_be.fitness_app.persistence.entity.UserEntity;
 import fitness_app_be.fitness_app.persistence.entity.WorkoutPlanEntity;
-import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaUserRepository;
 import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaWorkoutPlanRepository;
 import fitness_app_be.fitness_app.persistence.mapper.WorkoutPlanEntityMapper;
 import fitness_app_be.fitness_app.persistence.repositories.WorkoutPlanRepository;
