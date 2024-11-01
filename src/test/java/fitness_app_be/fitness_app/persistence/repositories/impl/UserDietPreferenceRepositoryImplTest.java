@@ -4,7 +4,7 @@ import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.domain.UserDietPreference;
 import fitness_app_be.fitness_app.persistence.entity.UserDietPreferenceEntity;
 import fitness_app_be.fitness_app.persistence.entity.UserEntity;
-import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaUserDietPreferenceRepository;
+import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaUserDietPreferenceRepository;
 import fitness_app_be.fitness_app.persistence.mapper.UserDietPreferenceEntityMapper;
 import fitness_app_be.fitness_app.persistence.mapper.UserEntityMapper;
 import fitness_app_be.fitness_app.persistence.repositories.UserRepository;

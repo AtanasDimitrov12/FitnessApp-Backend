@@ -2,7 +2,7 @@ package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.domain.Diet;
 import fitness_app_be.fitness_app.domain.Meal;
-import fitness_app_be.fitness_app.exceptionHandling.MealNotFoundException;
+import fitness_app_be.fitness_app.exception_handling.MealNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.MealRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

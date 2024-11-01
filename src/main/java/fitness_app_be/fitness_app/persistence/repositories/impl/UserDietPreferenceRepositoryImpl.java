@@ -3,7 +3,7 @@ package fitness_app_be.fitness_app.persistence.repositories.impl;
 import fitness_app_be.fitness_app.domain.UserDietPreference;
 import fitness_app_be.fitness_app.persistence.entity.UserDietPreferenceEntity;
 import fitness_app_be.fitness_app.persistence.entity.UserEntity;
-import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaUserDietPreferenceRepository;
+import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaUserDietPreferenceRepository;
 import fitness_app_be.fitness_app.persistence.mapper.UserDietPreferenceEntityMapper;
 import fitness_app_be.fitness_app.persistence.mapper.UserEntityMapper;
 import fitness_app_be.fitness_app.persistence.repositories.UserDietPreferenceRepository;
@@ -77,8 +77,6 @@ public class UserDietPreferenceRepositoryImpl implements UserDietPreferenceRepos
     }
 
     private UserEntity findUserEntityById(long userId) {
-        // Implement logic to fetch UserEntity by userId from UserRepository or similar source
-        // For example:
         return userEntityMapper.toEntity(userRepository.getUserById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User with ID " + userId + " not found.")));
     }

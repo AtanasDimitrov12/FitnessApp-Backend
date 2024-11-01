@@ -1,10 +1,9 @@
 package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.WorkoutPlan;
-import fitness_app_be.fitness_app.persistence.entity.UserEntity;
+import fitness_app_be.fitness_app.exception_handling.WorkoutPlanNotFoundException;
 import fitness_app_be.fitness_app.persistence.entity.WorkoutPlanEntity;
-import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaUserRepository;
-import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaWorkoutPlanRepository;
+import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaWorkoutPlanRepository;
 import fitness_app_be.fitness_app.persistence.mapper.WorkoutPlanEntityMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,9 +25,6 @@ class WorkoutPlanRepositoryImplTest {
     private JpaWorkoutPlanRepository jpaWorkoutPlanRepository;
 
     @Mock
-    private JpaUserRepository jpaUserRepository;
-
-    @Mock
     private WorkoutPlanEntityMapper workoutPlanEntityMapper;
 
     @InjectMocks
@@ -36,12 +32,10 @@ class WorkoutPlanRepositoryImplTest {
 
     private WorkoutPlan workoutPlan;
     private WorkoutPlanEntity workoutPlanEntity;
-    private UserEntity userEntity;
 
     @BeforeEach
     void setUp() {
-        workoutPlan = new WorkoutPlan(1L, List.of(), List.of(),List.of(),List.of());
-        userEntity = new UserEntity();
+        workoutPlan = new WorkoutPlan(1L, List.of(), List.of(), List.of(), List.of());
         workoutPlanEntity = new WorkoutPlanEntity();
     }
 
@@ -87,7 +81,6 @@ class WorkoutPlanRepositoryImplTest {
         verify(jpaWorkoutPlanRepository, times(1)).save(workoutPlanEntity);
     }
 
-
     @Test
     void update_ShouldReturnUpdatedWorkoutPlan_WhenExists() {
         when(jpaWorkoutPlanRepository.existsById(1L)).thenReturn(true);
@@ -102,12 +95,11 @@ class WorkoutPlanRepositoryImplTest {
         verify(jpaWorkoutPlanRepository, times(1)).save(workoutPlanEntity);
     }
 
-
     @Test
     void update_ShouldThrowException_WhenWorkoutPlanDoesNotExist() {
         when(jpaWorkoutPlanRepository.existsById(1L)).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> workoutPlanRepository.update(workoutPlan));
+        assertThrows(WorkoutPlanNotFoundException.class, () -> workoutPlanRepository.update(workoutPlan));
         verify(jpaWorkoutPlanRepository, never()).save(any());
     }
 
@@ -137,7 +129,7 @@ class WorkoutPlanRepositoryImplTest {
     void getWorkoutPlanById_ShouldThrowException_WhenWorkoutPlanDoesNotExist() {
         when(jpaWorkoutPlanRepository.existsById(1L)).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> workoutPlanRepository.getWorkoutPlanById(1L));
+        assertThrows(WorkoutPlanNotFoundException.class, () -> workoutPlanRepository.getWorkoutPlanById(1L));
         verify(jpaWorkoutPlanRepository, never()).findById(anyLong());
     }
 
@@ -158,7 +150,7 @@ class WorkoutPlanRepositoryImplTest {
     void getWorkoutPlanByUserId_ShouldThrowException_WhenWorkoutPlanDoesNotExist() {
         when(jpaWorkoutPlanRepository.existsByUsers_Id(1L)).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> workoutPlanRepository.getWorkoutPlanByUserId(1L));
+        assertThrows(WorkoutPlanNotFoundException.class, () -> workoutPlanRepository.getWorkoutPlanByUserId(1L));
         verify(jpaWorkoutPlanRepository, never()).findByUsers_Id(anyLong());
     }
 }

@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/workout-plans")
@@ -23,7 +22,7 @@ public class WorkoutPlanController {
     public List<WorkoutPlanDTO> getAllWorkoutPlans() {
         return workoutPlanService.getAllWorkoutPlans().stream()
                 .map(workoutPlanMapper::domainToDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @GetMapping("/{id}")

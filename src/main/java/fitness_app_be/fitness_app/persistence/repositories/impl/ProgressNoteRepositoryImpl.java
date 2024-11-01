@@ -2,7 +2,7 @@ package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.ProgressNote;
 import fitness_app_be.fitness_app.persistence.entity.ProgressNoteEntity;
-import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaProgressNoteRepository;
+import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaProgressNoteRepository;
 import fitness_app_be.fitness_app.persistence.mapper.ProgressNoteEntityMapper;
 import fitness_app_be.fitness_app.persistence.repositories.ProgressNoteRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,7 +27,7 @@ public class ProgressNoteRepositoryImpl implements ProgressNoteRepository {
     public List<ProgressNote> getAll() {
         return jpaProgressNoteRepository.findAll().stream()
                 .map(progressNoteEntityMapperImpl::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -60,6 +59,6 @@ public class ProgressNoteRepositoryImpl implements ProgressNoteRepository {
     public List<ProgressNote> findByUserId(Long userId) {
         return jpaProgressNoteRepository.findByUserId(userId).stream()
                 .map(progressNoteEntityMapperImpl::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

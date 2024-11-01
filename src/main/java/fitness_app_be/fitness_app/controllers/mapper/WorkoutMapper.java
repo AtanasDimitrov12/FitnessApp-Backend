@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.stream.Collectors;
 
 @Component
 public class WorkoutMapper {
@@ -33,12 +32,12 @@ public class WorkoutMapper {
                 workoutDTO.getExercises() != null
                         ? workoutDTO.getExercises().stream()
                         .map(exerciseMapper::toDomain)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null,
                 workoutDTO.getWorkoutPlans() != null
                         ? workoutDTO.getWorkoutPlans().stream()
                         .map(workoutPlanMapper::toDomain)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null
         );
     }
@@ -56,12 +55,12 @@ public class WorkoutMapper {
                 workout.getExercises() != null
                         ? workout.getExercises().stream()
                         .map(exerciseMapper::toDto)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null,
                 workout.getWorkoutPlans() != null
                         ? workout.getWorkoutPlans().stream()
                         .map(workoutPlanMapper::domainToDto)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null
         );
     }

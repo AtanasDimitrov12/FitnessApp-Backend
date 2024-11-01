@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.stream.Collectors;
 
 @Component
 public class UserMapper {
@@ -47,12 +46,12 @@ public class UserMapper {
                 userDTO.getDiets() != null
                         ? userDTO.getDiets().stream()
                         .map(dietMapper::toDomain)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null,
                 userDTO.getNotes() != null
                         ? userDTO.getNotes().stream()
                         .map(progressNoteMapper::toDomain)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null
         );
     }
@@ -74,12 +73,12 @@ public class UserMapper {
                 user.getDiets() != null
                         ? user.getDiets().stream()
                         .map(dietMapper::domainToDto)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null,
                 user.getNotes() != null
                         ? user.getNotes().stream()
                         .map(progressNoteMapper::domainToDto)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null
         );
     }

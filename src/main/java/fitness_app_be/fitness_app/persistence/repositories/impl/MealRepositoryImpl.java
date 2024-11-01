@@ -2,7 +2,7 @@ package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.Meal;
 import fitness_app_be.fitness_app.persistence.entity.MealEntity;
-import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaMealRepository;
+import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaMealRepository;
 import fitness_app_be.fitness_app.persistence.mapper.MealEntityMapper;
 import fitness_app_be.fitness_app.persistence.repositories.MealRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,7 +27,7 @@ public class MealRepositoryImpl implements MealRepository {
     public List<Meal> getAll() {
         return jpaMealRepository.findAll().stream()
                 .map(mealEntityMapperImpl::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -60,6 +59,6 @@ public class MealRepositoryImpl implements MealRepository {
     public List<Meal> findByNameContainingIgnoreCase(String name) {
         return jpaMealRepository.findByNameContainingIgnoreCase(name).stream()
                 .map(mealEntityMapperImpl::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

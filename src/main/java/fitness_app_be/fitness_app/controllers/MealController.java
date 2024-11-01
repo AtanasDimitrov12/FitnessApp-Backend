@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/meals")
@@ -23,7 +22,7 @@ public class MealController {
     public List<MealDTO> getAllMeals() {
         return mealService.getAllMeals().stream()
                 .map(mealMapper::domainToDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @GetMapping("/{id}")

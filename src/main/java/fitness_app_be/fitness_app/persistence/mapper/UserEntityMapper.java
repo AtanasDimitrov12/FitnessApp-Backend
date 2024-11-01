@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.stream.Collectors;
 
 @Component
 @NoArgsConstructor
@@ -47,10 +46,10 @@ public class UserEntityMapper {
                 .pictureURL(userEntity.getPictureURL())
                 .workoutPlan(workoutPlanEntityMapper.toDomain(userEntity.getWorkoutPlan()))
                 .diets(userEntity.getDiets() != null
-                        ? userEntity.getDiets().stream().map(dietEntityMapper::toDomain).collect(Collectors.toList())
+                        ? userEntity.getDiets().stream().map(dietEntityMapper::toDomain).toList()
                         : null)
                 .notes(userEntity.getNotes() != null
-                        ? userEntity.getNotes().stream().map(progressNoteEntityMapperImpl::toDomain).collect(Collectors.toList())
+                        ? userEntity.getNotes().stream().map(progressNoteEntityMapperImpl::toDomain).toList()
                         : null)
                 .build();
     }
@@ -79,7 +78,7 @@ public class UserEntityMapper {
             userEntity.setDiets(
                     user.getDiets().stream()
                             .map(dietEntityMapper::toEntity)
-                            .collect(Collectors.toList())
+                            .toList()
             );
         }
 
@@ -88,7 +87,7 @@ public class UserEntityMapper {
             userEntity.setNotes(
                     user.getNotes().stream()
                             .map(progressNoteEntityMapperImpl::toEntity)
-                            .collect(Collectors.toList())
+                            .toList()
             );
         }
 

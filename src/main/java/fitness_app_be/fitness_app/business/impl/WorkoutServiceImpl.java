@@ -4,7 +4,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import fitness_app_be.fitness_app.business.WorkoutService;
 import fitness_app_be.fitness_app.domain.Workout;
-import fitness_app_be.fitness_app.exceptionHandling.WorkoutNotFoundException;
+import fitness_app_be.fitness_app.exception_handling.WorkoutNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.WorkoutRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,9 +43,20 @@ public class WorkoutServiceImpl implements WorkoutService {
         return workoutRepository.create(workout);
     }
 
+    @SuppressWarnings("unchecked")
     String uploadImageToCloudinary(File file) throws IOException {
-        Map uploadResult = cloudinary.uploader().upload(file, ObjectUtils.emptyMap());
-        return uploadResult.get("url").toString();
+        if (file == null || !file.exists()) {
+            throw new IllegalArgumentException("File must not be null and must exist.");
+        }
+
+        Map<String, Object> uploadResult = cloudinary.uploader().upload(file, ObjectUtils.emptyMap());
+
+        Object url = uploadResult.get("url");
+        if (url instanceof String urlString) {
+            return urlString;
+        } else {
+            throw new IOException("Failed to retrieve image URL from upload result.");
+        }
     }
 
     @Override
@@ -62,16 +73,19 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public Workout updateWorkout(Workout workout) {
+    public Workout updateWorkout(Workout workout, File imageFile) throws IOException {
         Workout existingWorkout = workoutRepository.getWorkoutById(workout.getId())
                 .orElseThrow(() -> new WorkoutNotFoundException("Workout with ID " + workout.getId() + " not found"));
 
+        String imageUrl = uploadImageToCloudinary(imageFile);
+        existingWorkout.setPictureURL(imageUrl);
         existingWorkout.setName(workout.getName());
         existingWorkout.setDescription(workout.getDescription());
         existingWorkout.setExercises(workout.getExercises());
 
         return workoutRepository.update(existingWorkout);
     }
+
 
     @Override
     public String saveImage(MultipartFile image) throws IOException {

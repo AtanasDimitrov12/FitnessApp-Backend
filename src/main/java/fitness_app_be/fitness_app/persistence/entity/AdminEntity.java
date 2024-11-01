@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.util.List;
 
 @Entity
 @Table(name = "trainer")
@@ -25,7 +24,7 @@ public class AdminEntity {
 
     @Column(name = "password")
     @NotNull
-    private String Password;
+    private String password;
 
 
 }

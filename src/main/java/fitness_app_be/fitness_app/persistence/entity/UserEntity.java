@@ -1,13 +1,10 @@
 package fitness_app_be.fitness_app.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -46,8 +43,8 @@ public class UserEntity {
     private WorkoutPlanEntity workoutPlan;
 
     @ManyToMany(mappedBy = "users")
-    private List<DietEntity> diets = new ArrayList<>();
+    private List<DietEntity> diets;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
-    private List<ProgressNoteEntity> notes = new ArrayList<>();
+    private List<ProgressNoteEntity> notes;
 }

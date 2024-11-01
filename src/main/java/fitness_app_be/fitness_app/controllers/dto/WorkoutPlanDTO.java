@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -12,8 +11,8 @@ import java.util.List;
 @NoArgsConstructor
 public class WorkoutPlanDTO {
     private Long id;
-    private List<UserDTO> users = new ArrayList<>();
-    private List<WorkoutDTO> workouts = new ArrayList<>();
-    private List<String> fitnessGoals = new ArrayList<>();
-    private List<String> trainingStyles = new ArrayList<>();
+    private List<UserDTO> users;
+    private List<WorkoutDTO> workouts;
+    private List<String> fitnessGoals;
+    private List<String> trainingStyles;
 }

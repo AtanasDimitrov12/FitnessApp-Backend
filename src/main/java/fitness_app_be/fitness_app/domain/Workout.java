@@ -3,7 +3,6 @@ package fitness_app_be.fitness_app.domain;
 
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -16,6 +15,6 @@ public class Workout {
     private String name;
     private String description;
     private String pictureURL;
-    private List<Exercise> exercises = new ArrayList<>();
-    private List<WorkoutPlan> workoutPlans = new ArrayList<>();
+    private List<Exercise> exercises;
+    private List<WorkoutPlan> workoutPlans;
 }

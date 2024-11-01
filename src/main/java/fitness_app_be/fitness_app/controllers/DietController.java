@@ -5,15 +5,14 @@ import fitness_app_be.fitness_app.business.DietService;
 import fitness_app_be.fitness_app.controllers.dto.DietDTO;
 import fitness_app_be.fitness_app.controllers.mapper.DietMapper;
 import fitness_app_be.fitness_app.domain.Diet;
+import fitness_app_be.fitness_app.exception_handling.JsonParsingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/diets")
@@ -22,12 +21,13 @@ public class DietController {
 
     private final DietService dietService;
     private final DietMapper dietMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper(); // Reuse ObjectMapper instance
 
     @GetMapping
     public List<DietDTO> getAllDiets() {
         return dietService.getAllDiets().stream()
                 .map(dietMapper::domainToDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @GetMapping("/{id}")
@@ -41,20 +41,12 @@ public class DietController {
             @RequestPart("diet") String dietJson,
             @RequestPart("image") MultipartFile image) {
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        DietDTO dietDTO;
-        try {
-            dietDTO = objectMapper.readValue(dietJson, DietDTO.class);
-        } catch (IOException e) {
-            throw new RuntimeException("Error parsing diet JSON", e);
-        }
-
-        File convertedFile = convertMultipartFileToFile(image);
+        DietDTO dietDTO = parseDietJson(dietJson);
         Diet diet = dietMapper.toDomain(dietDTO);
-
         Diet createdDiet = dietService.createDiet(diet);
         return dietMapper.domainToDto(createdDiet);
     }
+
 
     @PutMapping
     public DietDTO updateDiet(@RequestBody DietDTO dietDTO) {
@@ -69,13 +61,13 @@ public class DietController {
         return ResponseEntity.noContent().build();
     }
 
-    private File convertMultipartFileToFile(MultipartFile multipartFile) {
+    private DietDTO parseDietJson(String dietJson) {
         try {
-            File convFile = new File(System.getProperty("java.io.tmpdir") + "/" + multipartFile.getOriginalFilename());
-            multipartFile.transferTo(convFile);
-            return convFile;
+            return objectMapper.readValue(dietJson, DietDTO.class);
         } catch (IOException e) {
-            throw new RuntimeException("Error converting MultipartFile to File", e);
+            throw new JsonParsingException("Error parsing diet JSON", e);
         }
     }
+
+
 }

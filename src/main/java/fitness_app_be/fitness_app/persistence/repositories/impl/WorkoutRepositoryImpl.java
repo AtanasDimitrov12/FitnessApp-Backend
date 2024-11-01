@@ -2,7 +2,7 @@ package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 
 import fitness_app_be.fitness_app.domain.Workout;
-import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaWorkoutRepository;
+import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaWorkoutRepository;
 import fitness_app_be.fitness_app.persistence.mapper.WorkoutEntityMapper;
 import fitness_app_be.fitness_app.persistence.repositories.WorkoutRepository;
 import fitness_app_be.fitness_app.persistence.entity.WorkoutEntity;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,7 +28,7 @@ public class WorkoutRepositoryImpl implements WorkoutRepository {
     public List<Workout> getAll() {
         return jpaWorkoutRepository.findAll().stream()
                 .map(workoutMapper::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -62,21 +61,21 @@ public class WorkoutRepositoryImpl implements WorkoutRepository {
     public List<Workout> findByNameContainingIgnoreCase(String name) {
         return jpaWorkoutRepository.findByNameContainingIgnoreCase(name).stream()
                 .map(workoutMapper::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public List<Workout> findByExercises(String exercise) {
         return jpaWorkoutRepository.findByExercises_NameContaining(exercise).stream()
                 .map(workoutMapper::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public List<Workout> findByDescriptionContainingIgnoreCase(String keyword) {
         return jpaWorkoutRepository.findByDescriptionContainingIgnoreCase(keyword).stream()
                 .map(workoutMapper::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 }
 

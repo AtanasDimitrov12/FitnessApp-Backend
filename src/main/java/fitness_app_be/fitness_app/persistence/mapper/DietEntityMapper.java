@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.stream.Collectors;
 
 @Component
 @NoArgsConstructor
@@ -35,12 +34,12 @@ public class DietEntityMapper {
                 .meals(dietEntity.getMeals() != null
                         ? dietEntity.getMeals().stream()
                         .map(mealEntityMapperImpl::toDomain)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null)
                 .users(dietEntity.getUsers() != null
                         ? dietEntity.getUsers().stream()
                         .map(userEntityMapper::toDomain)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null)
                 .build();
     }
@@ -59,13 +58,13 @@ public class DietEntityMapper {
         if (diet.getMeals() != null) {
             dietEntity.setMeals(diet.getMeals().stream()
                     .map(mealEntityMapperImpl::toEntity)
-                    .collect(Collectors.toList()));
+                    .toList());
         }
 
         if (diet.getUsers() != null) {
             dietEntity.setUsers(diet.getUsers().stream()
                     .map(userEntityMapper::toEntity)
-                    .collect(Collectors.toList()));
+                    .toList());
         }
 
         return dietEntity;

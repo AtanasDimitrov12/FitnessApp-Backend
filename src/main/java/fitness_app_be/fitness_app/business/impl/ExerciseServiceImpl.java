@@ -2,7 +2,7 @@ package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.business.ExerciseService;
 import fitness_app_be.fitness_app.domain.Exercise;
-import fitness_app_be.fitness_app.exceptionHandling.ExerciseNotFoundException;
+import fitness_app_be.fitness_app.exception_handling.ExerciseNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.ExerciseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

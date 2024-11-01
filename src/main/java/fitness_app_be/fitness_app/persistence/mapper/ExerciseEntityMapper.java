@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.stream.Collectors;
-
 @Component
 @NoArgsConstructor
 public class ExerciseEntityMapper {
@@ -33,7 +31,7 @@ public class ExerciseEntityMapper {
                 exerciseEntity.getWorkouts() != null
                         ? exerciseEntity.getWorkouts().stream()
                         .map(workoutEntityMapper::toDomain)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null
         );
     }
@@ -54,7 +52,7 @@ public class ExerciseEntityMapper {
             exerciseEntity.setWorkouts(
                     exercise.getWorkouts().stream()
                             .map(workoutEntityMapper::toEntity)
-                            .collect(Collectors.toList())
+                            .toList()
             );
         }
 

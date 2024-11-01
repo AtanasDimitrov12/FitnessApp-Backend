@@ -4,7 +4,7 @@ import fitness_app_be.fitness_app.domain.Diet;
 import fitness_app_be.fitness_app.domain.Meal;
 import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.persistence.entity.DietEntity;
-import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaDietRepository;
+import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaDietRepository;
 import fitness_app_be.fitness_app.persistence.mapper.DietEntityMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

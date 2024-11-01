@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -15,6 +14,6 @@ public class DietDTO {
     private String name;
     private String description;
     private String pictureURL;
-    private List<UserDTO> users = new ArrayList<>();
-    private List<MealDTO> meals = new ArrayList<>();
+    private List<UserDTO> users;
+    private List<MealDTO> meals;
 }

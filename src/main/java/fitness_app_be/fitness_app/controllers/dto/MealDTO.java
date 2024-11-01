@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -17,5 +16,5 @@ public class MealDTO {
     private int protein;
     private int carbs;
     private double cookingTime;
-    private List<DietDTO> diets = new ArrayList<>();
+    private List<DietDTO> diets;
 }

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -19,7 +18,7 @@ public class UserDTO {
     private UserWorkoutPreferenceDTO workoutPreference;
     private String pictureURL;
     private WorkoutPlanDTO workoutPlan;
-    private List<DietDTO> diets = new ArrayList<>();
-    private List<ProgressNoteDTO> notes = new ArrayList<>();
+    private List<DietDTO> diets;
+    private List<ProgressNoteDTO> notes;
 }
 

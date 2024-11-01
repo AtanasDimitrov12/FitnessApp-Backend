@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/exercises")
@@ -23,7 +22,7 @@ public class ExerciseController {
     public List<ExerciseDTO> getAllExercises() {
         return exerciseService.getAllExercises().stream()
                 .map(exerciseMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @GetMapping("/{id}")

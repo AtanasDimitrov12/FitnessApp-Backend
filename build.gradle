@@ -47,8 +47,10 @@ sonarqube{
 
 	properties{
 		property "sonar.projectKey" , "FitnessApp-Backend"
+		property "sonar.projectName", "FitnessApp-Backend"
 		property "sonar.host.url" , "http://localhost:9000"
-		property "sonar.token" , "sqp_327658ef380d4902cb7c5d4b0faaf781ee0b814b"
+		//property "sonar.token" , "sqp_6f59b9a3287dd027a561c49392241b548bc95694"
+		property "sonar.token" , "sqp_b99268d55784add102b34772d3b2cd7cd0c1e6c5"
 		property "sonar.scm.disabled" , "true"
 
 	}

@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -24,7 +23,7 @@ public class UserController {
 
         return userService.getAllUsers().stream()
                 .map(userMapper::domainToDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @GetMapping("/{id}")

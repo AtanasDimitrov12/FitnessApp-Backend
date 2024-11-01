@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -36,8 +35,8 @@ public class WorkoutEntity {
             joinColumns = @JoinColumn(name = "workout_id"),
             inverseJoinColumns = @JoinColumn(name = "exercise_id")
     )
-    private List<ExerciseEntity> exercises = new ArrayList<>();
+    private List<ExerciseEntity> exercises;
 
     @ManyToMany(mappedBy = "workouts")
-    private List<WorkoutPlanEntity> workoutPlans = new ArrayList<>();
+    private List<WorkoutPlanEntity> workoutPlans;
 }

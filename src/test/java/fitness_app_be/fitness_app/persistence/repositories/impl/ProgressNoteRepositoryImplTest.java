@@ -2,7 +2,7 @@ package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.*;
 import fitness_app_be.fitness_app.persistence.entity.ProgressNoteEntity;
-import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaProgressNoteRepository;
+import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaProgressNoteRepository;
 import fitness_app_be.fitness_app.persistence.mapper.ProgressNoteEntityMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

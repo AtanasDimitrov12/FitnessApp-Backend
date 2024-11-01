@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.stream.Collectors;
 
 @Component
 @NoArgsConstructor
@@ -34,12 +33,12 @@ public class WorkoutEntityMapper {
                 workoutEntity.getExercises() != null
                         ? workoutEntity.getExercises().stream()
                         .map(exerciseEntityMapper::toDomain)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null,
                 workoutEntity.getWorkoutPlans() != null
                         ? workoutEntity.getWorkoutPlans().stream()
                         .map(workoutPlanEntityMapper::toDomain)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null
         );
     }
@@ -58,13 +57,13 @@ public class WorkoutEntityMapper {
         if (workout.getExercises() != null) {
             workoutEntity.setExercises(workout.getExercises().stream()
                     .map(exerciseEntityMapper::toEntity)
-                    .collect(Collectors.toList()));
+                    .toList());
         }
 
         if (workout.getWorkoutPlans() != null) {
             workoutEntity.setWorkoutPlans(workout.getWorkoutPlans().stream()
                     .map(workoutPlanEntityMapper::toEntity)
-                    .collect(Collectors.toList()));
+                    .toList());
         }
 
         return workoutEntity;

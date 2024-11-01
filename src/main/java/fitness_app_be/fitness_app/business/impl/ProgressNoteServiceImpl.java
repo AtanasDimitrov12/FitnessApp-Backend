@@ -2,7 +2,7 @@ package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.business.ProgressNoteService;
 import fitness_app_be.fitness_app.domain.ProgressNote;
-import fitness_app_be.fitness_app.exceptionHandling.ProgressNoteNotFoundException;
+import fitness_app_be.fitness_app.exception_handling.ProgressNoteNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.ProgressNoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

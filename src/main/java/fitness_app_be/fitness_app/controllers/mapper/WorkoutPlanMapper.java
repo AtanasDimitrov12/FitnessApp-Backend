@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 @Component
 public class WorkoutPlanMapper {
@@ -31,12 +30,12 @@ public class WorkoutPlanMapper {
                 workoutPlanDTO.getUsers() != null
                         ? workoutPlanDTO.getUsers().stream()
                         .map(userMapper::toDomain)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null,
                 workoutPlanDTO.getWorkouts() != null
                         ? workoutPlanDTO.getWorkouts().stream()
                         .map(workoutMapper::toDomain)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null,
                 workoutPlanDTO.getFitnessGoals() != null
                         ? new ArrayList<>(workoutPlanDTO.getFitnessGoals())
@@ -57,12 +56,12 @@ public class WorkoutPlanMapper {
                 workoutPlan.getUsers() != null
                         ? workoutPlan.getUsers().stream()
                         .map(userMapper::domainToDto)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null,
                 workoutPlan.getWorkouts() != null
                         ? workoutPlan.getWorkouts().stream()
                         .map(workoutMapper::domainToDto)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null,
                 workoutPlan.getFitnessGoals() != null
                         ? new ArrayList<>(workoutPlan.getFitnessGoals())

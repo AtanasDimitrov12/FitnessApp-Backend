@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -36,7 +35,7 @@ public class DietEntity {
             joinColumns = @JoinColumn(name = "diet_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private List<UserEntity> users = new ArrayList<>();
+    private List<UserEntity> users;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
@@ -44,6 +43,6 @@ public class DietEntity {
             joinColumns = @JoinColumn(name = "diet_id"),
             inverseJoinColumns = @JoinColumn(name = "meal_id")
     )
-    private List<MealEntity> meals = new ArrayList<>();
+    private List<MealEntity> meals;
 
 }

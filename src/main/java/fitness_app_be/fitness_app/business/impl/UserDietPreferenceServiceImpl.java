@@ -2,12 +2,11 @@ package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.business.UserDietPreferenceService;
 import fitness_app_be.fitness_app.domain.UserDietPreference;
-import fitness_app_be.fitness_app.exceptionHandling.UserDietPreferenceNotFoundException;
+import fitness_app_be.fitness_app.exception_handling.UserDietPreferenceNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.UserDietPreferenceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

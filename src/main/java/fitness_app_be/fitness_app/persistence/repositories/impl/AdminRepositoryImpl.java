@@ -2,7 +2,7 @@ package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.Admin;
 import fitness_app_be.fitness_app.persistence.entity.AdminEntity;
-import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaAdminRepository;
+import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaAdminRepository;
 import fitness_app_be.fitness_app.persistence.mapper.AdminEntityMapper;
 import fitness_app_be.fitness_app.persistence.repositories.AdminRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,7 +27,7 @@ public class AdminRepositoryImpl implements AdminRepository {
     public List<Admin> getAll() {
         return jpaAdminRepository.findAll().stream()
                 .map(adminEntityMapper::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

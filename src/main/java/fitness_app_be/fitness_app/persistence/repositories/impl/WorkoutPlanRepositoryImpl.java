@@ -2,8 +2,9 @@ package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 
 import fitness_app_be.fitness_app.domain.WorkoutPlan;
+import fitness_app_be.fitness_app.exception_handling.WorkoutPlanNotFoundException;
 import fitness_app_be.fitness_app.persistence.entity.WorkoutPlanEntity;
-import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaWorkoutPlanRepository;
+import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaWorkoutPlanRepository;
 import fitness_app_be.fitness_app.persistence.mapper.WorkoutPlanEntityMapper;
 import fitness_app_be.fitness_app.persistence.repositories.WorkoutPlanRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -30,7 +30,7 @@ public class WorkoutPlanRepositoryImpl implements WorkoutPlanRepository {
     public List<WorkoutPlan> getAll() {
         return jpaWorkoutPlanRepository.findAll().stream()
                 .map(workoutPlanEntityMapper::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -42,7 +42,7 @@ public class WorkoutPlanRepositoryImpl implements WorkoutPlanRepository {
     @Override
     public WorkoutPlan update(WorkoutPlan workoutPlan) {
         if (!exists(workoutPlan.getId())) {
-            throw new IllegalArgumentException("Workout plan not found");
+            throw new WorkoutPlanNotFoundException(workoutPlan.getId());
         }
         WorkoutPlanEntity updatedEntity = jpaWorkoutPlanRepository.save(workoutPlanEntityMapper.toEntity(workoutPlan));
         return workoutPlanEntityMapper.toDomain(updatedEntity);
@@ -56,7 +56,7 @@ public class WorkoutPlanRepositoryImpl implements WorkoutPlanRepository {
     @Override
     public Optional<WorkoutPlan> getWorkoutPlanById(long workoutPlanId) {
         if (!exists(workoutPlanId)) {
-            throw new IllegalArgumentException("Workout plan not found");
+            throw new WorkoutPlanNotFoundException(workoutPlanId);
         }
         return jpaWorkoutPlanRepository.findById(workoutPlanId)
                 .map(workoutPlanEntityMapper::toDomain);
@@ -66,7 +66,7 @@ public class WorkoutPlanRepositoryImpl implements WorkoutPlanRepository {
     @Override
     public Optional<WorkoutPlan> getWorkoutPlanByUserId(long userId) {
         if (!jpaWorkoutPlanRepository.existsByUsers_Id(userId)) {
-            throw new IllegalArgumentException("Workout plan not found");
+            throw new WorkoutPlanNotFoundException("Workout plan not found");
         }
         return jpaWorkoutPlanRepository.findByUsers_Id(userId)
                 .map(workoutPlanEntityMapper::toDomain);

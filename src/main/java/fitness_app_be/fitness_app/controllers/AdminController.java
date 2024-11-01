@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/trainers")
@@ -25,7 +24,7 @@ public class AdminController {
 
         return adminService.getAllAdmins().stream()
                 .map(adminMapper::domainToDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @GetMapping("/{id}")

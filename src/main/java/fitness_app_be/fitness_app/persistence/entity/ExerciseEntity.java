@@ -3,7 +3,6 @@ package fitness_app_be.fitness_app.persistence.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,5 +28,5 @@ public class ExerciseEntity {
     private int reps;
 
     @ManyToMany(mappedBy = "exercises")
-    private List<WorkoutEntity> workouts = new ArrayList<>();
+    private List<WorkoutEntity> workouts;
 }

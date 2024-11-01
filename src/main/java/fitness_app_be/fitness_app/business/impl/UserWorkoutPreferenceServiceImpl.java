@@ -2,7 +2,7 @@ package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.business.UserWorkoutPreferenceService;
 import fitness_app_be.fitness_app.domain.UserWorkoutPreference;
-import fitness_app_be.fitness_app.exceptionHandling.UserWorkoutPreferenceNotFoundException;
+import fitness_app_be.fitness_app.exception_handling.UserWorkoutPreferenceNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.UserWorkoutPreferenceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
 package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.domain.*;
-import fitness_app_be.fitness_app.exceptionHandling.UserNotFoundException;
+import fitness_app_be.fitness_app.exception_handling.UserNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

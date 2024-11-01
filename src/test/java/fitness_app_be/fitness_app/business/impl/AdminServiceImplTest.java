@@ -1,7 +1,7 @@
 package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.domain.Admin;
-import fitness_app_be.fitness_app.exceptionHandling.AdminNotFoundException;
+import fitness_app_be.fitness_app.exception_handling.AdminNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.AdminRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

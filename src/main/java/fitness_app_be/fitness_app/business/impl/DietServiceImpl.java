@@ -2,7 +2,7 @@ package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.business.DietService;
 import fitness_app_be.fitness_app.domain.Diet;
-import fitness_app_be.fitness_app.exceptionHandling.DietNotFoundException;
+import fitness_app_be.fitness_app.exception_handling.DietNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.DietRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

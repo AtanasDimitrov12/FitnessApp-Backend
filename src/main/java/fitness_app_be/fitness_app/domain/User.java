@@ -2,7 +2,7 @@ package fitness_app_be.fitness_app.domain;
 
 import lombok.*;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Data
@@ -19,6 +19,6 @@ public class User {
     private UserWorkoutPreference workoutPreference;
     private String pictureURL;
     private WorkoutPlan workoutPlan;
-    private List<Diet> diets = new ArrayList<>();
-    private List<ProgressNote> notes = new ArrayList<>();
+    private List<Diet> diets;
+    private List<ProgressNote> notes;
 }

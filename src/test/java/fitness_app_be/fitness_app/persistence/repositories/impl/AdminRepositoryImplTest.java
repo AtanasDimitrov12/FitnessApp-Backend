@@ -2,7 +2,7 @@ package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.Admin;
 import fitness_app_be.fitness_app.persistence.entity.AdminEntity;
-import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaAdminRepository;
+import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaAdminRepository;
 import fitness_app_be.fitness_app.persistence.mapper.AdminEntityMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

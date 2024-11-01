@@ -1,10 +1,11 @@
 package fitness_app_be.fitness_app.business.impl;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.Uploader;
 import fitness_app_be.fitness_app.domain.Exercise;
 import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.domain.WorkoutPlan;
-import fitness_app_be.fitness_app.exceptionHandling.WorkoutNotFoundException;
+import fitness_app_be.fitness_app.exception_handling.WorkoutNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.WorkoutRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,6 +31,9 @@ class WorkoutServiceImplTest {
     @Mock
     private Cloudinary cloudinary;
 
+    @Mock
+    private Uploader uploader;
+
 
     @InjectMocks
     private WorkoutServiceImpl workoutService;
@@ -35,12 +41,18 @@ class WorkoutServiceImplTest {
     private Workout workout;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         List<Exercise> exercises = new ArrayList<>();
         List<WorkoutPlan> plans = new ArrayList<>();
         workout = new Workout(1L, "Test Workout", "Description", "http://example.com/image.jpg", exercises, plans);
 
+        // Use lenient() to prevent unnecessary stubbing exception
+        lenient().when(cloudinary.uploader()).thenReturn(uploader);
+        Map<String, Object> uploadResult = new HashMap<>();
+        uploadResult.put("url", "http://example.com/image.jpg");
+        lenient().when(uploader.upload(any(File.class), anyMap())).thenReturn(uploadResult);
     }
+
 
     @Test
     void getAllWorkouts_ShouldReturnListOfWorkouts() {
@@ -56,13 +68,10 @@ class WorkoutServiceImplTest {
 
     @Test
     void getWorkoutById_ShouldReturnWorkout_WhenWorkoutExists() {
-        // Arrange: Stub the repository's response to return an Optional with the expected workout
         when(workoutRepository.getWorkoutById(anyLong())).thenReturn(Optional.of(workout));
 
-        // Act: Call the service method to get the workout by ID
         Workout foundWorkout = workoutService.getWorkoutById(1L);
 
-        // Assert: Verify the result and interaction with the mock repository
         assertNotNull(foundWorkout);
         assertEquals(workout, foundWorkout);
         verify(workoutRepository, times(1)).getWorkoutById(1L);
@@ -111,18 +120,23 @@ class WorkoutServiceImplTest {
     }
 
     @Test
-    void updateWorkout_ShouldReturnUpdatedWorkout_WhenWorkoutExists() {
+    void updateWorkout_ShouldReturnUpdatedWorkout_WhenWorkoutExists() throws IOException {
+        // Arrange
         when(workoutRepository.getWorkoutById(1L)).thenReturn(Optional.of(workout));
         when(workoutRepository.update(workout)).thenReturn(workout);
 
-        Workout updatedWorkout = workoutService.updateWorkout(workout);
+        // Create a temporary file to use as the imageFile
+        File tempFile = File.createTempFile("test-image", ".jpg");
+        tempFile.deleteOnExit(); // Ensure the temp file is deleted after the test
 
+        // Act
+        Workout updatedWorkout = workoutService.updateWorkout(workout, tempFile);
+
+        // Assert
         assertNotNull(updatedWorkout);
         assertEquals(workout, updatedWorkout);
         verify(workoutRepository, times(1)).getWorkoutById(1L);
         verify(workoutRepository, times(1)).update(workout);
     }
-
-
 
 }

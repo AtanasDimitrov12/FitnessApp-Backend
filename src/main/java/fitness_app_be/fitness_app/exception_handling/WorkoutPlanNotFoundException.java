@@ -1,4 +1,4 @@
-package fitness_app_be.fitness_app.exceptionHandling;
+package fitness_app_be.fitness_app.exception_handling;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

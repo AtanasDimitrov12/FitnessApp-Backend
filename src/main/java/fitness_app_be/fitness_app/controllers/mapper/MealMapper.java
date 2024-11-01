@@ -2,13 +2,11 @@ package fitness_app_be.fitness_app.controllers.mapper;
 
 import fitness_app_be.fitness_app.controllers.dto.MealDTO;
 import fitness_app_be.fitness_app.domain.Meal;
-import fitness_app_be.fitness_app.domain.Diet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 @Component
 public class MealMapper {
@@ -35,7 +33,7 @@ public class MealMapper {
                 mealDTO.getDiets() != null
                         ? mealDTO.getDiets().stream()
                         .map(dietMapper::toDomain)
-                        .collect(Collectors.toList())
+                        .toList()
                         : new ArrayList<>()
         );
     }
@@ -55,7 +53,7 @@ public class MealMapper {
                 meal.getDiets() != null
                         ? meal.getDiets().stream()
                         .map(dietMapper::domainToDto)
-                        .collect(Collectors.toList())
+                        .toList()
                         : new ArrayList<>()
         );
     }

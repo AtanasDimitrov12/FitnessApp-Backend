@@ -2,7 +2,7 @@ package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.Diet;
 import fitness_app_be.fitness_app.persistence.entity.DietEntity;
-import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaDietRepository;
+import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaDietRepository;
 import fitness_app_be.fitness_app.persistence.mapper.DietEntityMapper;
 import fitness_app_be.fitness_app.persistence.repositories.DietRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,7 +27,7 @@ public class DietRepositoryImpl implements DietRepository {
     public List<Diet> getAll() {
         return jpaDietRepository.findAll().stream()
                 .map(dietEntityMapperImpl::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -66,6 +65,6 @@ public class DietRepositoryImpl implements DietRepository {
     public List<Diet> findByDescriptionContainingIgnoreCase(String description) {
         return jpaDietRepository.findByDescriptionContainingIgnoreCase(description).stream()
                 .map(dietEntityMapperImpl::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

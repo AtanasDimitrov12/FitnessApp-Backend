@@ -3,17 +3,21 @@ package fitness_app_be.fitness_app.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fitness_app_be.fitness_app.business.WorkoutService;
 import fitness_app_be.fitness_app.controllers.dto.WorkoutDTO;
-import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.controllers.mapper.WorkoutMapper;
+import fitness_app_be.fitness_app.domain.Workout;
+import fitness_app_be.fitness_app.exception_handling.CreationException;
+import fitness_app_be.fitness_app.exception_handling.FileConversionException;
+import fitness_app_be.fitness_app.exception_handling.JsonParsingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/workouts")
@@ -22,12 +26,13 @@ public class WorkoutController {
 
     private final WorkoutService workoutService;
     private final WorkoutMapper workoutMapper;
+    private final ObjectMapper objectMapper;
 
     @GetMapping
     public List<WorkoutDTO> getAllWorkouts() {
         return workoutService.getAllWorkouts().stream()
                 .map(workoutMapper::domainToDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @GetMapping("/{id}")
@@ -41,46 +46,33 @@ public class WorkoutController {
             @RequestPart("workout") String workoutJson,
             @RequestPart("image") MultipartFile image) {
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        WorkoutDTO workoutDTO;
-        try {
-            workoutDTO = objectMapper.readValue(workoutJson, WorkoutDTO.class);
-        } catch (IOException e) {
-            throw new RuntimeException("Error while parsing workout JSON", e);
-        }
-
-        File convertedFile = convertMultipartFileToFile(image);
-
+        WorkoutDTO workoutDTO = parseWorkoutJson(workoutJson);
         Workout workout = workoutMapper.toDomain(workoutDTO);
 
         try {
-
-            Workout createdWorkout = workoutService.createWorkout(workout, convertedFile);
+            File file = convertMultipartFileToFile(image);
+            Workout createdWorkout = workoutService.createWorkout(workout, file);
             return workoutMapper.domainToDto(createdWorkout);
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error while creating workout", e);
+            throw new CreationException("Error while creating workout", e);
         }
     }
-
 
     @PutMapping(consumes = "multipart/form-data")
     public WorkoutDTO updateWorkout(
             @RequestPart("workout") WorkoutDTO workoutDTO,
             @RequestPart(value = "image", required = false) MultipartFile image) {
 
-        if (image != null) {
-            File convertedFile = convertMultipartFileToFile(image);
-            try {
-                workoutService.saveImage(image);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
 
-        Workout workout = workoutMapper.toDomain(workoutDTO);
-        Workout updatedWorkout = workoutService.updateWorkout(workout);
-        return workoutMapper.domainToDto(updatedWorkout);
+            try {
+                File file = convertMultipartFileToFile(image);
+                Workout workout = workoutMapper.toDomain(workoutDTO);
+                Workout updatedWorkout = workoutService.updateWorkout(workout, file);
+                return workoutMapper.domainToDto(updatedWorkout);
+            } catch (IOException e) {
+                throw new CreationException("Error while saving workout image", e);
+            }
+
     }
 
     @DeleteMapping("/{id}")
@@ -89,13 +81,25 @@ public class WorkoutController {
         return ResponseEntity.noContent().build();
     }
 
-    private File convertMultipartFileToFile(MultipartFile multipartFile) {
+    private WorkoutDTO parseWorkoutJson(String workoutJson) {
         try {
-            File convFile = new File(System.getProperty("java.io.tmpdir") + "/" + multipartFile.getOriginalFilename());
-            multipartFile.transferTo(convFile);
-            return convFile;
+            return objectMapper.readValue(workoutJson, WorkoutDTO.class);
         } catch (IOException e) {
-            throw new RuntimeException("Error converting MultipartFile to File", e);
+            throw new JsonParsingException("Error while parsing workout JSON", e);
         }
     }
+
+    private File convertMultipartFileToFile(MultipartFile multipartFile) {
+        String filename = UUID.randomUUID() + "_" + multipartFile.getOriginalFilename();
+        File convFile = new File(System.getProperty("java.io.tmpdir") + File.separator + filename);
+
+        try (FileOutputStream fos = new FileOutputStream(convFile)) {
+            fos.write(multipartFile.getBytes());
+        } catch (IOException e) {
+            throw new FileConversionException("Error converting MultipartFile to File", e);
+        }
+        return convFile;
+    }
+
+
 }

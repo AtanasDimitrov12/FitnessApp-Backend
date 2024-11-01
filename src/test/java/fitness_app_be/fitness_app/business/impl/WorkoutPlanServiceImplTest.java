@@ -3,7 +3,7 @@ package fitness_app_be.fitness_app.business.impl;
 import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.domain.WorkoutPlan;
-import fitness_app_be.fitness_app.exceptionHandling.WorkoutPlanNotFoundException;
+import fitness_app_be.fitness_app.exception_handling.WorkoutPlanNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.WorkoutPlanRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

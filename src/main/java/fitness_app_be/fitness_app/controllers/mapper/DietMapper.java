@@ -2,14 +2,11 @@ package fitness_app_be.fitness_app.controllers.mapper;
 
 import fitness_app_be.fitness_app.controllers.dto.DietDTO;
 import fitness_app_be.fitness_app.domain.Diet;
-import fitness_app_be.fitness_app.domain.Meal;
-import fitness_app_be.fitness_app.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 @Component
 public class DietMapper {
@@ -36,12 +33,12 @@ public class DietMapper {
                 dietDTO.getUsers() != null
                         ? dietDTO.getUsers().stream()
                         .map(userMapper::toDomain)
-                        .collect(Collectors.toList())
+                        .toList()
                         : new ArrayList<>(),
                 dietDTO.getMeals() != null
                         ? dietDTO.getMeals().stream()
                         .map(mealMapper::toDomain)
-                        .collect(Collectors.toList())
+                        .toList()
                         : new ArrayList<>()
         );
     }
@@ -59,12 +56,12 @@ public class DietMapper {
                 diet.getUsers() != null
                         ? diet.getUsers().stream()
                         .map(userMapper::domainToDto)
-                        .collect(Collectors.toList())
+                        .toList()
                         : new ArrayList<>(),
                 diet.getMeals() != null
                         ? diet.getMeals().stream()
                         .map(mealMapper::domainToDto)
-                        .collect(Collectors.toList())
+                        .toList()
                         : new ArrayList<>()
         );
     }

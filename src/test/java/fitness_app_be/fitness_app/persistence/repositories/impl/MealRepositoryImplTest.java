@@ -3,7 +3,7 @@ package fitness_app_be.fitness_app.persistence.repositories.impl;
 import fitness_app_be.fitness_app.domain.Diet;
 import fitness_app_be.fitness_app.domain.Meal;
 import fitness_app_be.fitness_app.persistence.entity.MealEntity;
-import fitness_app_be.fitness_app.persistence.jpaRepositories.JpaMealRepository;
+import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaMealRepository;
 import fitness_app_be.fitness_app.persistence.mapper.MealEntityMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

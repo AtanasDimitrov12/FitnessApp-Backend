@@ -1,7 +1,7 @@
 package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.domain.UserDietPreference;
-import fitness_app_be.fitness_app.exceptionHandling.UserDietPreferenceNotFoundException;
+import fitness_app_be.fitness_app.exception_handling.UserDietPreferenceNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.UserDietPreferenceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

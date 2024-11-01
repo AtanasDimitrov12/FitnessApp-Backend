@@ -4,8 +4,6 @@ import fitness_app_be.fitness_app.domain.UserWorkoutPreference;
 import fitness_app_be.fitness_app.persistence.entity.UserWorkoutPreferenceEntity;
 import fitness_app_be.fitness_app.persistence.entity.UserEntity;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component

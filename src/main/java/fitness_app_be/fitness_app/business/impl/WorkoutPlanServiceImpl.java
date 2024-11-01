@@ -2,7 +2,7 @@ package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.business.WorkoutPlanService;
 import fitness_app_be.fitness_app.domain.WorkoutPlan;
-import fitness_app_be.fitness_app.exceptionHandling.WorkoutPlanNotFoundException;
+import fitness_app_be.fitness_app.exception_handling.WorkoutPlanNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.WorkoutPlanRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
     @Override
     public WorkoutPlan getWorkoutPlanByUserId(Long userId) {
         return workoutPlanRepository.getWorkoutPlanByUserId(userId)
-                .orElseThrow(() -> new WorkoutPlanNotFoundException("Workout plan for user ID " + userId + " not found"));
+                .orElseThrow(() -> new WorkoutPlanNotFoundException(userId));
     }
 
     @Override
@@ -40,7 +40,7 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
     @Override
     public void deleteWorkoutPlan(Long id) {
         if (!workoutPlanRepository.exists(id)) {
-            throw new WorkoutPlanNotFoundException("Workout plan with ID " + id + " not found");
+            throw new WorkoutPlanNotFoundException(id);
         }
         workoutPlanRepository.delete(id);
     }
@@ -48,7 +48,7 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
     @Override
     public WorkoutPlan updateWorkoutPlan(WorkoutPlan workoutPlan) {
         WorkoutPlan existingPlan = workoutPlanRepository.getWorkoutPlanById(workoutPlan.getId())
-                .orElseThrow(() -> new WorkoutPlanNotFoundException("Workout plan with ID " + workoutPlan.getId() + " not found"));
+                .orElseThrow(() -> new WorkoutPlanNotFoundException(workoutPlan.getId()));
 
         existingPlan.setWorkouts(workoutPlan.getWorkouts());
         return workoutPlanRepository.update(existingPlan);
