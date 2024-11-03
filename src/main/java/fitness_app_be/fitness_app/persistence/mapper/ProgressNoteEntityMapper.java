@@ -18,7 +18,7 @@ public class ProgressNoteEntityMapper {
                 progressNoteEntity.getUser().getId(),
                 progressNoteEntity.getWeight(),
                 progressNoteEntity.getNote(),
-                progressNoteEntity.getPictureURL()
+                progressNoteEntity.getDate()
         );
     }
 
@@ -31,7 +31,7 @@ public class ProgressNoteEntityMapper {
         progressNoteEntity.setId(progressNote.getId());
         progressNoteEntity.setWeight(progressNote.getWeight());
         progressNoteEntity.setNote(progressNote.getNote());
-        progressNoteEntity.setPictureURL(progressNote.getPictureURL());
+        progressNoteEntity.setDate(progressNote.getDate());
 
         return progressNoteEntity;
     }

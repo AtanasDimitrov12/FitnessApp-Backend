@@ -46,7 +46,7 @@ public class ProgressNoteServiceImpl implements ProgressNoteService {
 
         existingNote.setWeight(progressNote.getWeight());
         existingNote.setNote(progressNote.getNote());
-        existingNote.setPictureURL(progressNote.getPictureURL());
+        existingNote.setDate(progressNote.getDate());
 
         return progressNoteRepository.update(existingNote);
     }

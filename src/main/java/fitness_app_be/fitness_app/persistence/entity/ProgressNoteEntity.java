@@ -3,6 +3,8 @@ package fitness_app_be.fitness_app.persistence.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "progress_note")
 @Data
@@ -26,6 +28,6 @@ public class ProgressNoteEntity {
     @Column(name = "note")
     private String note;
 
-    @Column(name = "picture_url")
-    private String pictureURL;
+    @Column(name = "date")
+    private LocalDate date;
 }

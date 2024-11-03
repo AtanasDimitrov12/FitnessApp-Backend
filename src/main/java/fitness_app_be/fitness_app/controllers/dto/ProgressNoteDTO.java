@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,5 +14,5 @@ public class ProgressNoteDTO {
     private Long userId;
     private double weight;
     private String note;
-    private String pictureURL;
+    private LocalDate date;
 }

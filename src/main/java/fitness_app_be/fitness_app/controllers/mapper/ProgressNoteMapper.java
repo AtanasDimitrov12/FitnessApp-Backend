@@ -10,12 +10,12 @@ public class ProgressNoteMapper {
     public ProgressNote toDomain(ProgressNoteDTO progressNoteDTO) {
         return new ProgressNote(progressNoteDTO.getId(), progressNoteDTO.getUserId(),
                 progressNoteDTO.getWeight(), progressNoteDTO.getNote(),
-                progressNoteDTO.getPictureURL());
+                progressNoteDTO.getDate());
     }
 
     public ProgressNoteDTO domainToDto(ProgressNote progressNote) {
         return new ProgressNoteDTO(progressNote.getId(), progressNote.getUserId(),
                 progressNote.getWeight(), progressNote.getNote(),
-                progressNote.getPictureURL());
+                progressNote.getDate());
     }
 }
