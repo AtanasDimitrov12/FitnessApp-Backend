@@ -14,6 +14,7 @@ public class ExerciseDTO {
     private String name;
     private int sets;
     private int reps;
+    private String muscleGroup;
     private List<WorkoutDTO> workouts;
 }
 

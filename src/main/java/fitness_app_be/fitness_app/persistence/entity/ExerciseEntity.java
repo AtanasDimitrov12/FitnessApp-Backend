@@ -27,6 +27,9 @@ public class ExerciseEntity {
     @Column(name = "reps", nullable = false)
     private int reps;
 
+    @Column(name = "muscleGroup", nullable = false)
+    private String muscleGroup;
+
     @ManyToMany(mappedBy = "exercises")
     private List<WorkoutEntity> workouts;
 }
