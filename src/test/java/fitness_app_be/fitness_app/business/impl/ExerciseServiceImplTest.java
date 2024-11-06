@@ -32,7 +32,7 @@ class ExerciseServiceImplTest {
     @BeforeEach
     void setUp() {
         List<Workout> workouts = new ArrayList<>();
-        exercise = new Exercise(1L, "Push-up", 3, 15, workouts);
+        exercise = new Exercise(1L, "Push-up", 3, 15, "Back", workouts);
     }
 
     @Test

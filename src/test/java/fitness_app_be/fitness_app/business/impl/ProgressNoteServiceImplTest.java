@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +30,7 @@ class ProgressNoteServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        progressNote = new ProgressNote(1L, 1L, 75.5, "Weekly progress", "http://example.com/image.jpg");
+        progressNote = new ProgressNote(1L, 1L, 75.5, "Weekly progress", LocalDate.now());
 
     }
 
@@ -95,7 +96,7 @@ class ProgressNoteServiceImplTest {
 
     @Test
     void updateProgressNote_ShouldReturnUpdatedProgressNote_WhenNoteExists() {
-        ProgressNote updatedNote = new ProgressNote(1L, 1L, 76, "Updated progress", "http://example.com/updated_image.jpg");
+        ProgressNote updatedNote = new ProgressNote(1L, 1L, 76, "Updated progress", LocalDate.now());
 
 
         when(progressNoteRepository.getProgressNoteById(1L)).thenReturn(Optional.of(progressNote));
@@ -112,7 +113,7 @@ class ProgressNoteServiceImplTest {
 
     @Test
     void updateProgressNote_ShouldThrowException_WhenNoteNotFound() {
-        ProgressNote updatedNote = new ProgressNote(1L, 1L, 76, "Updated progress", "http://example.com/updated_image.jpg");
+        ProgressNote updatedNote = new ProgressNote(1L, 1L, 76, "Updated progress", LocalDate.now());
 
 
         when(progressNoteRepository.getProgressNoteById(1L)).thenReturn(Optional.empty());

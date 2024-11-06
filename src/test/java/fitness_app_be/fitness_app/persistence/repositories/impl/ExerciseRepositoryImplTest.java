@@ -34,8 +34,8 @@ class ExerciseRepositoryImplTest {
 
     @BeforeEach
     void setUp() {
-        exercise = new Exercise(1L, "Push Up", 3, 12, List.of());
-        exerciseEntity = new ExerciseEntity(1L, "Push Up", 3, 12, List.of());
+        exercise = new Exercise(1L, "Push Up", 3, 12, "Back",  List.of());
+        exerciseEntity = new ExerciseEntity(1L, "Push Up", 3, 12, "Back", List.of());
     }
 
     @Test

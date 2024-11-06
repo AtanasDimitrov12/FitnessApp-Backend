@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,8 +35,8 @@ class ProgressNoteRepositoryImplTest {
 
     @BeforeEach
     void setUp() {
-        progressNote = new ProgressNote(1L, 101L, 85, "Weekly progress", "pictureURL");
-        progressNoteEntity = new ProgressNoteEntity(1L, null, 85, "Weekly progress", "pictureURL"); // Simplified UserEntity for brevity
+        progressNote = new ProgressNote(1L, 101L, 85, "Weekly progress", LocalDate.now());
+        progressNoteEntity = new ProgressNoteEntity(1L, null, 85, "Weekly progress", LocalDate.now()); // Simplified UserEntity for brevity
     }
 
 
