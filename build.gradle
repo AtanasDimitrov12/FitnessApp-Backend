@@ -24,39 +24,34 @@ repositories {
 	mavenCentral()
 }
 
+
 dependencies {
 	implementation 'com.cloudinary:cloudinary-http44:1.27.0'
-
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
 
-	implementation 'com.h2database:h2' // Or MySQL dependency if you're using MySQL
+	// MySQL connector
+	implementation 'mysql:mysql-connector-java:8.0.33'
 
 	implementation 'org.projectlombok:lombok:1.18.28'
 	annotationProcessor 'org.projectlombok:lombok:1.18.28'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
 	testImplementation 'org.mockito:mockito-junit-jupiter:5.3.1'
 }
 
-sonarqube{
-
-	properties{
-		property "sonar.projectKey" , "FitnessApp-Backend"
+sonarqube {
+	properties {
+		property "sonar.projectKey", "FitnessApp-Backend"
 		property "sonar.projectName", "FitnessApp-Backend"
-		property "sonar.host.url" , "http://localhost:9000"
-		//property "sonar.token" , "sqp_6f59b9a3287dd027a561c49392241b548bc95694"
-		property "sonar.token" , "sqp_b99268d55784add102b34772d3b2cd7cd0c1e6c5"
-		property "sonar.scm.disabled" , "true"
-
+		property "sonar.host.url", "http://localhost:9000"
+		property "sonar.token", "sqp_b99268d55784add102b34772d3b2cd7cd0c1e6c5"
+		property "sonar.scm.disabled", "true"
 	}
 }
-
-
 
 tasks.named('test') {
 	useJUnitPlatform()
