@@ -45,10 +45,11 @@ dependencies {
 
 sonarqube {
 	properties {
-		property "sonar.projectKey", "FitnessApp-Backend"
-		property "sonar.projectName", "FitnessApp-Backend"
+		property "sonar.projectKey", "FitnessApp-Backend2"
+		property "sonar.projectName", "FitnessApp-Backend2"
 		property "sonar.host.url", "http://localhost:9000"
-		property "sonar.token", "sqp_b99268d55784add102b34772d3b2cd7cd0c1e6c5"
+		//property "sonar.token", "sqp_b99268d55784add102b34772d3b2cd7cd0c1e6c5"
+		property "sonar.token" , "sqp_927663c06cbab3f4dbe27871abc6a1ae654bf865"
 		property "sonar.scm.disabled", "true"
 	}
 }
