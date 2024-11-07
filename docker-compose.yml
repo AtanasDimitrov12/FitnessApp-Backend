@@ -6,11 +6,35 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-
     ports:
       - "8090:8080"
-
     environment:
-      JAVA_OPTS: ""
-
+      SPRING_DATASOURCE_URL: jdbc:mysql://fitness-app-db:3306/fitness_app_db
+    networks:
+      - fitness-network
     restart: unless-stopped
+
+  fitness-app-db:
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: fitness_app_db
+      MYSQL_ROOT_PASSWORD: FontysPass12#
+    ports:
+      - "3307:3306"
+    networks:
+      - fitness-network
+    restart: unless-stopped
+
+  sonarqube:
+    image: sonarqube:latest
+    ports:
+      - "9000:9000"
+    networks:
+      - fitness-network
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    restart: unless-stopped
+
+networks:
+  fitness-network:
+    driver: bridge
