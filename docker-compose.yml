@@ -20,7 +20,7 @@ services:
       MYSQL_DATABASE: fitness_app_db
       MYSQL_ROOT_PASSWORD: FontysPass12#
     ports:
-      - "3307:3306"
+      - "3308:3306"  # Changed from 3307 to 3308
     networks:
       - fitness-network
     restart: unless-stopped
