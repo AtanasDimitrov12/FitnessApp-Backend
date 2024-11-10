@@ -33,7 +33,18 @@ public class WorkoutRepositoryImpl implements WorkoutRepository {
 
     @Override
     public Workout create(Workout workout) {
-        WorkoutEntity savedEntity = jpaWorkoutRepository.save(workoutMapper.toEntity(workout));
+        System.out.println("Workout entity on save1: " + workout);
+        WorkoutEntity entity = workoutMapper.toEntity(workout);
+        System.out.println("Mapped entity: " + entity);
+        WorkoutEntity savedEntity;
+        try {
+            savedEntity = jpaWorkoutRepository.save(entity);
+        } catch (Exception e) {
+            e.printStackTrace();  // This will print the stack trace and specific error
+            throw new RuntimeException("Failed to save WorkoutEntity", e);
+        }
+
+        System.out.println("Workout entity on save2: " + savedEntity);
         return workoutMapper.toDomain(savedEntity);
     }
 

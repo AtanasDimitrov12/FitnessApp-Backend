@@ -3,8 +3,10 @@ package fitness_app_be.fitness_app.business.impl;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import fitness_app_be.fitness_app.business.WorkoutService;
+import fitness_app_be.fitness_app.domain.Exercise;
 import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.exception_handling.WorkoutNotFoundException;
+import fitness_app_be.fitness_app.persistence.repositories.ExerciseRepository;
 import fitness_app_be.fitness_app.persistence.repositories.WorkoutRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,12 +18,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class WorkoutServiceImpl implements WorkoutService {
 
     private final WorkoutRepository workoutRepository;
+    private final ExerciseRepository exerciseRepository;
     private final Cloudinary cloudinary;
 
     @Override
@@ -37,11 +41,33 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public Workout createWorkout(Workout workout, File imageFile) throws IOException {
+        try {
+            // Validate and manage exercises
+            List<Exercise> managedExercises = workout.getExercises().stream()
+                    .map(exercise -> exerciseRepository.findById(exercise.getId())
+                            .orElseThrow(() -> new IllegalArgumentException("Exercise not found: " + exercise.getId())))
+                    .collect(Collectors.toList());
+            workout.setExercises(managedExercises);
+            System.out.println("Service" + workout.getName());
 
-        String imageUrl = uploadImageToCloudinary(imageFile);
-        workout.setPictureURL(imageUrl);
-        return workoutRepository.create(workout);
+            // Upload image and set URL
+            String imageUrl = uploadImageToCloudinary(imageFile);
+            workout.setPictureURL(imageUrl);
+            System.out.println("Image URL" + imageUrl);
+
+            // Persist workout
+            return workoutRepository.create(workout);
+
+        } catch (IllegalArgumentException e) {
+            throw new WorkoutNotFoundException("Exercise validation failed: " + e.getMessage());
+        } catch (IOException e) {
+            throw new WorkoutNotFoundException("Image upload failed: " + e.getMessage());
+        } catch (Exception e) {
+            throw new WorkoutNotFoundException("Error creating workout: " + e.getMessage());
+        }
     }
+
+
 
     @SuppressWarnings("unchecked")
     String uploadImageToCloudinary(File file) throws IOException {
@@ -89,9 +115,14 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public String saveImage(MultipartFile image) throws IOException {
+        String directoryPath = "path/to/save/images/";
+        File directory = new File(directoryPath);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
 
-        String filename = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
-        File imageFile = new File("path/to/save/images/" + filename);
+        String filename = UUID.randomUUID() + "_" + image.getOriginalFilename();
+        File imageFile = new File(directoryPath + filename);
 
         try (FileOutputStream fos = new FileOutputStream(imageFile)) {
             fos.write(image.getBytes());
@@ -99,4 +130,5 @@ public class WorkoutServiceImpl implements WorkoutService {
 
         return "http://your-domain.com/images/" + filename;
     }
+
 }

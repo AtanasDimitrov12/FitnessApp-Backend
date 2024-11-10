@@ -29,13 +29,14 @@ public class WorkoutEntity {
     @Column(name = "picture_url")
     private String pictureURL;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(
             name = "workout_exercise",
             joinColumns = @JoinColumn(name = "workout_id"),
             inverseJoinColumns = @JoinColumn(name = "exercise_id")
     )
     private List<ExerciseEntity> exercises;
+
 
     @ManyToMany(mappedBy = "workouts")
     private List<WorkoutPlanEntity> workoutPlans;

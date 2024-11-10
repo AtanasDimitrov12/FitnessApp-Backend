@@ -20,4 +20,6 @@ public interface ExerciseRepository {
 
     Optional<Exercise> findByName(String name);
 
+    Optional<Exercise> findById(long id);
+
 }

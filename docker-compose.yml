@@ -25,15 +25,15 @@ services:
       - fitness-network
     restart: unless-stopped
 
-  sonarqube:
-    image: sonarqube:latest
-    ports:
-      - "9000:9000"
-    networks:
-      - fitness-network
-    environment:
-      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
-    restart: unless-stopped
+#  sonarqube:
+#    image: sonarqube:latest
+#    ports:
+#      - "9000:9000"
+#    networks:
+#      - fitness-network
+#    environment:
+#      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+#    restart: unless-stopped
 
 networks:
   fitness-network:

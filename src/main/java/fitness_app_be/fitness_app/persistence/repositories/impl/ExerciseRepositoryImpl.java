@@ -69,4 +69,9 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     public Optional<Exercise> findByName(String name) {
         return jpaExerciseRepository.findByName(name).map(exerciseEntityMapper::toDomain);
     }
+
+    @Override
+    public Optional<Exercise> findById(long id){
+        return jpaExerciseRepository.findById(id).map(exerciseEntityMapper::toDomain);
+    }
 }

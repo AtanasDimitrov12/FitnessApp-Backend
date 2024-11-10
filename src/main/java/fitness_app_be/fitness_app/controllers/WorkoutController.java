@@ -46,12 +46,14 @@ public class WorkoutController {
             @RequestPart("workout") String workoutJson,
             @RequestPart("image") MultipartFile image) {
 
+        System.out.println("Received request to create workout");
         WorkoutDTO workoutDTO = parseWorkoutJson(workoutJson);
         Workout workout = workoutMapper.toDomain(workoutDTO);
-
+        System.out.println("Workout created. Domain:" + workout.getName()+" DTO: "+workoutDTO.getName());
         try {
             File file = convertMultipartFileToFile(image);
             Workout createdWorkout = workoutService.createWorkout(workout, file);
+            System.out.println("Controller image successfully uploadet. URL: " + createdWorkout.getPictureURL());
             return workoutMapper.domainToDto(createdWorkout);
         } catch (IOException e) {
             throw new CreationException("Error while creating workout", e);
@@ -90,6 +92,9 @@ public class WorkoutController {
     }
 
     private File convertMultipartFileToFile(MultipartFile multipartFile) {
+        if (multipartFile == null || multipartFile.isEmpty()) {
+            throw new FileConversionException("No file uploaded or file is empty");
+        }
         String filename = UUID.randomUUID() + "_" + multipartFile.getOriginalFilename();
         File convFile = new File(System.getProperty("java.io.tmpdir") + File.separator + filename);
 
@@ -100,6 +105,7 @@ public class WorkoutController {
         }
         return convFile;
     }
+
 
 
 }
