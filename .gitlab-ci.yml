@@ -29,12 +29,13 @@ test:
 sonarqube:
   stage: sonarqube
   script:
-    - ./gradlew sonarqube "-Dsonar.projectKey=${SONAR_PROJECT_KEY}" "-Dsonar.projectName=${SONAR_PROJECT_NAME}" "-Dsonar.host.url=${SONAR_HOST_URL}" "-Dsonar.login=${SONAR_TOKEN}" "-Dsonar.scm.disabled=true"
+    - ./gradlew sonarqube -Dsonar.projectKey=${FitnessAppBE} -Dsonar.projectName=${FitnessAppBE} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${sqp_5897c86278c0283af11a841841290766cd48a03f} -Dsonar.scm.disabled=true
   dependencies:
     - build
   services:
     - name: sonarqube:latest
       alias: sonarqube
+      command: ["-Dsonar.search.javaAdditionalOpts=-Xmx512m", "-Dsonar.web.javaOpts=-Xmx512m"]
   only:
     - main
 

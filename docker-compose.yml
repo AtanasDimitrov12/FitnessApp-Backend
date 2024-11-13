@@ -20,21 +20,35 @@ services:
       MYSQL_DATABASE: fitness_app_db
       MYSQL_ROOT_PASSWORD: FontysPass12#
     ports:
-      - "3308:3306"  # Changed from 3307 to 3308
+      - "3308:3306"
     networks:
       - fitness-network
     restart: unless-stopped
 
-#  sonarqube:
-#    image: sonarqube:latest
-#    ports:
-#      - "9000:9000"
-#    networks:
-#      - fitness-network
-#    environment:
-#      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
-#    restart: unless-stopped
+  sonarqube:
+    image: sonarqube:latest
+    ports:
+      - "9000:9000"
+    networks:
+      - fitness-network
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+      - SONAR_WEB_JVM_OPTS=-Xmx512m -Xms512m -XX:+HeapDumpOnOutOfMemoryError
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9000 || exit 1"]
+      interval: 30s
+      retries: 3
+    restart: unless-stopped
 
 networks:
   fitness-network:
     driver: bridge
+
+volumes:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_logs:
