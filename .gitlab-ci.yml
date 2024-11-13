@@ -1,9 +1,9 @@
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-  SONAR_PROJECT_KEY: "FitnessApp-Backend2"
-  SONAR_PROJECT_NAME: "FitnessApp-Backend2"
+  SONAR_PROJECT_KEY: "FitnessAppBE"
+  SONAR_PROJECT_NAME: "FitnessAppBE"
   SONAR_HOST_URL: "http://sonarqube:9000"
-  SONAR_TOKEN: "sqp_927663c06cbab3f4dbe27871abc6a1ae654bf865"
+  SONAR_TOKEN: "sqp_5897c86278c0283af11a841841290766cd48a03f"
 
 stages:
   - build
@@ -29,7 +29,7 @@ test:
 sonarqube:
   stage: sonarqube
   script:
-    - ./gradlew sonarqube -Dsonar.projectKey=${FitnessAppBE} -Dsonar.projectName=${FitnessAppBE} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${sqp_5897c86278c0283af11a841841290766cd48a03f} -Dsonar.scm.disabled=true
+    - ./gradlew sonarqube -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.projectName=${SONAR_PROJECT_NAME} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN} -Dsonar.scm.disabled=true
   dependencies:
     - build
   services:
