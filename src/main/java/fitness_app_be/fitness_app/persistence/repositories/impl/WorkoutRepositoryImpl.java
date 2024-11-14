@@ -2,6 +2,7 @@ package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 
 import fitness_app_be.fitness_app.domain.Workout;
+import fitness_app_be.fitness_app.exception_handling.WorkoutSaveException;
 import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaWorkoutRepository;
 import fitness_app_be.fitness_app.persistence.mapper.WorkoutEntityMapper;
 import fitness_app_be.fitness_app.persistence.repositories.WorkoutRepository;
@@ -33,18 +34,16 @@ public class WorkoutRepositoryImpl implements WorkoutRepository {
 
     @Override
     public Workout create(Workout workout) {
-        System.out.println("Workout entity on save1: " + workout);
         WorkoutEntity entity = workoutMapper.toEntity(workout);
-        System.out.println("Mapped entity: " + entity);
+
         WorkoutEntity savedEntity;
         try {
             savedEntity = jpaWorkoutRepository.save(entity);
         } catch (Exception e) {
-            e.printStackTrace();  // This will print the stack trace and specific error
-            throw new RuntimeException("Failed to save WorkoutEntity", e);
+            e.printStackTrace();  // Print stack trace for debugging
+            throw new WorkoutSaveException("Failed to save WorkoutEntity", e);  // Use custom exception
         }
 
-        System.out.println("Workout entity on save2: " + savedEntity);
         return workoutMapper.toDomain(savedEntity);
     }
 

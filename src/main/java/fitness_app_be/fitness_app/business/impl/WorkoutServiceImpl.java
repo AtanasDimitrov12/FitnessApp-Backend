@@ -48,12 +48,12 @@ public class WorkoutServiceImpl implements WorkoutService {
                             .orElseThrow(() -> new IllegalArgumentException("Exercise not found: " + exercise.getId())))
                     .collect(Collectors.toList());
             workout.setExercises(managedExercises);
-            System.out.println("Service" + workout.getName());
+
 
             // Upload image and set URL
             String imageUrl = uploadImageToCloudinary(imageFile);
             workout.setPictureURL(imageUrl);
-            System.out.println("Image URL" + imageUrl);
+
 
             // Persist workout
             return workoutRepository.create(workout);

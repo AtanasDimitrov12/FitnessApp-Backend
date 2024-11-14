@@ -46,14 +46,11 @@ public class WorkoutController {
             @RequestPart("workout") String workoutJson,
             @RequestPart("image") MultipartFile image) {
 
-        System.out.println("Received request to create workout");
         WorkoutDTO workoutDTO = parseWorkoutJson(workoutJson);
         Workout workout = workoutMapper.toDomain(workoutDTO);
-        System.out.println("Workout created. Domain:" + workout.getName()+" DTO: "+workoutDTO.getName());
         try {
             File file = convertMultipartFileToFile(image);
             Workout createdWorkout = workoutService.createWorkout(workout, file);
-            System.out.println("Controller image successfully uploadet. URL: " + createdWorkout.getPictureURL());
             return workoutMapper.domainToDto(createdWorkout);
         } catch (IOException e) {
             throw new CreationException("Error while creating workout", e);
