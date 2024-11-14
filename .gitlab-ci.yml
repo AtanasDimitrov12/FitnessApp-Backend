@@ -1,16 +1,15 @@
-variables:
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-  SONAR_PROJECT_KEY: "FitnessAppBE"
-  SONAR_PROJECT_NAME: "FitnessAppBE"
-  SONAR_HOST_URL: "http://sonarqube:9000"
-  SONAR_TOKEN: "sqp_5897c86278c0283af11a841841290766cd48a03f"
+image: gradle:8.2.0-jdk17-jammy
 
+variables:
+  SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+  GIT_DEPTH: "0"
 
 
 stages:
   - build
   - test
-  - sonarqube
+  - sonarqube-check
+  - sonarqube-vulnerability-report
   - deploy
 
 build:
@@ -28,25 +27,31 @@ test:
   script:
     - ./gradlew test
 
-sonarqube:
-  stage: sonarqube
+sonarqube-check:
+  stage: sonarqube-check
+
+  script: gradle sonar
+  allow_failure: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'develop'
+
+sonarqube-vulnerability-report:
+  stage: sonarqube-vulnerability-report
   script:
-    - echo "Waiting for SonarQube to initialize..."
-    - sleep 30
-    - ./gradlew sonarqube
-  dependencies:
-    - build
-  services:
-    - name: sonarqube:latest
-      alias: sonarqube
-      command: ["-Dsonar.search.javaAdditionalOpts=-Xmx512m", "-Dsonar.web.javaOpts=-Xmx512m"]
-  only:
-    - main
-
-
-
-
-
+    - 'curl -u "${SONAR_TOKEN}:" "${SONAR_HOST_URL}/api/issues/gitlab_sast_export?projectKey=FitnessApp&branch=${CI_COMMIT_BRANCH}&pullRequest=${CI_MERGE_REQUEST_IID}" -o gl-sast-sonar-report.json'
+  allow_failure: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'develop'
+  artifacts:
+    expire_in: 1 day
+    reports:
+      sast: gl-sast-sonar-report.json
 
 deploy:
   stage: deploy
