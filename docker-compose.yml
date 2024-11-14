@@ -27,10 +27,7 @@ services:
 
   sonarqube:
     image: sonarqube:latest
-    ports:
-      - "9000:9000"
-    networks:
-      - fitness-network
+    network_mode: "host"  # Allows SonarQube to be accessed at localhost:9000
     environment:
       - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
       - SONAR_WEB_JVM_OPTS=-Xmx512m -Xms512m -XX:+HeapDumpOnOutOfMemoryError
@@ -39,7 +36,7 @@ services:
       - sonarqube_extensions:/opt/sonarqube/extensions
       - sonarqube_logs:/opt/sonarqube/logs
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9000 || exit 1"]
+      test: [ "CMD-SHELL", "curl -f http://localhost:9000 || exit 1" ]
       interval: 30s
       retries: 3
     restart: unless-stopped
