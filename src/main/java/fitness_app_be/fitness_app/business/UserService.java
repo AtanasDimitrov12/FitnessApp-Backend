@@ -9,6 +9,7 @@ public interface UserService {
     User getUserById(long id);
     User createUser(User user);
     void deleteUser(long userId);
+    Optional<User> findUserByUsername(String username);
     Optional<User> getUserByEmail(String email);
     List<User> searchUsersByPartialUsername(String partialUsername);
     User updateUser(User user);

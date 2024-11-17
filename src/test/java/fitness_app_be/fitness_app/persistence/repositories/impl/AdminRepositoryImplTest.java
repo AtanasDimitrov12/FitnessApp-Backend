@@ -1,6 +1,7 @@
 package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.Admin;
+import fitness_app_be.fitness_app.domain.Role;
 import fitness_app_be.fitness_app.persistence.entity.AdminEntity;
 import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaAdminRepository;
 import fitness_app_be.fitness_app.persistence.mapper.AdminEntityMapper;
@@ -34,7 +35,7 @@ class AdminRepositoryImplTest {
 
     @BeforeEach
     void setUp() {
-        admin = new Admin(1L, "admin@example.com", "password");
+        admin = new Admin(1L, "admin@example.com", "password", Role.ADMIN);
 
 
         adminEntity = new AdminEntity();

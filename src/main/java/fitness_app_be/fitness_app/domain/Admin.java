@@ -10,4 +10,5 @@ public class Admin {
     private Long id;
     private String email;
     private String password;
+    private Role role;
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.Collectors;
 
 @Component
 public class UserMapper {
@@ -34,26 +35,30 @@ public class UserMapper {
             return null;
         }
 
-        return new User(
-                userDTO.getId(),
-                userDTO.getUsername(),
-                userDTO.getEmail(),
-                userDTO.getPassword(),
-                userDietPreferenceMapper.toDomain(userDTO.getDietPreference()),
-                userWorkoutPreferenceMapper.toDomain(userDTO.getWorkoutPreference()),
-                userDTO.getPictureURL(),
-                workoutPlanMapper.toDomain(userDTO.getWorkoutPlan()),
-                userDTO.getDiets() != null
+        return User.builder()
+                .id(userDTO.getId())
+                .username(userDTO.getUsername())
+                .email(userDTO.getEmail())
+                .password(userDTO.getPassword())
+                .dietPreference(userDietPreferenceMapper.toDomain(userDTO.getDietPreference()))
+                .workoutPreference(userWorkoutPreferenceMapper.toDomain(userDTO.getWorkoutPreference()))
+                .pictureURL(userDTO.getPictureURL())
+                .createdAt(userDTO.getCreatedAt())
+                .updatedAt(userDTO.getUpdatedAt())
+                .role(userDTO.getRole())
+                .workoutPlan(workoutPlanMapper.toDomain(userDTO.getWorkoutPlan()))
+                .diets(userDTO.getDiets() != null
                         ? userDTO.getDiets().stream()
                         .map(dietMapper::toDomain)
-                        .toList()
-                        : null,
-                userDTO.getNotes() != null
+                        .collect(Collectors.toList())
+                        : null)
+                .notes(userDTO.getNotes() != null
                         ? userDTO.getNotes().stream()
                         .map(progressNoteMapper::toDomain)
-                        .toList()
-                        : null
-        );
+                        .collect(Collectors.toList())
+                        : null)
+                .isActive(userDTO.getIsActive())
+                .build();
     }
 
     public UserDTO domainToDto(User user) {
@@ -61,25 +66,29 @@ public class UserMapper {
             return null;
         }
 
-        return new UserDTO(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getPassword(),
-                userDietPreferenceMapper.toDto(user.getDietPreference()),
-                userWorkoutPreferenceMapper.toDto(user.getWorkoutPreference()),
-                user.getPictureURL(),
-                workoutPlanMapper.domainToDto(user.getWorkoutPlan()),
-                user.getDiets() != null
+        return UserDTO.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .dietPreference(userDietPreferenceMapper.toDto(user.getDietPreference()))
+                .workoutPreference(userWorkoutPreferenceMapper.toDto(user.getWorkoutPreference()))
+                .pictureURL(user.getPictureURL())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
+                .role(user.getRole())
+                .workoutPlan(workoutPlanMapper.domainToDto(user.getWorkoutPlan()))
+                .diets(user.getDiets() != null
                         ? user.getDiets().stream()
                         .map(dietMapper::domainToDto)
-                        .toList()
-                        : null,
-                user.getNotes() != null
+                        .collect(Collectors.toList())
+                        : null)
+                .notes(user.getNotes() != null
                         ? user.getNotes().stream()
                         .map(progressNoteMapper::domainToDto)
-                        .toList()
-                        : null
-        );
+                        .collect(Collectors.toList())
+                        : null)
+                .isActive(user.getIsActive())
+                .build();
     }
 }

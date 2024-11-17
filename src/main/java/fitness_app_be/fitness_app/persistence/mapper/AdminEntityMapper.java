@@ -17,7 +17,8 @@ public class AdminEntityMapper {
         return new Admin(
                 adminEntity.getId(),
                 adminEntity.getEmail(),
-                adminEntity.getPassword()
+                adminEntity.getPassword(),
+                adminEntity.getRole()
         );
     }
 
@@ -30,6 +31,7 @@ public class AdminEntityMapper {
         adminEntity.setId(trainer.getId());
         adminEntity.setEmail(trainer.getEmail());
         adminEntity.setPassword(trainer.getPassword());
+        adminEntity.setRole(trainer.getRole());
 
         return adminEntity;
     }

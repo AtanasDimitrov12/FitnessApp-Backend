@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 public class AdminMapper {
 
     public Admin toDomain(AdminDTO adminDTO) {
-        return new Admin(adminDTO.getId(), adminDTO.getEmail(), adminDTO.getPassword());
+        return new Admin(adminDTO.getId(), adminDTO.getEmail(), adminDTO.getPassword(), adminDTO.getRole());
     }
 
     public AdminDTO domainToDto(Admin admin) {
-        return new AdminDTO(admin.getId(), admin.getEmail(), admin.getPassword());
+        return new AdminDTO(admin.getId(), admin.getEmail(), admin.getPassword(), admin.getRole());
     }
 }

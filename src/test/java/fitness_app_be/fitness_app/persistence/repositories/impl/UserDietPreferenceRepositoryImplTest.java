@@ -1,5 +1,6 @@
 package fitness_app_be.fitness_app.persistence.repositories.impl;
 
+import fitness_app_be.fitness_app.domain.Role;
 import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.domain.UserDietPreference;
 import fitness_app_be.fitness_app.persistence.entity.UserDietPreferenceEntity;
@@ -15,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,9 +48,9 @@ class UserDietPreferenceRepositoryImplTest {
     @BeforeEach
     void setUp() {
         preference = new UserDietPreference(1L, 101L, 2000, 3);
-        userEntity = new UserEntity(101L, "testUser", "test@example.com", "password", null, null, "pictureURL", null, null, null);
+        userEntity = new UserEntity(1L, "testUser", "test@example.com", "password", null, null, "pictureURL", null, null, null, LocalDateTime.now(), LocalDateTime.now(), true, Role.USER);
         preferenceEntity = new UserDietPreferenceEntity(1L, userEntity, 2000, 3);
-        user = new User(101L, "testUser", "test@example.com", "password", null, null, "pictureURL", null, null, null);
+        user = new User(101L, "testUser", "test@example.com", "password", null, null, "pictureURL", LocalDateTime.now(), LocalDateTime.now(), Role.USER, null, null, null, true);
     }
 
     @Test

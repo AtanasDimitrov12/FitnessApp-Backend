@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-
 @Component
 @NoArgsConstructor
 public class UserEntityMapper {
@@ -51,6 +50,10 @@ public class UserEntityMapper {
                 .notes(userEntity.getNotes() != null
                         ? userEntity.getNotes().stream().map(progressNoteEntityMapperImpl::toDomain).toList()
                         : null)
+                .createdAt(userEntity.getCreatedAt())
+                .updatedAt(userEntity.getUpdatedAt())
+                .isActive(userEntity.getIsActive())
+                .role(userEntity.getRole())
                 .build();
     }
 
@@ -65,6 +68,10 @@ public class UserEntityMapper {
         userEntity.setEmail(user.getEmail());
         userEntity.setPassword(user.getPassword());
         userEntity.setPictureURL(user.getPictureURL());
+        userEntity.setCreatedAt(user.getCreatedAt());
+        userEntity.setUpdatedAt(user.getUpdatedAt());
+        userEntity.setIsActive(user.getIsActive());
+        userEntity.setRole(user.getRole());
 
         // Map diet preference and workout preference
         userEntity.setDietPreference(userDietPreferenceEntityMapper.toEntity(user.getDietPreference(), userEntity));

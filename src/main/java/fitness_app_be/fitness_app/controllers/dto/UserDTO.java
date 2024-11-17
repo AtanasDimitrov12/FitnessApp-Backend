@@ -1,12 +1,16 @@
 package fitness_app_be.fitness_app.controllers.dto;
 
+import fitness_app_be.fitness_app.domain.Role;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDTO {
@@ -17,8 +21,12 @@ public class UserDTO {
     private UserDietPreferenceDTO dietPreference;
     private UserWorkoutPreferenceDTO workoutPreference;
     private String pictureURL;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private Boolean isActive;
+    private Role role;
     private WorkoutPlanDTO workoutPlan;
     private List<DietDTO> diets;
     private List<ProgressNoteDTO> notes;
-}
 
+}

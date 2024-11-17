@@ -1,5 +1,6 @@
 package fitness_app_be.fitness_app.persistence.entity;
 
+import fitness_app_be.fitness_app.domain.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -25,6 +26,9 @@ public class AdminEntity {
     @Column(name = "password")
     @NotNull
     private String password;
+
+    @Enumerated(EnumType.STRING) // Store as string in the database
+    private Role role;
 
 
 }

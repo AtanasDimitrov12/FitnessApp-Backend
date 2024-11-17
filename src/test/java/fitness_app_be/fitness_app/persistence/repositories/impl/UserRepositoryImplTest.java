@@ -1,6 +1,7 @@
 package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.ProgressNote;
+import fitness_app_be.fitness_app.domain.Role;
 import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.persistence.entity.ProgressNoteEntity;
 import fitness_app_be.fitness_app.persistence.entity.UserEntity;
@@ -13,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,9 +41,9 @@ class UserRepositoryImplTest {
     void setUp() {
         List<ProgressNote> notes = new ArrayList<>();
 
-        user = new User(1L, "testUser", "test@example.com", "password", null, null, "pictureURL", null, null, notes);
+        user = new User(1L, "testUser", "test@example.com", "password", null, null, "pictureURL", LocalDateTime.now(), LocalDateTime.now(), Role.USER, null, null, notes, true);
         List<ProgressNoteEntity> notesEntity = new ArrayList<>();
-        userEntity = new UserEntity(1L, "testUser", "test@example.com", "password", null, null, "pictureURL", null, null, notesEntity);
+        userEntity = new UserEntity(1L, "testUser", "test@example.com", "password", null, null, "pictureURL", null, null, notesEntity, LocalDateTime.now(), LocalDateTime.now(), true, Role.USER);
 
     }
 

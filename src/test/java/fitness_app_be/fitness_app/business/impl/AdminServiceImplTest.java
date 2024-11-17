@@ -1,6 +1,7 @@
 package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.domain.Admin;
+import fitness_app_be.fitness_app.domain.Role;
 import fitness_app_be.fitness_app.exception_handling.AdminNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.AdminRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +31,7 @@ class AdminServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        admin = new Admin(1L, "admin@example.com", "password");
+        admin = new Admin(1L, "admin@example.com", "password", Role.ADMIN);
     }
 
     @Test

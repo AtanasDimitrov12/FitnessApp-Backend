@@ -1,8 +1,7 @@
 package fitness_app_be.fitness_app.domain;
 
 import lombok.*;
-
-
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -18,7 +17,14 @@ public class User {
     private UserDietPreference dietPreference;
     private UserWorkoutPreference workoutPreference;
     private String pictureURL;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private Role role;
     private WorkoutPlan workoutPlan;
     private List<Diet> diets;
     private List<ProgressNote> notes;
+
+
+    @Builder.Default
+    private Boolean isActive = true;
 }
