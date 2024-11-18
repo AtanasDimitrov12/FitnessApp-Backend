@@ -6,6 +6,7 @@ import fitness_app_be.fitness_app.controllers.mapper.MealMapper;
 import fitness_app_be.fitness_app.domain.Meal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class MealController {
     private final MealService mealService;
     private final MealMapper mealMapper;
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping
     public List<MealDTO> getAllMeals() {
         return mealService.getAllMeals().stream()
@@ -25,12 +27,14 @@ public class MealController {
                 .toList();
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/{id}")
     public MealDTO getMealById(@PathVariable Long id) {
         Meal meal = mealService.getMealById(id);
         return mealMapper.domainToDto(meal);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public MealDTO createMeal(@RequestBody MealDTO mealDTO) {
         Meal meal = mealMapper.toDomain(mealDTO);
@@ -38,6 +42,7 @@ public class MealController {
         return mealMapper.domainToDto(createdMeal);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
     public MealDTO updateMeal(@RequestBody MealDTO mealDTO) {
         Meal meal = mealMapper.toDomain(mealDTO);
@@ -45,6 +50,7 @@ public class MealController {
         return mealMapper.domainToDto(updatedMeal);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMeal(@PathVariable Long id) {
         mealService.deleteMeal(id);

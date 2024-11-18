@@ -1,11 +1,15 @@
 package fitness_app_be.fitness_app.controllers;
 
 import fitness_app_be.fitness_app.business.AuthService;
+import fitness_app_be.fitness_app.business.UserService;
+import fitness_app_be.fitness_app.business.AdminService;
 import fitness_app_be.fitness_app.controllers.dto.Authentication.JwtResponse;
 import fitness_app_be.fitness_app.controllers.dto.Authentication.LoginRequest;
 import fitness_app_be.fitness_app.domain.User;
+import fitness_app_be.fitness_app.domain.Admin;
 import fitness_app_be.fitness_app.controllers.dto.UserDTO;
-import fitness_app_be.fitness_app.persistence.repositories.UserRepository;
+import fitness_app_be.fitness_app.exception_handling.AdminNotFoundException;
+import fitness_app_be.fitness_app.exception_handling.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,40 +21,52 @@ import java.util.Optional;
 public class AuthController {
 
     private final AuthService authService;
-    private final UserRepository userRepository;
+    private final UserService userService;
+    private final AdminService adminService;
 
     @Autowired
-    public AuthController(AuthService authService, UserRepository userRepository) {
+    public AuthController(AuthService authService, UserService userService, AdminService adminService) {
         this.authService = authService;
-        this.userRepository = userRepository;
+        this.userService = userService;
+        this.adminService = adminService;
     }
 
     @PostMapping("/signup")
     public ResponseEntity<String> registerUser(@RequestBody UserDTO userDTO) {
-        // Convert UserDTO to User domain model
         User user = new User();
         user.setUsername(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
         user.setPassword(userDTO.getPassword());
 
-        // Register user using the AuthService
         authService.register(user);
         return ResponseEntity.ok("User registered successfully");
     }
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest loginRequest) {
-        // Authenticate user and get JWT token
-        Optional<User> userOptional = userRepository.findByUsername(loginRequest.getUsername());
-
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.status(401).body(new JwtResponse("Invalid username or password"));
+        // Try to authenticate as a user
+        try {
+            Optional<User> userOptional = userService.findUserByUsername(loginRequest.getUsername());
+            if (userOptional.isPresent()) {
+                String jwtToken = authService.authenticateUser(loginRequest.getUsername(), loginRequest.getPassword());
+                return ResponseEntity.ok(new JwtResponse(jwtToken));
+            }
+        } catch (UserNotFoundException e) {
+            System.out.println("User not found, attempting admin login.");
         }
 
-        User user = userOptional.get();
+        // If user authentication fails, try to authenticate as an admin
+        try {
+            Optional<Admin> adminOptional = adminService.findAdminByEmail(loginRequest.getUsername());
+            if (adminOptional.isPresent()) {
+                String jwtToken = authService.authenticateAdmin(loginRequest.getUsername(), loginRequest.getPassword());
+                return ResponseEntity.ok(new JwtResponse(jwtToken));
+            }
+        } catch (AdminNotFoundException e) {
+            System.out.println("Admin not found, returning unauthorized response.");
+        }
 
-        // Authenticate and get JWT token
-        String jwtToken = authService.authenticateUser(loginRequest.getUsername(), loginRequest.getPassword());
-        return ResponseEntity.ok(new JwtResponse(jwtToken));
+        // If neither user nor admin is found or authenticated, return unauthorized
+        return ResponseEntity.status(401).body(new JwtResponse("Invalid username or password"));
     }
 }

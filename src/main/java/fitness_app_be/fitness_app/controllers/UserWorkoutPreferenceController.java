@@ -6,6 +6,7 @@ import fitness_app_be.fitness_app.controllers.mapper.UserWorkoutPreferenceMapper
 import fitness_app_be.fitness_app.domain.UserWorkoutPreference;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,12 +17,14 @@ public class UserWorkoutPreferenceController {
     private final UserWorkoutPreferenceService userWorkoutPreferenceService;
     private final UserWorkoutPreferenceMapper userWorkoutPreferenceMapper;
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/{userId}")
     public UserWorkoutPreferenceDTO getUserWorkoutPreferenceByUserId(@PathVariable Long userId) {
         UserWorkoutPreference userWorkoutPreference = userWorkoutPreferenceService.getUserWorkoutPreferenceByUserId(userId);
         return userWorkoutPreferenceMapper.toDto(userWorkoutPreference);
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
     public UserWorkoutPreferenceDTO createUserWorkoutPreference(@RequestBody UserWorkoutPreferenceDTO userWorkoutPreferenceDTO) {
         UserWorkoutPreference userWorkoutPreference = userWorkoutPreferenceMapper.toDomain(userWorkoutPreferenceDTO);
@@ -29,6 +32,7 @@ public class UserWorkoutPreferenceController {
         return userWorkoutPreferenceMapper.toDto(createdUserWorkoutPreference);
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PutMapping
     public UserWorkoutPreferenceDTO updateUserWorkoutPreference(@RequestBody UserWorkoutPreferenceDTO userWorkoutPreferenceDTO) {
         UserWorkoutPreference userWorkoutPreference = userWorkoutPreferenceMapper.toDomain(userWorkoutPreferenceDTO);
@@ -36,6 +40,7 @@ public class UserWorkoutPreferenceController {
         return userWorkoutPreferenceMapper.toDto(updatedUserWorkoutPreference);
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUserWorkoutPreference(@PathVariable Long id) {
         userWorkoutPreferenceService.deleteUserWorkoutPreference(id);

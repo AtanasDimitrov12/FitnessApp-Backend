@@ -1,6 +1,7 @@
 package fitness_app_be.fitness_app.configuration.security;
 
 import fitness_app_be.fitness_app.configuration.security.auth.AuthenticationRequestFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -17,7 +18,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebSecurity
 @EnableMethodSecurity(jsr250Enabled = true)
 @Configuration
-public class WebSecurityConfig {
+public class WebSecurityConfig implements WebMvcConfigurer {
+
+    @Value("${corsheader}")
+    private String corsHeader;
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity,
@@ -28,21 +33,32 @@ public class WebSecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .sessionManagement(configurer ->
                         configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(registry ->
-                        registry.anyRequest().permitAll()
+                .authorizeHttpRequests(registry -> registry
+                        .requestMatchers("/auth/**").permitAll()  // Public access for authentication
+                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")  // Only authenticated users or admins
+                        .requestMatchers("/admin/**").hasRole("ADMIN")  // Admin-only access
+                        .anyRequest().authenticated()  // Other requests require authentication
                 )
                 .exceptionHandling(configure -> configure.authenticationEntryPoint(authenticationEntryPoint))
                 .addFilterBefore(authenticationRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
 
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("http://localhost:5173");
+                registry.addMapping("/**")
+                        .allowedOrigins(corsHeader)
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
+                        .allowCredentials(true)
+                        .maxAge(3600);
             }
         };
     }
+
+
 }

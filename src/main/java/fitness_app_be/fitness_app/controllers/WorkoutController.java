@@ -10,6 +10,7 @@ import fitness_app_be.fitness_app.exception_handling.FileConversionException;
 import fitness_app_be.fitness_app.exception_handling.JsonParsingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +29,7 @@ public class WorkoutController {
     private final WorkoutMapper workoutMapper;
     private final ObjectMapper objectMapper;
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping
     public List<WorkoutDTO> getAllWorkouts() {
         return workoutService.getAllWorkouts().stream()
@@ -35,12 +37,14 @@ public class WorkoutController {
                 .toList();
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/{id}")
     public WorkoutDTO getWorkoutById(@PathVariable Long id) {
         Workout workout = workoutService.getWorkoutById(id);
         return workoutMapper.domainToDto(workout);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(consumes = "multipart/form-data")
     public WorkoutDTO createWorkout(
             @RequestPart("workout") String workoutJson,
@@ -57,6 +61,7 @@ public class WorkoutController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(consumes = "multipart/form-data")
     public WorkoutDTO updateWorkout(
             @RequestPart("workout") WorkoutDTO workoutDTO,
@@ -74,6 +79,7 @@ public class WorkoutController {
 
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteWorkout(@PathVariable Long id) {
         workoutService.deleteWorkout(id);

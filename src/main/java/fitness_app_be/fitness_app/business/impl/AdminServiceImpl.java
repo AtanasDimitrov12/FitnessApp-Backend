@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +44,11 @@ public class AdminServiceImpl implements AdminService {
     public Admin getAdminByEmail(String email) {
         return adminRepository.findByEmail(email)
                 .orElseThrow(() -> new AdminNotFoundException("Trainer with email: " + email + " not found"));
+    }
+
+    @Override
+    public Optional<Admin> findAdminByEmail(String email){
+        return adminRepository.findByEmail(email);
     }
 
     @Override

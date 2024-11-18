@@ -6,6 +6,7 @@ import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.controllers.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public List<UserDTO> getAllUsers() {
 
@@ -26,6 +28,7 @@ public class UserController {
                 .toList();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public UserDTO getUserById(@PathVariable Long id) {
 
@@ -33,6 +36,7 @@ public class UserController {
         return userMapper.domainToDto(user);
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
     public UserDTO createUser(@RequestBody UserDTO userDTO) {
 
@@ -40,6 +44,7 @@ public class UserController {
         return userMapper.domainToDto(createdUser);
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PutMapping
     public UserDTO updateUser(@RequestBody UserDTO userDTO) {
 
@@ -48,6 +53,7 @@ public class UserController {
         return userMapper.domainToDto(updatedUser);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
 

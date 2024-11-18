@@ -6,6 +6,7 @@ import fitness_app_be.fitness_app.controllers.mapper.UserDietPreferenceMapper;
 import fitness_app_be.fitness_app.domain.UserDietPreference;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,12 +17,14 @@ public class UserDietPreferenceController {
     private final UserDietPreferenceService userDietPreferenceService;
     private final UserDietPreferenceMapper userDietPreferenceMapper;
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/{userId}")
     public UserDietPreferenceDTO getUserDietPreferenceByUserId(@PathVariable Long userId) {
         UserDietPreference userDietPreference = userDietPreferenceService.getUserDietPreferenceByUserId(userId);
         return userDietPreferenceMapper.toDto(userDietPreference);
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
     public UserDietPreferenceDTO createUserDietPreference(@RequestBody UserDietPreferenceDTO userDietPreferenceDTO) {
         UserDietPreference userDietPreference = userDietPreferenceMapper.toDomain(userDietPreferenceDTO);
@@ -29,6 +32,7 @@ public class UserDietPreferenceController {
         return userDietPreferenceMapper.toDto(createdUserDietPreference);
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PutMapping
     public UserDietPreferenceDTO updateUserDietPreference(@RequestBody UserDietPreferenceDTO userDietPreferenceDTO) {
         UserDietPreference userDietPreference = userDietPreferenceMapper.toDomain(userDietPreferenceDTO);
@@ -36,6 +40,7 @@ public class UserDietPreferenceController {
         return userDietPreferenceMapper.toDto(updatedUserDietPreference);
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUserDietPreference(@PathVariable Long id) {
         userDietPreferenceService.deleteUserDietPreference(id);

@@ -7,7 +7,7 @@ import lombok.*;
 
 
 @Entity
-@Table(name = "trainer")
+@Table(name = "admins")
 @Data
 @Builder
 @AllArgsConstructor
