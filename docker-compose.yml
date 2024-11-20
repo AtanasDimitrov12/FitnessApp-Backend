@@ -2,43 +2,57 @@ version: '3.8'
 
 services:
   fitness-app:
-    image: fitness-app-backend:latest
     build:
       context: .
       dockerfile: Dockerfile
+    image: fitness-app-backend:latest
     ports:
       - "8090:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://fitness-app-db:3306/fitness_app_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: FontysPass12# # Make sure this matches your MySQL setup
+      JAVA_OPTS: "-Xms256m -Xmx512m" # Optional: Configurable JVM memory settings
+    depends_on:
+      - fitness-app-db # Ensures the database starts first
     networks:
       - fitness-network
     restart: unless-stopped
 
   fitness-app-db:
     image: mysql:latest
+    container_name: fitness-app-db
     environment:
       MYSQL_DATABASE: fitness_app_db
       MYSQL_ROOT_PASSWORD: FontysPass12#
     ports:
       - "3308:3306"
+    volumes:
+      - db_data:/var/lib/mysql # Ensures database data persists
     networks:
       - fitness-network
     restart: unless-stopped
 
   sonarqube:
     image: sonarqube:latest
-    network_mode: "host"  # Allows SonarQube to be accessed at localhost:9000
+    container_name: sonarqube
+    network_mode: "bridge" # Changed from host for better isolation (host is risky for cross-platform setups)
     environment:
-      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
-      - SONAR_WEB_JVM_OPTS=-Xmx512m -Xms512m -XX:+HeapDumpOnOutOfMemoryError
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+      SONAR_WEB_JVM_OPTS: "-Xmx512m -Xms512m -XX:+HeapDumpOnOutOfMemoryError"
+    ports:
+      - "9000:9000"
     volumes:
       - sonarqube_data:/opt/sonarqube/data
       - sonarqube_extensions:/opt/sonarqube/extensions
       - sonarqube_logs:/opt/sonarqube/logs
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:9000 || exit 1" ]
+      test: ["CMD-SHELL", "curl -f http://localhost:9000 || exit 1"]
       interval: 30s
+      timeout: 10s
       retries: 3
+    depends_on:
+      - fitness-app
     restart: unless-stopped
 
 networks:
@@ -46,6 +60,7 @@ networks:
     driver: bridge
 
 volumes:
+  db_data: # Persistent volume for the database
   sonarqube_data:
   sonarqube_extensions:
   sonarqube_logs:
