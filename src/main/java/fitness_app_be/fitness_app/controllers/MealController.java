@@ -34,7 +34,7 @@ public class MealController {
         return mealMapper.domainToDto(meal);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping
     public MealDTO createMeal(@RequestBody MealDTO mealDTO) {
         Meal meal = mealMapper.toDomain(mealDTO);
@@ -42,7 +42,7 @@ public class MealController {
         return mealMapper.domainToDto(createdMeal);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping
     public MealDTO updateMeal(@RequestBody MealDTO mealDTO) {
         Meal meal = mealMapper.toDomain(mealDTO);
@@ -50,7 +50,7 @@ public class MealController {
         return mealMapper.domainToDto(updatedMeal);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMeal(@PathVariable Long id) {
         mealService.deleteMeal(id);

@@ -1,30 +1,43 @@
 package fitness_app_be.fitness_app.controllers;
 
 import fitness_app_be.fitness_app.business.MealService;
+import fitness_app_be.fitness_app.configuration.security.TestSecurityConfig;
+import fitness_app_be.fitness_app.configuration.security.token.AccessTokenDecoder;
 import fitness_app_be.fitness_app.controllers.dto.MealDTO;
 import fitness_app_be.fitness_app.controllers.mapper.MealMapper;
 import fitness_app_be.fitness_app.domain.Meal;
+import fitness_app_be.fitness_app.domain.Role;
+import fitness_app_be.fitness_app.domain.User;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ExtendWith(SpringExtension.class)
 @WebMvcTest(MealController.class)
+@Import(TestSecurityConfig.class)
+@ActiveProfiles("test")
 class MealControllerTest {
 
     @Autowired
@@ -36,9 +49,50 @@ class MealControllerTest {
     @MockBean
     private MealMapper mealMapper;
 
+    @MockBean
+    private AccessTokenDecoder accessTokenDecoder;
+
+    @MockBean
+    private AuthenticationEntryPoint authenticationEntryPoint;
+
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private WebApplicationContext context;
+
+    @BeforeEach
+    public void setup() {
+        // Create a mock User with necessary role
+        User mockUser = new User(
+                1L,
+                "testUser",
+                "test@example.com",
+                "password",
+                null,
+                null,
+                "pictureURL",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                Role.ADMIN,
+                null,
+                null,
+                null,
+                true
+        );
+
+        // Mock AccessTokenDecoder to return Optional<User>
+        when(accessTokenDecoder.decode(Mockito.anyString())).thenAnswer(invocation -> Optional.of(mockUser));
+
+
+        // Reinitialize MockMvc with security applied
+        this.mockMvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+    }
+
+    @WithMockUser(authorities = "ROLE_ADMIN")
     @Test
     void getAllMeals_ShouldReturnListOfMeals() throws Exception {
         Meal meal = new Meal(1L, "Salad", 200, 10, 15, 30.0, Collections.emptyList());
@@ -58,6 +112,7 @@ class MealControllerTest {
                 .andExpect(jsonPath("$[0].cookingTime", is(mealDTO.getCookingTime())));
     }
 
+    @WithMockUser(authorities = "ROLE_ADMIN")
     @Test
     void getMealById_ShouldReturnMeal() throws Exception {
         Meal meal = new Meal(1L, "Salad", 200, 10, 15, 30.0, Collections.emptyList());
@@ -76,6 +131,7 @@ class MealControllerTest {
                 .andExpect(jsonPath("$.cookingTime", is(mealDTO.getCookingTime())));
     }
 
+    @WithMockUser(authorities = "ROLE_ADMIN")
     @Test
     void createMeal_ShouldReturnCreatedMeal() throws Exception {
         MealDTO mealDTO = new MealDTO(null, "Salad", 200, 10, 15, 30.0, Collections.emptyList());
@@ -99,6 +155,7 @@ class MealControllerTest {
                 .andExpect(jsonPath("$.cookingTime", is(createdMealDTO.getCookingTime())));
     }
 
+    @WithMockUser(authorities = "ROLE_ADMIN")
     @Test
     void updateMeal_ShouldReturnUpdatedMeal() throws Exception {
         MealDTO mealDTO = new MealDTO(1L, "Updated Salad", 250, 12, 18, 25.0, Collections.emptyList());
@@ -122,6 +179,7 @@ class MealControllerTest {
                 .andExpect(jsonPath("$.cookingTime", is(updatedMealDTO.getCookingTime())));
     }
 
+    @WithMockUser(authorities = "ROLE_ADMIN")
     @Test
     void deleteMeal_ShouldReturnNoContent() throws Exception {
         Mockito.doNothing().when(mealService).deleteMeal(1L);
