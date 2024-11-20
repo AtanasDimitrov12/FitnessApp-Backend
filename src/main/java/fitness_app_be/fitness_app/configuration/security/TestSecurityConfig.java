@@ -5,48 +5,52 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.Collections;
 
-
 @Configuration
-@EnableWebSecurity
-@Profile("test")  // Ensures this config is only active in the test profile
+@Profile("test") // Ensure this configuration is only active in the test profile
 public class TestSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests()
-                .anyRequest().permitAll()  // Allow all requests for testing purposes
-                .and();
+                .csrf(csrf -> csrf.disable()) // Disable CSRF for testing
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/meals/**").hasRole("ADMIN") // Require ROLE_ADMIN for /api/meals/**
+                        .anyRequest().permitAll() // Allow all other requests
+                )
+                .httpBasic(httpBasic -> httpBasic.realmName("Test Security")) // Use basic authentication
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) ->
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
+                );
 
         return http.build();
     }
 
     @Bean
-    public AuthenticationEntryPoint authenticationEntryPoint() {
-        return (request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-    }
-
-    @Bean
     public UserDetailsService userDetailsService() {
-        return username -> {
-            if ("admin".equals(username)) {
-                return new User("admin", "password", Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")));
+        return email -> {
+            if ("admin@example.com".equals(email)) { // Use email instead of username
+                return new org.springframework.security.core.userdetails.User(
+                        "admin@example.com", // Email as the principal
+                        "password", // Mocked password
+                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN"))
+                );
+            } else if ("user@example.com".equals(email)) {
+                return new org.springframework.security.core.userdetails.User(
+                        "user@example.com", // Email as the principal
+                        "password", // Mocked password
+                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+                );
             } else {
-                throw new UsernameNotFoundException("User not found");
+                throw new UsernameNotFoundException("User not found with email: " + email);
             }
         };
     }
-
-
 }
-
