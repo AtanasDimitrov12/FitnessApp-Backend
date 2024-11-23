@@ -1,7 +1,7 @@
 package fitness_app_be.fitness_app.controllers;
 
 import fitness_app_be.fitness_app.business.ExerciseService;
-import fitness_app_be.fitness_app.configuration.security.TestSecurityConfig;
+import fitness_app_be.fitness_app.config.TestSecurityConfig;
 import fitness_app_be.fitness_app.configuration.security.token.AccessToken;
 import fitness_app_be.fitness_app.configuration.security.token.AccessTokenDecoder;
 import fitness_app_be.fitness_app.controllers.dto.ExerciseDTO;

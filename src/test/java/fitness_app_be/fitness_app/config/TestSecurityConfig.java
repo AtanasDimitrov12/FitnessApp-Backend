@@ -1,4 +1,4 @@
-package fitness_app_be.fitness_app.configuration.security;
+package fitness_app_be.fitness_app.config;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;

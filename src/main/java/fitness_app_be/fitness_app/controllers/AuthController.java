@@ -50,7 +50,7 @@ public class AuthController {
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
                 String jwtToken = authService.authenticateUser(user.getUsername(), loginRequest.getPassword());
-                return ResponseEntity.ok(new JwtResponse(user.getId(), "User", jwtToken));
+                return ResponseEntity.ok(new JwtResponse(jwtToken));
             }
         } catch (UserNotFoundException e) {
             System.out.println("User not found, attempting admin login.");
@@ -62,13 +62,13 @@ public class AuthController {
             if (adminOptional.isPresent()) {
                 Admin admin = adminOptional.get();
                 String jwtToken = authService.authenticateAdmin(admin.getEmail(), loginRequest.getPassword());
-                return ResponseEntity.ok(new JwtResponse(admin.getId(), "Admin", jwtToken));
+                return ResponseEntity.ok(new JwtResponse(jwtToken));
             }
         } catch (AdminNotFoundException e) {
             System.out.println("Admin not found, returning unauthorized response.");
         }
 
         // If neither user nor admin is found or authenticated, return unauthorized
-        return ResponseEntity.status(401).body(new JwtResponse( null, null, "Invalid username or password"));
+        return ResponseEntity.status(401).body(new JwtResponse("Invalid username or password"));
     }
 }
