@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,6 +27,9 @@ class UserServiceImplTest {
 
     @InjectMocks
     private UserServiceImpl userService;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     private User user;
 
@@ -129,16 +133,28 @@ class UserServiceImplTest {
 
     @Test
     void updateUser_ShouldReturnUpdatedUser_WhenUserExists() {
-        when(userRepository.exists(1L)).thenReturn(true);
-        when(userRepository.update(user)).thenReturn(user);
+        // Arrange
+        user.setPassword("updatedPassword"); // Original plain password
+        String encodedPassword = "encodedPassword";
 
-        User updatedUser = userService.updateUser(user);
+        when(userRepository.exists(1L)).thenReturn(true); // Mock user existence
+        when(passwordEncoder.encode("updatedPassword")).thenReturn(encodedPassword); // Mock password encoding
+        when(userRepository.update(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0)); // Return updated user
 
-        assertNotNull(updatedUser);
-        assertEquals(user, updatedUser);
+        // Act
+        User result = userService.updateUser(user);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(encodedPassword, result.getPassword()); // Verify password is encoded
         verify(userRepository, times(1)).exists(1L);
-        verify(userRepository, times(1)).update(user);
+        verify(passwordEncoder, times(1)).encode("updatedPassword"); // Ensure encoding is called
+        verify(userRepository, times(1)).update(argThat(updatedUserRequest ->
+                updatedUserRequest.getPassword().equals(encodedPassword) // Ensure encoded password is passed
+        ));
     }
+
+
 
     @Test
     void updateUser_ShouldThrowException_WhenUserNotFound() {

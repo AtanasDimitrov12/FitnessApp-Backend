@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +27,9 @@ class AdminServiceImplTest {
 
     @InjectMocks
     private AdminServiceImpl adminService;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     private Admin admin;
 
@@ -125,7 +129,7 @@ class AdminServiceImplTest {
         Admin result = adminService.updateAdmin(updatedAdmin);
 
         assertNotNull(result);
-        assertEquals("newPassword", result.getPassword());
+        assertEquals(passwordEncoder.encode("newPassword"), result.getPassword());
         verify(adminRepository, times(1)).findByEmail("admin@example.com");
         verify(adminRepository, times(1)).update(admin);
     }
