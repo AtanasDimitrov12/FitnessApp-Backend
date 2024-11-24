@@ -5,6 +5,7 @@ import fitness_app_be.fitness_app.domain.Admin;
 import fitness_app_be.fitness_app.exception_handling.AdminNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.AdminRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Optional;
 public class AdminServiceImpl implements AdminService {
 
     private final AdminRepository adminRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<Admin> getAllAdmins() {
@@ -57,7 +59,7 @@ public class AdminServiceImpl implements AdminService {
                 .orElseThrow(() -> new AdminNotFoundException("Admin with email " + admin.getEmail() + " not found"));
 
 
-        existingAdmin.setPassword(admin.getPassword());
+        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
 
         return adminRepository.update(existingAdmin);
     }

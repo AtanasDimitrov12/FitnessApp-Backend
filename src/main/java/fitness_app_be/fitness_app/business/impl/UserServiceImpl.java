@@ -5,6 +5,7 @@ import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.exception_handling.UserNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -66,6 +68,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(User user) {
         if (userRepository.exists(user.getId())) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             return userRepository.update(user);
         } else {
             throw new UserNotFoundException(user.getId());
