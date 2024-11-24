@@ -44,7 +44,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest loginRequest) {
-        // Try to authenticate as a user
+
         try {
             Optional<User> userOptional = userService.findUserByUsername(loginRequest.getUsername());
             if (userOptional.isPresent()) {
@@ -56,7 +56,7 @@ public class AuthController {
             System.out.println("User not found, attempting admin login.");
         }
 
-        // If user authentication fails, try to authenticate as an admin
+
         try {
             Optional<Admin> adminOptional = adminService.findAdminByEmail(loginRequest.getUsername());
             if (adminOptional.isPresent()) {
@@ -68,7 +68,7 @@ public class AuthController {
             System.out.println("Admin not found, returning unauthorized response.");
         }
 
-        // If neither user nor admin is found or authenticated, return unauthorized
+
         return ResponseEntity.status(401).body(new JwtResponse("Invalid username or password"));
     }
 }

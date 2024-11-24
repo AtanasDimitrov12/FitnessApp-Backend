@@ -27,6 +27,12 @@ public class ProgressNoteServiceImpl implements ProgressNoteService {
     }
 
     @Override
+    public List<ProgressNote> getProgressNotesByUserId(Long userId) {
+        return progressNoteRepository.findByUserId(userId);
+    }
+
+
+    @Override
     public ProgressNote createProgressNote(ProgressNote progressNote) {
         return progressNoteRepository.create(progressNote);
     }

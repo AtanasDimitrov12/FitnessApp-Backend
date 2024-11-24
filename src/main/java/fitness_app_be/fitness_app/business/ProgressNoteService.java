@@ -7,6 +7,7 @@ import java.util.List;
 public interface ProgressNoteService {
     List<ProgressNote> getAllProgressNotes();
     ProgressNote getProgressNoteById(Long id);
+    List<ProgressNote> getProgressNotesByUserId(Long userId);
     ProgressNote createProgressNote(ProgressNote progressNote);
     void deleteProgressNote(Long id);
     ProgressNote updateProgressNote(ProgressNote progressNote);

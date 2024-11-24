@@ -28,7 +28,7 @@ public class UserController {
                 .toList();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/{id}")
     public UserDTO getUserById(@PathVariable Long id) {
 

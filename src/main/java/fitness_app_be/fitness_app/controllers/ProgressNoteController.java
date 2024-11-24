@@ -35,6 +35,16 @@ public class ProgressNoteController {
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @GetMapping("/user/{userId}")
+    public List<ProgressNoteDTO> getProgressNotesByUserId(@PathVariable Long userId) {
+        return progressNoteService.getProgressNotesByUserId(userId).stream()
+                .map(progressNoteMapper::domainToDto)
+                .toList();
+    }
+
+
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
     public ProgressNoteDTO createProgressNote(@RequestBody ProgressNoteDTO progressNoteDTO) {
         ProgressNote progressNote = progressNoteMapper.toDomain(progressNoteDTO);
