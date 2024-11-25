@@ -28,7 +28,6 @@ test:
 sonarqube-check:
   stage: sonarqube-check
   script:
-    - echo "127.0.0.1 host.docker.internal" | sudo tee -a /etc/hosts  # Map host.docker.internal for Linux
     - echo "Waiting for SonarQube to initialize..."
     - sleep 30
     - ./gradlew sonarqube -Dsonar.host.url=$SONAR_HOST_URL
