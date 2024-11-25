@@ -6,4 +6,5 @@ public interface AuthService {
     void register(User user);
     String authenticateUser(String Username, String Password);
     String authenticateAdmin(String email, String password);
+    boolean verifyPassword(String storedPassword, String inputPassword);
 }

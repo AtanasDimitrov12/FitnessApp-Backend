@@ -77,4 +77,9 @@ public class AuthServiceImpl implements AuthService {
         return accessTokenEncoder.encode(accessToken);
     }
 
+    public boolean verifyPassword(String storedPassword, String inputPassword) {
+
+        return passwordEncoder.matches(inputPassword, storedPassword);
+    }
 }
+

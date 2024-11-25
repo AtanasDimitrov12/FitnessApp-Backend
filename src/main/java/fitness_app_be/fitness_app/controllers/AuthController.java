@@ -5,6 +5,7 @@ import fitness_app_be.fitness_app.business.UserService;
 import fitness_app_be.fitness_app.business.AdminService;
 import fitness_app_be.fitness_app.controllers.dto.Authentication.JwtResponse;
 import fitness_app_be.fitness_app.controllers.dto.Authentication.LoginRequest;
+import fitness_app_be.fitness_app.controllers.dto.Authentication.VerifyPasswordRequest;
 import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.domain.Admin;
 import fitness_app_be.fitness_app.controllers.dto.UserDTO;
@@ -45,6 +46,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest loginRequest) {
 
+        // User Login Attempt
         try {
             Optional<User> userOptional = userService.findUserByUsername(loginRequest.getUsername());
             if (userOptional.isPresent()) {
@@ -53,10 +55,11 @@ public class AuthController {
                 return ResponseEntity.ok(new JwtResponse(jwtToken));
             }
         } catch (UserNotFoundException e) {
-            System.out.println("User not found, attempting admin login.");
+            // Log or handle user-specific issues
+            System.out.println("User not found: " + loginRequest.getUsername());
         }
 
-
+        // Admin Login Attempt
         try {
             Optional<Admin> adminOptional = adminService.findAdminByEmail(loginRequest.getUsername());
             if (adminOptional.isPresent()) {
@@ -65,10 +68,40 @@ public class AuthController {
                 return ResponseEntity.ok(new JwtResponse(jwtToken));
             }
         } catch (AdminNotFoundException e) {
-            System.out.println("Admin not found, returning unauthorized response.");
+            // Log or handle admin-specific issues
+            System.out.println("Admin not found: " + loginRequest.getUsername());
         }
 
-
+        // Generic failure response for unauthorized access
         return ResponseEntity.status(401).body(new JwtResponse("Invalid username or password"));
+    }
+
+    @PostMapping("/verify-password")
+    public ResponseEntity<Boolean> verifyPassword(@RequestBody VerifyPasswordRequest verifyPasswordRequest) {
+        try {
+            // Check user password
+            Optional<User> userOptional = userService.findUserByUsername(verifyPasswordRequest.getUsername());
+            if (userOptional.isPresent()) {
+                boolean isPasswordValid = authService.verifyPassword(
+                        userOptional.get().getPassword(),
+                        verifyPasswordRequest.getPassword()
+                );
+                return ResponseEntity.ok(isPasswordValid);
+            }
+
+            // Check admin password
+            Optional<Admin> adminOptional = adminService.findAdminByEmail(verifyPasswordRequest.getUsername());
+            if (adminOptional.isPresent()) {
+                boolean isPasswordValid = authService.verifyPassword(
+                        adminOptional.get().getPassword(),
+                        verifyPasswordRequest.getPassword()
+                );
+                return ResponseEntity.ok(isPasswordValid);
+            }
+        } catch (Exception e) {
+            System.err.println("Error verifying password: " + e.getMessage());
+        }
+
+        return ResponseEntity.status(401).body(false); // Unauthorized if verification fails
     }
 }
