@@ -46,7 +46,7 @@ public class WorkoutServiceImpl implements WorkoutService {
             List<Exercise> managedExercises = workout.getExercises().stream()
                     .map(exercise -> exerciseRepository.findById(exercise.getId())
                             .orElseThrow(() -> new IllegalArgumentException("Exercise not found: " + exercise.getId())))
-                    .collect(Collectors.toList());
+                    .toList();
             workout.setExercises(managedExercises);
 
 

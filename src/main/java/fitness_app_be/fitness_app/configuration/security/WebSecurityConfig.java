@@ -65,24 +65,4 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         return source; // Return as CorsConfigurationSource (valid due to inheritance)
     }
 
-
-
-
-//    @Bean
-//    public WebMvcConfigurer corsConfigurer() {
-//        return new WebMvcConfigurer() {
-//            @Override
-//            public void addCorsMappings(CorsRegistry registry) {
-//                registry.addMapping("/**")
-//                        .allowedOrigins("http://localhost:5173") // Allow your frontend origin
-//                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-//                        .allowedHeaders("*")
-//                        .allowCredentials(true)
-//                        .maxAge(3600); // Cache preflight responses for 1 hour
-//            }
-//        };
-//    }
-
-
-
 }

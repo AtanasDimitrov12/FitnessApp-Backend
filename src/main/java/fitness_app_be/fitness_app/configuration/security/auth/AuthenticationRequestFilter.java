@@ -8,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,11 +21,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
+@AllArgsConstructor
 public class AuthenticationRequestFilter extends OncePerRequestFilter {
 
     private static final String SPRING_SECURITY_ROLE_PREFIX = "ROLE_";
-
-    @Autowired
     private AccessTokenDecoder accessTokenDecoder;
 
     @Override

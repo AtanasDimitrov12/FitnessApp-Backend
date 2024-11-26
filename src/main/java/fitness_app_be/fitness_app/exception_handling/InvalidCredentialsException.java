@@ -5,5 +5,10 @@ public class InvalidCredentialsException extends RuntimeException {
 
         super("Invalid username or password");
     }
+
+    public InvalidCredentialsException(String errorMessage) {
+
+        super("Error verifying password: " + errorMessage);
+    }
 }
 

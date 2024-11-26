@@ -1,14 +1,14 @@
-package fitness_app_be.fitness_app.controllers.dto.Authentication;
+package fitness_app_be.fitness_app.controllers.dto.authentication;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginRequest {
+public class VerifyPasswordRequest {
     private String username;
     private String password;
-}
 
+}

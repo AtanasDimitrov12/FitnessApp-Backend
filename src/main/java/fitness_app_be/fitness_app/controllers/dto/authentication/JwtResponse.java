@@ -1,4 +1,4 @@
-package fitness_app_be.fitness_app.controllers.dto.Authentication;
+package fitness_app_be.fitness_app.controllers.dto.authentication;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

@@ -3,13 +3,14 @@ package fitness_app_be.fitness_app.controllers;
 import fitness_app_be.fitness_app.business.AuthService;
 import fitness_app_be.fitness_app.business.UserService;
 import fitness_app_be.fitness_app.business.AdminService;
-import fitness_app_be.fitness_app.controllers.dto.Authentication.JwtResponse;
-import fitness_app_be.fitness_app.controllers.dto.Authentication.LoginRequest;
-import fitness_app_be.fitness_app.controllers.dto.Authentication.VerifyPasswordRequest;
+import fitness_app_be.fitness_app.controllers.dto.authentication.JwtResponse;
+import fitness_app_be.fitness_app.controllers.dto.authentication.LoginRequest;
+import fitness_app_be.fitness_app.controllers.dto.authentication.VerifyPasswordRequest;
 import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.domain.Admin;
 import fitness_app_be.fitness_app.controllers.dto.UserDTO;
 import fitness_app_be.fitness_app.exception_handling.AdminNotFoundException;
+import fitness_app_be.fitness_app.exception_handling.InvalidCredentialsException;
 import fitness_app_be.fitness_app.exception_handling.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +57,7 @@ public class AuthController {
             }
         } catch (UserNotFoundException e) {
             // Log or handle user-specific issues
-            System.out.println("User not found: " + loginRequest.getUsername());
+            throw new UserNotFoundException("User not found: " + loginRequest.getUsername());
         }
 
         // Admin Login Attempt
@@ -69,7 +70,7 @@ public class AuthController {
             }
         } catch (AdminNotFoundException e) {
             // Log or handle admin-specific issues
-            System.out.println("Admin not found: " + loginRequest.getUsername());
+            throw new AdminNotFoundException("Admin not found: " + loginRequest.getUsername());
         }
 
         // Generic failure response for unauthorized access
@@ -99,7 +100,7 @@ public class AuthController {
                 return ResponseEntity.ok(isPasswordValid);
             }
         } catch (Exception e) {
-            System.err.println("Error verifying password: " + e.getMessage());
+            throw new InvalidCredentialsException(e.getMessage());
         }
 
         return ResponseEntity.status(401).body(false); // Unauthorized if verification fails

@@ -50,12 +50,12 @@ public class UserMapper {
                 .diets(userDTO.getDiets() != null
                         ? userDTO.getDiets().stream()
                         .map(dietMapper::toDomain)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null)
                 .notes(userDTO.getNotes() != null
                         ? userDTO.getNotes().stream()
                         .map(progressNoteMapper::toDomain)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null)
                 .isActive(userDTO.getIsActive())
                 .build();
@@ -81,12 +81,12 @@ public class UserMapper {
                 .diets(user.getDiets() != null
                         ? user.getDiets().stream()
                         .map(dietMapper::domainToDto)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null)
                 .notes(user.getNotes() != null
                         ? user.getNotes().stream()
                         .map(progressNoteMapper::domainToDto)
-                        .collect(Collectors.toList())
+                        .toList()
                         : null)
                 .isActive(user.getIsActive())
                 .build();
