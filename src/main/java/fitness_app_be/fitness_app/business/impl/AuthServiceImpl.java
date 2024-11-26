@@ -9,6 +9,7 @@ import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.domain.Role;
 import fitness_app_be.fitness_app.configuration.security.token.AccessToken;
 import fitness_app_be.fitness_app.configuration.security.token.impl.AccessTokenImpl;
+import fitness_app_be.fitness_app.exception_handling.InvalidCredentialsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -40,12 +41,12 @@ public class AuthServiceImpl implements AuthService {
         Optional<User> userOptional = userService.findUserByUsername(username);
 
         if (userOptional.isEmpty()) {
-            throw new RuntimeException("Invalid username or password");
+            throw new InvalidCredentialsException();
         }
 
         User storedUser = userOptional.get();
         if (!passwordEncoder.matches(password, storedUser.getPassword())) {
-            throw new RuntimeException("Invalid username or password");
+            throw new InvalidCredentialsException();
         }
 
         AccessToken accessToken = new AccessTokenImpl(
@@ -61,12 +62,12 @@ public class AuthServiceImpl implements AuthService {
         Optional<Admin> adminOptional = adminService.findAdminByEmail(email);
 
         if (adminOptional.isEmpty()) {
-            throw new RuntimeException("Invalid username or password");
+            throw new InvalidCredentialsException();
         }
 
         Admin storedAdmin = adminOptional.get();
         if (!passwordEncoder.matches(password, storedAdmin.getPassword())) {
-            throw new RuntimeException("Invalid username or password");
+            throw new InvalidCredentialsException();
         }
 
         AccessToken accessToken = new AccessTokenImpl(

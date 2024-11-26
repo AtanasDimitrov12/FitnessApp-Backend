@@ -1,6 +1,9 @@
 package fitness_app_be.fitness_app.business;
 
 import fitness_app_be.fitness_app.domain.User;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,4 +16,5 @@ public interface UserService {
     Optional<User> getUserByEmail(String email);
     List<User> searchUsersByPartialUsername(String partialUsername);
     User updateUser(User user);
+    User uploadUserProfilePicture(Long userId, File imageFile) throws IOException;
 }

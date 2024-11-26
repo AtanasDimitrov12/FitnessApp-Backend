@@ -4,7 +4,7 @@ import fitness_app_be.fitness_app.domain.User;
 
 public interface AuthService {
     void register(User user);
-    String authenticateUser(String Username, String Password);
+    String authenticateUser(String username, String password);
     String authenticateAdmin(String email, String password);
     boolean verifyPassword(String storedPassword, String inputPassword);
 }

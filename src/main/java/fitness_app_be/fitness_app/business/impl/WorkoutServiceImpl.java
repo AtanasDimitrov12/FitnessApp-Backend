@@ -70,7 +70,7 @@ public class WorkoutServiceImpl implements WorkoutService {
 
 
     @SuppressWarnings("unchecked")
-    String uploadImageToCloudinary(File file) throws IOException {
+    private String uploadImageToCloudinary(File file) throws IOException {
         if (file == null || !file.exists()) {
             throw new IllegalArgumentException("File must not be null and must exist.");
         }
