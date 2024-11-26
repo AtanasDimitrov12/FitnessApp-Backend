@@ -139,7 +139,13 @@ class UserServiceImplTest {
 
         when(userRepository.exists(1L)).thenReturn(true); // Mock user existence
         when(passwordEncoder.encode("updatedPassword")).thenReturn(encodedPassword); // Mock password encoding
-        when(userRepository.update(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0)); // Return updated user
+
+        // Mock userRepository.update() to verify and update the User password
+        when(userRepository.update(any(User.class))).thenAnswer(invocation -> {
+            User updatedUser = invocation.getArgument(0); // Capture the User object passed
+            updatedUser.setPassword(encodedPassword); // Simulate encoding the password
+            return updatedUser; // Return the updated User
+        });
 
         // Act
         User result = userService.updateUser(user);
@@ -153,6 +159,7 @@ class UserServiceImplTest {
                 updatedUserRequest.getPassword().equals(encodedPassword) // Ensure encoded password is passed
         ));
     }
+
 
 
 
