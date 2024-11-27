@@ -79,10 +79,8 @@ public class DietController {
         } catch (IOException e) {
             // Log the exception with contextual information
             logger.error("Failed to parse diet JSON: {}", dietJson, e);
-
             // Rethrow as a custom exception with additional context
             throw new JsonParsingException("Error parsing diet JSON. Ensure the input is correctly formatted.", e);
         }
     }
-
 }
