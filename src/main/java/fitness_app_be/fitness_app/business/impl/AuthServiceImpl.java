@@ -3,6 +3,7 @@ package fitness_app_be.fitness_app.business.impl;
 import fitness_app_be.fitness_app.business.AdminService;
 import fitness_app_be.fitness_app.business.AuthService;
 import fitness_app_be.fitness_app.business.UserService;
+import fitness_app_be.fitness_app.configuration.security.PasswordEncodeConfig;
 import fitness_app_be.fitness_app.configuration.security.token.AccessTokenEncoder;
 import fitness_app_be.fitness_app.domain.Admin;
 import fitness_app_be.fitness_app.domain.User;
@@ -11,7 +12,6 @@ import fitness_app_be.fitness_app.configuration.security.token.AccessToken;
 import fitness_app_be.fitness_app.configuration.security.token.impl.AccessTokenImpl;
 import fitness_app_be.fitness_app.exception_handling.InvalidCredentialsException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -23,13 +23,13 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserService userService;
     private final AdminService adminService;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncodeConfig passwordEncodeConfig;
     private final AccessTokenEncoder accessTokenEncoder;
 
     @Override
     public void register(User user) {
         // Hash the password and set default role
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncodeConfig.createBCryptPasswordEncoder().encode(user.getPassword()));
         user.setRole(Role.USER);
 
         // Use UserService to create the user
@@ -45,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         User storedUser = userOptional.get();
-        if (!passwordEncoder.matches(password, storedUser.getPassword())) {
+        if (!passwordEncodeConfig.createBCryptPasswordEncoder().matches(password, storedUser.getPassword())) {
             throw new InvalidCredentialsException();
         }
 
@@ -66,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         Admin storedAdmin = adminOptional.get();
-        if (!passwordEncoder.matches(password, storedAdmin.getPassword())) {
+        if (!passwordEncodeConfig.createBCryptPasswordEncoder().matches(password, storedAdmin.getPassword())) {
             throw new InvalidCredentialsException();
         }
 
@@ -78,9 +78,10 @@ public class AuthServiceImpl implements AuthService {
         return accessTokenEncoder.encode(accessToken);
     }
 
+    @Override
     public boolean verifyPassword(String storedPassword, String inputPassword) {
 
-        return passwordEncoder.matches(inputPassword, storedPassword);
+        return passwordEncodeConfig.createBCryptPasswordEncoder().matches(inputPassword, storedPassword);
     }
 }
 

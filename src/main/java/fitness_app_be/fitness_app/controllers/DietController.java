@@ -77,10 +77,9 @@ public class DietController {
             // Parse the JSON string into a DietDTO object using ObjectMapper
             return objectMapper.readValue(dietJson, DietDTO.class);
         } catch (IOException e) {
-            // Log the exception with contextual information
-            logger.error("Failed to parse diet JSON: {}", dietJson, e);
             // Rethrow as a custom exception with additional context
-            throw new JsonParsingException("Error parsing diet JSON. Ensure the input is correctly formatted.", e);
+            throw new JsonParsingException(
+                    "Error parsing diet JSON. Ensure the input is correctly formatted.", e);
         }
     }
 }
