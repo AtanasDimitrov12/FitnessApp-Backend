@@ -28,13 +28,12 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     @Value("${corsheader}")
     private String corsHeader;
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity,
                                            AuthenticationEntryPoint authenticationEntryPoint,
                                            AuthenticationRequestFilter authenticationRequestFilter) throws Exception {
         httpSecurity
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.disable()) // Safe to disable for stateless APIs using JWT
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Use the CorsConfigurationSource bean
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
@@ -58,11 +57,9 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         configuration.setAllowCredentials(true); // Allow cookies or credentials
         configuration.setMaxAge(3600L); // Cache preflight response for 1 hour
 
-        // Declare the source and register the configuration
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
 
-        return source; // Return as CorsConfigurationSource (valid due to inheritance)
+        return source;
     }
-
 }
