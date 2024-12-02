@@ -3,9 +3,11 @@ package fitness_app_be.fitness_app.controllers;
 import fitness_app_be.fitness_app.business.AuthService;
 import fitness_app_be.fitness_app.business.UserService;
 import fitness_app_be.fitness_app.business.AdminService;
+import fitness_app_be.fitness_app.controllers.dto.AdminDTO;
 import fitness_app_be.fitness_app.controllers.dto.authentication.JwtResponse;
 import fitness_app_be.fitness_app.controllers.dto.authentication.LoginRequest;
 import fitness_app_be.fitness_app.controllers.dto.authentication.VerifyPasswordRequest;
+import fitness_app_be.fitness_app.controllers.mapper.AdminMapper;
 import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.domain.Admin;
 import fitness_app_be.fitness_app.controllers.dto.UserDTO;
@@ -25,12 +27,14 @@ public class AuthController {
     private final AuthService authService;
     private final UserService userService;
     private final AdminService adminService;
+    private final AdminMapper adminMapper;
 
     @Autowired
-    public AuthController(AuthService authService, UserService userService, AdminService adminService) {
+    public AuthController(AuthService authService, UserService userService, AdminService adminService, AdminMapper adminMapper) {
         this.authService = authService;
         this.userService = userService;
         this.adminService = adminService;
+        this.adminMapper = adminMapper;
     }
 
     @PostMapping("/signup")
@@ -43,6 +47,16 @@ public class AuthController {
         authService.register(user);
         return ResponseEntity.ok("User registered successfully");
     }
+
+    @PostMapping("/admin/signup")
+    public ResponseEntity<String> registerAdmin(@RequestBody AdminDTO adminDTO) {
+        Admin admin = adminMapper.toDomain(adminDTO);
+
+        authService.adminRegister(admin);
+        return ResponseEntity.ok("User registered successfully");
+    }
+
+
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest loginRequest) {
