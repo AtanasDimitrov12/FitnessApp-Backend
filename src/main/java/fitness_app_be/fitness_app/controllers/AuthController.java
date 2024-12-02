@@ -60,36 +60,38 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest loginRequest) {
-
         // User Login Attempt
-        try {
-            Optional<User> userOptional = userService.findUserByUsername(loginRequest.getUsername());
-            if (userOptional.isPresent()) {
-                User user = userOptional.get();
+        Optional<User> userOptional = userService.findUserByUsername(loginRequest.getUsername());
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            try {
                 String jwtToken = authService.authenticateUser(user.getUsername(), loginRequest.getPassword());
                 return ResponseEntity.ok(new JwtResponse(jwtToken));
+            } catch (UserNotFoundException e) {
+                // Log authentication failure
+                System.out.println("Invalid user credentials for username: " + loginRequest.getUsername());
             }
-        } catch (UserNotFoundException e) {
-            // Log or handle user-specific issues
-            throw new UserNotFoundException("User not found: " + loginRequest.getUsername());
         }
 
+        System.out.println("Admin Log In!");
+
         // Admin Login Attempt
-        try {
-            Optional<Admin> adminOptional = adminService.findAdminByEmail(loginRequest.getUsername());
-            if (adminOptional.isPresent()) {
-                Admin admin = adminOptional.get();
+        Optional<Admin> adminOptional = adminService.findAdminByEmail(loginRequest.getUsername());
+        if (adminOptional.isPresent()) {
+            Admin admin = adminOptional.get();
+            try {
                 String jwtToken = authService.authenticateAdmin(admin.getEmail(), loginRequest.getPassword());
                 return ResponseEntity.ok(new JwtResponse(jwtToken));
+            } catch (AdminNotFoundException e) {
+                // Log authentication failure
+                System.out.println("Invalid admin credentials for email: " + loginRequest.getUsername());
             }
-        } catch (AdminNotFoundException e) {
-            // Log or handle admin-specific issues
-            throw new AdminNotFoundException("Admin not found: " + loginRequest.getUsername());
         }
 
         // Generic failure response for unauthorized access
         return ResponseEntity.status(401).body(new JwtResponse("Invalid username or password"));
     }
+
 
     @PostMapping("/verify-password")
     public ResponseEntity<Boolean> verifyPassword(@RequestBody VerifyPasswordRequest verifyPasswordRequest) {

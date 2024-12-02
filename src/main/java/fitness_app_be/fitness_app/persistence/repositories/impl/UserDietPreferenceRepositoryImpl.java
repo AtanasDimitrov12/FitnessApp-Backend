@@ -19,7 +19,7 @@ public class UserDietPreferenceRepositoryImpl implements UserDietPreferenceRepos
     private final JpaUserDietPreferenceRepository jpaUserDietPreferenceRepository;
     private final UserDietPreferenceEntityMapper userDietPreferenceEntityMapper;
     private final UserRepository userRepository;
-    private final UserEntityMapper userEntityMapper;
+    private final UserEntityMapper mapper;
 
     @Autowired
     public UserDietPreferenceRepositoryImpl(
@@ -29,7 +29,7 @@ public class UserDietPreferenceRepositoryImpl implements UserDietPreferenceRepos
         this.jpaUserDietPreferenceRepository = jpaUserDietPreferenceRepository;
         this.userDietPreferenceEntityMapper = userDietPreferenceEntityMapper;
         this.userRepository = userRepository;
-        this.userEntityMapper = userEntityMapper;
+        this.mapper = userEntityMapper;
     }
 
     @Override
@@ -42,6 +42,8 @@ public class UserDietPreferenceRepositoryImpl implements UserDietPreferenceRepos
         UserEntity userEntity = findUserEntityById(preference.getUserid()); // Fetch or obtain the UserEntity
         UserDietPreferenceEntity entity = userDietPreferenceEntityMapper.toEntity(preference, userEntity);
         UserDietPreferenceEntity savedEntity = jpaUserDietPreferenceRepository.save(entity);
+        userEntity.setDietPreference(savedEntity);
+        userRepository.update(mapper.toDomain(userEntity));
         return userDietPreferenceEntityMapper.toDomain(savedEntity);
     }
 
@@ -77,7 +79,8 @@ public class UserDietPreferenceRepositoryImpl implements UserDietPreferenceRepos
     }
 
     private UserEntity findUserEntityById(long userId) {
-        return userEntityMapper.toEntity(userRepository.getUserById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User with ID " + userId + " not found.")));
+        return userRepository.findEntityById(userId);
     }
+
+
 }

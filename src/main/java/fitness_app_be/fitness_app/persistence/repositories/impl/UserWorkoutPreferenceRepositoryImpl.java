@@ -44,6 +44,8 @@ public class UserWorkoutPreferenceRepositoryImpl implements UserWorkoutPreferenc
         UserEntity userEntity = findUserEntityById(preference.getUserid()); // Retrieve UserEntity
         UserWorkoutPreferenceEntity entity = userWorkoutPreferenceEntityMapper.toEntity(preference, userEntity);
         UserWorkoutPreferenceEntity savedEntity = jpaUserWorkoutPreferenceRepository.save(entity);
+        userEntity.setWorkoutPreference(savedEntity);
+        userRepository.save(userEntity);
         return userWorkoutPreferenceEntityMapper.toDomain(savedEntity);
     }
 

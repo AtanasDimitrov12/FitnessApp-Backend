@@ -115,4 +115,11 @@ public class UserRepositoryImpl implements UserRepository {
     public long countByIsActive(boolean isActive) {
         return jpaUserRepository.countByIsActive(isActive);
     }
+
+    @Override
+    public UserEntity findEntityById(long userId) {
+        return jpaUserRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User with ID " + userId + " not found."));
+    }
+
 }

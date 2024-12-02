@@ -1,6 +1,7 @@
 package fitness_app_be.fitness_app.persistence.repositories;
 
 import fitness_app_be.fitness_app.domain.User;
+import fitness_app_be.fitness_app.persistence.entity.UserEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,4 +39,6 @@ public interface UserRepository {
     long countByEmail(String email);
 
     long countByIsActive(boolean isActive); // Count active/inactive users
+
+    UserEntity findEntityById(long userId);
 }
