@@ -4,15 +4,20 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import fitness_app_be.fitness_app.business.UserService;
 import fitness_app_be.fitness_app.domain.User;
+import fitness_app_be.fitness_app.exception_handling.CustomFileUploadException;
 import fitness_app_be.fitness_app.exception_handling.UserNotFoundException;
+import fitness_app_be.fitness_app.exception_handling.UserProfileUpdateException;
 import fitness_app_be.fitness_app.exception_handling.WorkoutNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -80,43 +85,65 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User uploadUserProfilePicture(Long userId, File imageFile) throws IOException {
+    public User uploadUserProfilePicture(Long userId, MultipartFile imageFile) throws CustomFileUploadException, UserProfileUpdateException {
+        try {
+            // Upload the image to the cloud directly using MultipartFile
+            String imageUrl = uploadImageToCloud(imageFile);
 
+            // Update the user's profile with the image URL
+            User user = getUserById(userId);
+            user.setPictureURL(imageUrl);
 
-            try {
-                // Upload the image to the cloud (e.g., Cloudinary, AWS S3, etc.)
-                String imageUrl = uploadImageToCloud(imageFile);
+            // Save the updated user
+            return userRepository.update(user);
 
-                // Update the user's profile with the image URL
-                User user = getUserById(userId);
-                user.setPictureURL(imageUrl);
+        } catch (UserNotFoundException e) {
+            throw new UserNotFoundException("User not found: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new CustomFileUploadException("Image upload failed: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new UserProfileUpdateException("Error updating user profile: " + e.getMessage(), e);
+        }
+    }
 
-                // Save the updated user
-                return userRepository.update(user);
-
-            } catch (IllegalArgumentException e) {
-                throw new WorkoutNotFoundException("Exercise validation failed: " + e.getMessage());
-            } catch (IOException e) {
-                throw new WorkoutNotFoundException("Image upload failed: " + e.getMessage());
-            } catch (Exception e) {
-                throw new WorkoutNotFoundException("Error creating workout: " + e.getMessage());
-            }
+    private String uploadImageToCloud(MultipartFile multipartFile) throws IOException {
+        if (multipartFile == null || multipartFile.isEmpty()) {
+            throw new IllegalArgumentException("File must not be null or empty.");
         }
 
-    private String uploadImageToCloud (File file) throws IOException {
-        if (file == null || !file.exists()) {
-            throw new IllegalArgumentException("File must not be null and must exist.");
-        }
+        // Get the current system time
+        Date currentDate = new Date();
+        System.out.println("Current system time: " + currentDate);
 
-        Map<String, Object> uploadResult = cloudinary.uploader().upload(file, ObjectUtils.emptyMap());
+        // Get the current timestamp in seconds
+        long timestamp = System.currentTimeMillis() / 1000L;
+        System.out.println("Timestamp sent to Cloudinary: " + timestamp);
 
+        // Convert timestamp to readable date for comparison
+        Date timestampDate = new Date(timestamp * 1000L);
+        System.out.println("Timestamp date: " + timestampDate);
+
+        // Upload parameters
+        Map<String, Object> uploadParams = ObjectUtils.asMap(
+                "timestamp", timestamp
+        );
+
+        // Upload the image to Cloudinary
+        Map uploadResult = cloudinary.uploader().upload(
+                multipartFile.getBytes(),
+                uploadParams
+        );
+
+        // Retrieve the URL
         Object url = uploadResult.get("url");
-        if (url instanceof String urlString) {
-            return urlString;
+        if (url instanceof String) {
+            return (String) url;
         } else {
             throw new IOException("Failed to retrieve image URL from upload result.");
         }
     }
+
+
 
 
 }

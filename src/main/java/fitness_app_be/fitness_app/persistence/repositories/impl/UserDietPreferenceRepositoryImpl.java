@@ -40,6 +40,9 @@ public class UserDietPreferenceRepositoryImpl implements UserDietPreferenceRepos
     @Override
     public UserDietPreference create(UserDietPreference preference) {
         UserEntity userEntity = findUserEntityById(preference.getUserid()); // Fetch or obtain the UserEntity
+        if (userEntity == null) {
+            throw new IllegalArgumentException("User with ID " + preference.getUserid() + " does not exist.");
+        }
         UserDietPreferenceEntity entity = userDietPreferenceEntityMapper.toEntity(preference, userEntity);
         UserDietPreferenceEntity savedEntity = jpaUserDietPreferenceRepository.save(entity);
         userEntity.setDietPreference(savedEntity);
@@ -49,14 +52,24 @@ public class UserDietPreferenceRepositoryImpl implements UserDietPreferenceRepos
 
     @Override
     public UserDietPreference update(UserDietPreference preference) {
-        if (!exists(preference.getId())) {
-            throw new IllegalArgumentException("UserDietPreference with ID " + preference.getId() + " does not exist.");
-        }
-        UserEntity userEntity = findUserEntityById(preference.getUserid()); // Fetch or obtain the UserEntity
-        UserDietPreferenceEntity entity = userDietPreferenceEntityMapper.toEntity(preference, userEntity);
-        UserDietPreferenceEntity updatedEntity = jpaUserDietPreferenceRepository.save(entity);
+        // Find the existing preference by user ID
+        UserDietPreferenceEntity existingEntity = jpaUserDietPreferenceRepository
+                .findByUserId(preference.getUserid())
+                .orElseThrow(() ->
+                        new IllegalArgumentException("UserDietPreference for user ID " + preference.getUserid() + " does not exist.")
+                );
+
+        // Update fields in the existing entity
+        existingEntity.setCalories(preference.getCalories());
+        existingEntity.setMealFrequency(preference.getMealFrequency());
+
+        // Save the updated entity
+        UserDietPreferenceEntity updatedEntity = jpaUserDietPreferenceRepository.save(existingEntity);
+
+        // Convert the updated entity back to the domain object and return
         return userDietPreferenceEntityMapper.toDomain(updatedEntity);
     }
+
 
     @Override
     public void delete(long preferenceId) {
@@ -81,6 +94,4 @@ public class UserDietPreferenceRepositoryImpl implements UserDietPreferenceRepos
     private UserEntity findUserEntityById(long userId) {
         return userRepository.findEntityById(userId);
     }
-
-
 }

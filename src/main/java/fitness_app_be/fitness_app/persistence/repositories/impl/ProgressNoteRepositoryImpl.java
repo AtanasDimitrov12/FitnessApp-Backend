@@ -21,7 +21,7 @@ public class ProgressNoteRepositoryImpl implements ProgressNoteRepository {
     private final JpaProgressNoteRepository jpaProgressNoteRepository;
     private final ProgressNoteEntityMapper progressNoteEntityMapperImpl;
     private final UserRepository userRepository;
-    private final UserEntityMapper mapper;
+    private final UserEntityMapper userEntityMapper;
 
     @Override
     public boolean exists(long id) {
@@ -40,17 +40,17 @@ public class ProgressNoteRepositoryImpl implements ProgressNoteRepository {
         // Fetch the user entity
         System.out.println(progressNote);
 
-        UserEntity user = userRepository.findEntityById(progressNote.getUserId());
+        UserEntity userEntity = userRepository.findEntityById(progressNote.getUserId());
 
         // Map the domain object to an entity
         ProgressNoteEntity progressNoteEntity = progressNoteEntityMapperImpl.toEntity(progressNote);
         System.out.println("First "+progressNoteEntity);
 
         // Associate the progress note with the user
-        progressNoteEntity.setUser(user);  // Ensure the relationship is established both ways
+        progressNoteEntity.setUser(userEntity);  // Ensure the relationship is established both ways
         System.out.println("Second "+progressNoteEntity);
-        user.getNotes().add(progressNoteEntity);
-        userRepository.update(mapper.toDomain(user));
+        userEntity.getNotes().add(progressNoteEntity);
+        userRepository.update(userEntityMapper.toDomain(userEntity));
 
 
         // Save the progress note (and potentially cascade the changes to the user if configured)

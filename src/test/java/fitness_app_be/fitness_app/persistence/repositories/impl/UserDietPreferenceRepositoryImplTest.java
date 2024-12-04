@@ -69,8 +69,7 @@ class UserDietPreferenceRepositoryImplTest {
 
     @Test
     void create_ShouldReturnCreatedPreference() {
-        when(userRepository.getUserById(101L)).thenReturn(Optional.of(user));
-        when(userEntityMapper.toEntity(user)).thenReturn(userEntity);
+        when(userRepository.findEntityById(101L)).thenReturn(userEntity);
         when(userDietPreferenceEntityMapper.toEntity(preference, userEntity)).thenReturn(preferenceEntity);
         when(jpaUserDietPreferenceRepository.save(preferenceEntity)).thenReturn(preferenceEntity);
         when(userDietPreferenceEntityMapper.toDomain(preferenceEntity)).thenReturn(preference);
@@ -85,8 +84,7 @@ class UserDietPreferenceRepositoryImplTest {
     @Test
     void update_ShouldReturnUpdatedPreference_WhenPreferenceExists() {
         when(jpaUserDietPreferenceRepository.existsById(1L)).thenReturn(true);
-        when(userRepository.getUserById(101L)).thenReturn(Optional.of(user));
-        when(userEntityMapper.toEntity(user)).thenReturn(userEntity);
+        when(userRepository.findEntityById(101L)).thenReturn(userEntity);
         when(userDietPreferenceEntityMapper.toEntity(preference, userEntity)).thenReturn(preferenceEntity);
         when(jpaUserDietPreferenceRepository.save(preferenceEntity)).thenReturn(preferenceEntity);
         when(userDietPreferenceEntityMapper.toDomain(preferenceEntity)).thenReturn(preference);

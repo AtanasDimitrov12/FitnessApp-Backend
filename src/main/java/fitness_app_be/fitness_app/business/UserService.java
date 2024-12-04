@@ -1,6 +1,9 @@
 package fitness_app_be.fitness_app.business;
 
 import fitness_app_be.fitness_app.domain.User;
+import fitness_app_be.fitness_app.exception_handling.CustomFileUploadException;
+import fitness_app_be.fitness_app.exception_handling.UserProfileUpdateException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,5 +19,5 @@ public interface UserService {
     Optional<User> getUserByEmail(String email);
     List<User> searchUsersByPartialUsername(String partialUsername);
     User updateUser(User user);
-    User uploadUserProfilePicture(Long userId, File imageFile) throws IOException;
+    User uploadUserProfilePicture(Long userId, MultipartFile imageFile) throws CustomFileUploadException, UserProfileUpdateException;
 }

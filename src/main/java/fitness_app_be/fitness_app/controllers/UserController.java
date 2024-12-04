@@ -4,18 +4,18 @@ import fitness_app_be.fitness_app.business.UserService;
 import fitness_app_be.fitness_app.controllers.dto.UserDTO;
 import fitness_app_be.fitness_app.controllers.mapper.UserMapper;
 import fitness_app_be.fitness_app.domain.User;
-import fitness_app_be.fitness_app.exception_handling.FileConversionException;
+import fitness_app_be.fitness_app.exception_handling.CustomFileUploadException;
+import fitness_app_be.fitness_app.exception_handling.UserNotFoundException;
+import fitness_app_be.fitness_app.exception_handling.UserProfileUpdateException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
@@ -60,15 +60,20 @@ public class UserController {
     public UserDTO uploadProfilePicture(
             @PathVariable Long id,
             @RequestPart("image") MultipartFile image) {
-        try {
-            // Convert MultipartFile to File
-            File file = convertMultipartFileToFile(image);
 
-            // Use the service to upload the picture and update the user's profile
-            User updatedUser = userService.uploadUserProfilePicture(id, file);
+        try {
+            // Pass the MultipartFile directly to the service method
+            User updatedUser = userService.uploadUserProfilePicture(id, image);
             return userMapper.domainToDto(updatedUser);
-        } catch (IOException e) {
-            throw new FileConversionException("Error converting or uploading file", e);
+        } catch (UserNotFoundException e) {
+            // Return 404 Not Found
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        } catch (CustomFileUploadException | UserProfileUpdateException e) {
+            // Return 500 Internal Server Error
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        } catch (Exception e) {
+            // Handle any other exceptions
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", e);
         }
     }
 
@@ -77,19 +82,5 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
-    }
-
-    // Helper method to convert MultipartFile to File
-    private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
-        if (multipartFile == null || multipartFile.isEmpty()) {
-            throw new FileConversionException("No file uploaded or file is empty");
-        }
-        String filename = UUID.randomUUID() + "_" + multipartFile.getOriginalFilename();
-        File convFile = new File(System.getProperty("java.io.tmpdir") + File.separator + filename);
-
-        try (FileOutputStream fos = new FileOutputStream(convFile)) {
-            fos.write(multipartFile.getBytes());
-        }
-        return convFile;
     }
 }
