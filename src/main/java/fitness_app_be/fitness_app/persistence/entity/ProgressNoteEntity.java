@@ -18,9 +18,11 @@ public class ProgressNoteEntity {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
     private UserEntity user;
+
 
     @Column(name = "weight")
     private double weight;

@@ -2,9 +2,7 @@ package fitness_app_be.fitness_app.persistence.entity;
 
 import fitness_app_be.fitness_app.domain.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,10 +29,12 @@ public class UserEntity {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "diet_preference_id")
+    @ToString.Exclude // Avoid fetching diet preference in toString
     private UserDietPreferenceEntity dietPreference;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "workout_preference_id")
+    @ToString.Exclude // Avoid fetching workout preference in toString
     private UserWorkoutPreferenceEntity workoutPreference;
 
     @Column(name = "picture_url")
@@ -42,12 +42,15 @@ public class UserEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workout_plan_id")
+    @ToString.Exclude // Avoid fetching workout plan in toString
     private WorkoutPlanEntity workoutPlan;
 
     @ManyToMany(mappedBy = "users")
+    @ToString.Exclude // Avoid fetching diets in toString
     private List<DietEntity> diets;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
+    @ToString.Exclude // Avoid fetching progress notes in toString
     private List<ProgressNoteEntity> notes;
 
     // New Fields

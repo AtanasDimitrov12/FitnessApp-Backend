@@ -39,6 +39,7 @@ public class ProgressNoteServiceImpl implements ProgressNoteService {
 
     @Override
     public void deleteProgressNote(Long id) {
+
         if (!progressNoteRepository.exists(id)) {
             throw new ProgressNoteNotFoundException(id);
         }

@@ -1,6 +1,7 @@
 package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.ProgressNote;
+import fitness_app_be.fitness_app.exception_handling.UserNotFoundException;
 import fitness_app_be.fitness_app.persistence.entity.ProgressNoteEntity;
 import fitness_app_be.fitness_app.persistence.entity.UserEntity;
 import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaProgressNoteRepository;
@@ -8,6 +9,7 @@ import fitness_app_be.fitness_app.persistence.mapper.ProgressNoteEntityMapper;
 import fitness_app_be.fitness_app.persistence.mapper.UserEntityMapper;
 import fitness_app_be.fitness_app.persistence.repositories.ProgressNoteRepository;
 import fitness_app_be.fitness_app.persistence.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -37,28 +39,26 @@ public class ProgressNoteRepositoryImpl implements ProgressNoteRepository {
 
     @Override
     public ProgressNote create(ProgressNote progressNote) {
-        // Fetch the user entity
-        System.out.println(progressNote);
-
+        // Fetch the UserEntity and handle the case where it might not exist
         UserEntity userEntity = userRepository.findEntityById(progressNote.getUserId());
+        if (userEntity == null) {
+            throw new UserNotFoundException("User not found with ID: " + progressNote.getUserId());
+        }
 
-        // Map the domain object to an entity
+        // Map the ProgressNote domain object to a ProgressNoteEntity
         ProgressNoteEntity progressNoteEntity = progressNoteEntityMapperImpl.toEntity(progressNote);
-        System.out.println("First "+progressNoteEntity);
 
-        // Associate the progress note with the user
-        progressNoteEntity.setUser(userEntity);  // Ensure the relationship is established both ways
-        System.out.println("Second "+progressNoteEntity);
-        userEntity.getNotes().add(progressNoteEntity);
-        userRepository.update(userEntityMapper.toDomain(userEntity));
+        // Associate the ProgressNoteEntity with the UserEntity
+        progressNoteEntity.setUser(userEntity);
+        userEntity.getNotes().add(progressNoteEntity); // Maintain bidirectional relationship
 
-
-        // Save the progress note (and potentially cascade the changes to the user if configured)
+        // Save the ProgressNoteEntity
         ProgressNoteEntity savedEntity = jpaProgressNoteRepository.save(progressNoteEntity);
 
-        // Return the domain object
+        // Return the saved entity as a domain object
         return progressNoteEntityMapperImpl.toDomain(savedEntity);
     }
+
 
 
     @Override
@@ -70,8 +70,19 @@ public class ProgressNoteRepositoryImpl implements ProgressNoteRepository {
 
     @Override
     public void delete(long progressNoteId) {
-        jpaProgressNoteRepository.deleteById(progressNoteId);
+
+        // Fetch the progress note entity
+        ProgressNoteEntity note = findById(progressNoteId)
+                .orElseThrow(() -> new EntityNotFoundException("Note not found"));
+
+        // Delete the progress note entity
+        jpaProgressNoteRepository.delete(note);
     }
+
+    public Optional<ProgressNoteEntity> findById(long progressNoteId) {
+        return jpaProgressNoteRepository.findById(progressNoteId);
+    }
+
 
     @Override
     public Optional<ProgressNote> getProgressNoteById(long progressNoteId) {
