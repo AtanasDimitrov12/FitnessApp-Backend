@@ -51,14 +51,26 @@ public class UserWorkoutPreferenceRepositoryImpl implements UserWorkoutPreferenc
 
     @Override
     public UserWorkoutPreference update(UserWorkoutPreference preference) {
-        if (!exists(preference.getId())) {
-            throw new IllegalArgumentException("UserWorkoutPreference with ID " + preference.getId() + " does not exist.");
-        }
-        UserEntity userEntity = findUserEntityById(preference.getUserid());
-        UserWorkoutPreferenceEntity entity = userWorkoutPreferenceEntityMapper.toEntity(preference, userEntity);
-        UserWorkoutPreferenceEntity updatedEntity = jpaUserWorkoutPreferenceRepository.save(entity);
+        // Find the existing workout preference by user ID
+        UserWorkoutPreferenceEntity existingEntity = jpaUserWorkoutPreferenceRepository
+                .findByUserId(preference.getUserid())
+                .orElseThrow(() ->
+                        new IllegalArgumentException("UserWorkoutPreference for user ID " + preference.getUserid() + " does not exist.")
+                );
+
+        // Update fields in the existing entity
+        existingEntity.setFitnessGoal(preference.getFitnessGoal());
+        existingEntity.setFitnessLevel(preference.getFitnessLevel());
+        existingEntity.setPreferredTrainingStyle(preference.getPreferredTrainingStyle());
+        existingEntity.setDaysAvailable(preference.getDaysAvailable());
+
+        // Save the updated entity
+        UserWorkoutPreferenceEntity updatedEntity = jpaUserWorkoutPreferenceRepository.save(existingEntity);
+
+        // Convert the updated entity back to the domain object and return
         return userWorkoutPreferenceEntityMapper.toDomain(updatedEntity);
     }
+
 
     @Override
     public void delete(long preferenceId) {

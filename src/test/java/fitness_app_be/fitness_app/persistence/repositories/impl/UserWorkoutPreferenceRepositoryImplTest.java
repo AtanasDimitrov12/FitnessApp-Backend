@@ -78,27 +78,47 @@ class UserWorkoutPreferenceRepositoryImplTest {
 
     @Test
     void update_ShouldReturnUpdatedPreference_WhenPreferenceExists() {
-        when(jpaUserWorkoutPreferenceRepository.existsById(1L)).thenReturn(true);
-        when(userRepository.findById(101L)).thenReturn(Optional.of(userEntity));
-        when(userWorkoutPreferenceEntityMapper.toEntity(preference, userEntity)).thenReturn(preferenceEntity);
-        when(jpaUserWorkoutPreferenceRepository.save(preferenceEntity)).thenReturn(preferenceEntity);
-        when(userWorkoutPreferenceEntityMapper.toDomain(preferenceEntity)).thenReturn(preference);
+        // Mock the repository to return an existing workout preference entity
+        when(jpaUserWorkoutPreferenceRepository.findByUserId(preference.getUserid()))
+                .thenReturn(Optional.of(preferenceEntity));
 
+        // Mock the save operation
+        when(jpaUserWorkoutPreferenceRepository.save(preferenceEntity))
+                .thenReturn(preferenceEntity);
+
+        // Mock the mapping back to domain
+        when(userWorkoutPreferenceEntityMapper.toDomain(preferenceEntity))
+                .thenReturn(preference);
+
+        // Call the update method
         UserWorkoutPreference updatedPreference = userWorkoutPreferenceRepository.update(preference);
 
+        // Verify and assert the results
         assertNotNull(updatedPreference);
         assertEquals(preference, updatedPreference);
-        verify(jpaUserWorkoutPreferenceRepository, times(1)).existsById(1L);
-        verify(jpaUserWorkoutPreferenceRepository, times(1)).save(preferenceEntity);
+
+        verify(jpaUserWorkoutPreferenceRepository, times(1))
+                .findByUserId(preference.getUserid());
+        verify(jpaUserWorkoutPreferenceRepository, times(1))
+                .save(preferenceEntity);
     }
+
 
     @Test
     void update_ShouldThrowException_WhenPreferenceDoesNotExist() {
-        when(jpaUserWorkoutPreferenceRepository.existsById(1L)).thenReturn(false);
+        // Mock the repository to return an empty Optional
+        when(jpaUserWorkoutPreferenceRepository.findByUserId(preference.getUserid()))
+                .thenReturn(Optional.empty());
 
+        // Assert that the exception is thrown
         assertThrows(IllegalArgumentException.class, () -> userWorkoutPreferenceRepository.update(preference));
-        verify(jpaUserWorkoutPreferenceRepository, times(1)).existsById(1L);
+
+        // Verify that the method interactions occurred as expected
+        verify(jpaUserWorkoutPreferenceRepository, times(1))
+                .findByUserId(preference.getUserid());
+        verify(jpaUserWorkoutPreferenceRepository, never()).save(any());
     }
+
 
     @Test
     void delete_ShouldDeletePreference_WhenExists() {
