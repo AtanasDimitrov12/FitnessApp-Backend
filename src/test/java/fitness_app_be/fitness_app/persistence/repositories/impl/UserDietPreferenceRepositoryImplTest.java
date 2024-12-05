@@ -35,7 +35,7 @@ class UserDietPreferenceRepositoryImplTest {
     private UserRepository userRepository;
 
     @Mock
-    private UserEntityMapper userEntityMapper;
+    private UserEntityMapper mapper;
 
     @InjectMocks
     private UserDietPreferenceRepositoryImpl userDietPreferenceRepository;
@@ -69,40 +69,72 @@ class UserDietPreferenceRepositoryImplTest {
 
     @Test
     void create_ShouldReturnCreatedPreference() {
-        when(userRepository.findEntityById(101L)).thenReturn(userEntity);
+        // Mock the user repository to return a valid UserEntity
+        when(userRepository.findEntityById(preference.getUserid())).thenReturn(userEntity);
+
+        // Mock the mapper to convert the domain object to the entity
         when(userDietPreferenceEntityMapper.toEntity(preference, userEntity)).thenReturn(preferenceEntity);
+
+        // Mock the repository save operation
         when(jpaUserDietPreferenceRepository.save(preferenceEntity)).thenReturn(preferenceEntity);
+
+        // Mock the mapper to convert the saved entity back to the domain object
         when(userDietPreferenceEntityMapper.toDomain(preferenceEntity)).thenReturn(preference);
 
+        // Mock the mapper for user update
+        when(mapper.toDomain(userEntity)).thenReturn(user);
+
+        // Call the create method
         UserDietPreference createdPreference = userDietPreferenceRepository.create(preference);
 
+        // Verify the results
         assertNotNull(createdPreference);
         assertEquals(preference, createdPreference);
+
+        // Verify method interactions
+        verify(userRepository, times(1)).findEntityById(preference.getUserid());
         verify(jpaUserDietPreferenceRepository, times(1)).save(preferenceEntity);
+        verify(userRepository, times(1)).update(user);
     }
+
 
     @Test
     void update_ShouldReturnUpdatedPreference_WhenPreferenceExists() {
-        when(jpaUserDietPreferenceRepository.existsById(1L)).thenReturn(true);
-        when(userRepository.findEntityById(101L)).thenReturn(userEntity);
-        when(userDietPreferenceEntityMapper.toEntity(preference, userEntity)).thenReturn(preferenceEntity);
+        // Mock an existing preference entity
+        when(jpaUserDietPreferenceRepository.findByUserId(preference.getUserid()))
+                .thenReturn(Optional.of(preferenceEntity));
+
+        // Mock the save operation
         when(jpaUserDietPreferenceRepository.save(preferenceEntity)).thenReturn(preferenceEntity);
+
+        // Mock the mapping back to domain
         when(userDietPreferenceEntityMapper.toDomain(preferenceEntity)).thenReturn(preference);
 
+        // Call the update method
         UserDietPreference updatedPreference = userDietPreferenceRepository.update(preference);
 
+        // Verify and assert the results
         assertNotNull(updatedPreference);
         assertEquals(preference, updatedPreference);
-        verify(jpaUserDietPreferenceRepository, times(1)).existsById(1L);
+
+        verify(jpaUserDietPreferenceRepository, times(1)).findByUserId(preference.getUserid());
         verify(jpaUserDietPreferenceRepository, times(1)).save(preferenceEntity);
     }
 
     @Test
     void update_ShouldThrowException_WhenPreferenceDoesNotExist() {
-        when(jpaUserDietPreferenceRepository.existsById(1L)).thenReturn(false);
+        // Mock the repository to return an empty Optional
+        when(jpaUserDietPreferenceRepository.findByUserId(preference.getUserid()))
+                .thenReturn(Optional.empty());
+
+        // Assert that the exception is thrown
         assertThrows(IllegalArgumentException.class, () -> userDietPreferenceRepository.update(preference));
-        verify(jpaUserDietPreferenceRepository, times(1)).existsById(1L);
+
+        // Verify that the method interactions occurred as expected
+        verify(jpaUserDietPreferenceRepository, times(1)).findByUserId(preference.getUserid());
+        verify(jpaUserDietPreferenceRepository, never()).save(any());
     }
+
 
     @Test
     void delete_ShouldDeletePreference_WhenExists() {
