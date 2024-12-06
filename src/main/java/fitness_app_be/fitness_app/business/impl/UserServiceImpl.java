@@ -2,15 +2,17 @@ package fitness_app_be.fitness_app.business.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import fitness_app_be.fitness_app.business.UserDietPreferenceService;
 import fitness_app_be.fitness_app.business.UserService;
+import fitness_app_be.fitness_app.business.UserWorkoutPreferenceService;
 import fitness_app_be.fitness_app.domain.User;
+import fitness_app_be.fitness_app.domain.UserDietPreference;
+import fitness_app_be.fitness_app.domain.UserWorkoutPreference;
 import fitness_app_be.fitness_app.exception_handling.CustomFileUploadException;
 import fitness_app_be.fitness_app.exception_handling.UserNotFoundException;
 import fitness_app_be.fitness_app.exception_handling.UserProfileUpdateException;
-import fitness_app_be.fitness_app.exception_handling.WorkoutNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +31,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final Cloudinary cloudinary;
     private final PasswordEncoder passwordEncoder;
+    private final UserDietPreferenceService userDietPreferenceService;
+    private final UserWorkoutPreferenceService userWorkoutPreferenceService;
 
 
     @Override
@@ -44,8 +48,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user) {
+
         return userRepository.create(user);
     }
+
+
 
     @Override
     public void deleteUser(long userId) {

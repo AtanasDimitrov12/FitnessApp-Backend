@@ -92,15 +92,20 @@ class ProgressNoteRepositoryImplTest {
     @Test
     void create_ShouldReturnCreatedProgressNote() {
         // Arrange
-        // Mock the User domain object
-        User user = new User(101L, "username", "email@example.com", "password", null, null, null, null, null, Role.USER, null, null, null, true);
-        when(userEntityMapper.toDomain(userEntity)).thenReturn(user); // Map UserEntity to User
+        ProgressNote progressNote = new ProgressNote(1L, 101L, 70.5, "Test note", LocalDate.now()); // Create domain object
+        ProgressNoteEntity progressNoteEntity = new ProgressNoteEntity(); // Mock entity equivalent
+        progressNoteEntity.setId(1L);
 
-        // Mock the behavior of userRepository and entity mappers
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(101L);
+        userEntity.setUsername("username");
+        userEntity.setNotes(new ArrayList<>()); // Initialize notes to avoid NullPointerException
+
+        // Mock the behavior of the userRepository and mappers
         when(userRepository.findEntityById(101L)).thenReturn(userEntity); // Return UserEntity when searched
         when(progressNoteEntityMapper.toEntity(progressNote)).thenReturn(progressNoteEntity); // Map ProgressNote to ProgressNoteEntity
         when(jpaProgressNoteRepository.save(progressNoteEntity)).thenReturn(progressNoteEntity); // Save ProgressNoteEntity
-        when(progressNoteEntityMapper.toDomain(progressNoteEntity)).thenReturn(progressNote); // Map ProgressNoteEntity to ProgressNote
+        when(progressNoteEntityMapper.toDomain(progressNoteEntity)).thenReturn(progressNote); // Map ProgressNoteEntity back to ProgressNote
 
         // Act
         ProgressNote createdNote = progressNoteRepository.create(progressNote);
@@ -114,7 +119,9 @@ class ProgressNoteRepositoryImplTest {
         verify(progressNoteEntityMapper, times(1)).toEntity(progressNote); // Verify mapping to entity
         verify(jpaProgressNoteRepository, times(1)).save(progressNoteEntity); // Verify saving entity
         verify(progressNoteEntityMapper, times(1)).toDomain(progressNoteEntity); // Verify mapping back to domain
-        verify(userRepository, times(1)).update(user); // Verify updating User domain object
+
+        // Ensure that the note was added to the user's notes
+        assertTrue(userEntity.getNotes().contains(progressNoteEntity), "The user's notes should contain the new progress note");
     }
 
 

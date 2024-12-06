@@ -39,30 +39,18 @@ public class ProgressNoteRepositoryImpl implements ProgressNoteRepository {
 
     @Override
     public ProgressNote create(ProgressNote progressNote) {
-        // Fetch the UserEntity and handle the case where it might not exist
         UserEntity userEntity = userRepository.findEntityById(progressNote.getUserId());
         if (userEntity == null) {
             throw new UserNotFoundException("User not found with ID: " + progressNote.getUserId());
         }
 
-        // Map the ProgressNote domain object to a ProgressNoteEntity
         ProgressNoteEntity progressNoteEntity = progressNoteEntityMapperImpl.toEntity(progressNote);
-
-        // Associate the ProgressNoteEntity with the UserEntity
         progressNoteEntity.setUser(userEntity);
-        userEntity.getNotes().add(progressNoteEntity); // Maintain bidirectional relationship
+        userEntity.getNotes().add(progressNoteEntity);
 
-        // Save the ProgressNoteEntity
         ProgressNoteEntity savedEntity = jpaProgressNoteRepository.save(progressNoteEntity);
-
-        // Update the UserEntity in the repository
-        userRepository.update(userEntityMapper.toDomain(userEntity)); // <-- This is the missing line
-
-        // Return the saved entity as a domain object
         return progressNoteEntityMapperImpl.toDomain(savedEntity);
     }
-
-
 
 
     @Override

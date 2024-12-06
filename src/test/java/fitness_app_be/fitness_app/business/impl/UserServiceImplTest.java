@@ -1,5 +1,7 @@
 package fitness_app_be.fitness_app.business.impl;
 
+import fitness_app_be.fitness_app.business.UserDietPreferenceService;
+import fitness_app_be.fitness_app.business.UserWorkoutPreferenceService;
 import fitness_app_be.fitness_app.domain.*;
 import fitness_app_be.fitness_app.exception_handling.UserNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.UserRepository;
@@ -24,6 +26,12 @@ class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private UserDietPreferenceService userDietPreferenceService;
+
+    @Mock
+    private UserWorkoutPreferenceService userWorkoutPreferenceService;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -80,15 +88,26 @@ class UserServiceImplTest {
     }
 
     @Test
-    void createUser_ShouldReturnCreatedUser() {
-        when(userRepository.create(any(User.class))).thenReturn(user);
+    void createUser_ShouldCreateUserSuccessfully() {
+        // Arrange
+        User user = new User(1L, "username", "email@example.com", "password", null, null, null, null, null, Role.USER, null, null, null, true);
 
+        // Mocking repository
+        when(userRepository.create(user)).thenReturn(user); // Mock user creation
+
+        // Act
         User createdUser = userService.createUser(user);
 
-        assertNotNull(createdUser);
-        assertEquals(user, createdUser);
+        // Assert
+        assertNotNull(createdUser, "Created user should not be null");
+        assertEquals(user, createdUser, "Returned user should match the input");
+
+        // Verify interactions
         verify(userRepository, times(1)).create(user);
     }
+
+
+
 
     @Test
     void deleteUser_ShouldDeleteUser_WhenUserExists() {

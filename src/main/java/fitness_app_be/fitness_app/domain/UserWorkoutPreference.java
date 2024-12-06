@@ -8,7 +8,6 @@ import lombok.*;
 public class UserWorkoutPreference {
     @Setter(AccessLevel.NONE)
     private Long id;
-    @Setter(AccessLevel.NONE)
     private Long userid;
     private String fitnessGoal;
     private String fitnessLevel;
