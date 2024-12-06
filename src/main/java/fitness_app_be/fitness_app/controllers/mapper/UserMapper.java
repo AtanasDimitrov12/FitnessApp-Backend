@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 @Component
 public class UserMapper {
 
@@ -45,16 +48,14 @@ public class UserMapper {
                 .updatedAt(userDTO.getUpdatedAt())
                 .role(userDTO.getRole())
                 .workoutPlan(workoutPlanMapper.toDomain(userDTO.getWorkoutPlan()))
-                .diets(userDTO.getDiets() != null
-                        ? userDTO.getDiets().stream()
-                        .map(dietMapper::toDomain)
-                        .toList()
+                .diet(userDTO.getDiet() != null
+                        ? dietMapper.toDomain(userDTO.getDiet())
                         : null)
                 .notes(userDTO.getNotes() != null
                         ? userDTO.getNotes().stream()
                         .map(progressNoteMapper::toDomain)
-                        .toList()
-                        : null)
+                        .collect(Collectors.toList())
+                        : Collections.emptyList())
                 .isActive(userDTO.getIsActive())
                 .build();
     }
@@ -76,16 +77,14 @@ public class UserMapper {
                 .updatedAt(user.getUpdatedAt())
                 .role(user.getRole())
                 .workoutPlan(workoutPlanMapper.domainToDto(user.getWorkoutPlan()))
-                .diets(user.getDiets() != null
-                        ? user.getDiets().stream()
-                        .map(dietMapper::domainToDto)
-                        .toList()
+                .diet(user.getDiet() != null
+                        ? dietMapper.domainToDto(user.getDiet())
                         : null)
                 .notes(user.getNotes() != null
                         ? user.getNotes().stream()
                         .map(progressNoteMapper::domainToDto)
-                        .toList()
-                        : null)
+                        .collect(Collectors.toList())
+                        : Collections.emptyList())
                 .isActive(user.getIsActive())
                 .build();
     }

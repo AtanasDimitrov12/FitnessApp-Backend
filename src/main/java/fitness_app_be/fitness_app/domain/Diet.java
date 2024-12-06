@@ -13,9 +13,6 @@ public class Diet {
 
     @Setter(AccessLevel.NONE)
     private Long id;
-    private String name;
-    private String description;
-    private String pictureURL;
-    private List<User> users;
+    private User user;
     private List<Meal> meals;
 }

@@ -39,9 +39,9 @@ public class UserDietPreferenceRepositoryImpl implements UserDietPreferenceRepos
 
     @Override
     public UserDietPreference create(UserDietPreference preference) {
-        UserEntity userEntity = findUserEntityById(preference.getUserid()); // Fetch or obtain the UserEntity
+        UserEntity userEntity = findUserEntityById(preference.getUser().getId()); // Fetch or obtain the UserEntity
         if (userEntity == null) {
-            throw new IllegalArgumentException("User with ID " + preference.getUserid() + " does not exist.");
+            throw new IllegalArgumentException("User with ID " + preference.getUser().getId() + " does not exist.");
         }
         UserDietPreferenceEntity entity = userDietPreferenceEntityMapper.toEntity(preference, userEntity);
         UserDietPreferenceEntity savedEntity = jpaUserDietPreferenceRepository.save(entity);
@@ -54,9 +54,9 @@ public class UserDietPreferenceRepositoryImpl implements UserDietPreferenceRepos
     public UserDietPreference update(UserDietPreference preference) {
         // Find the existing preference by user ID
         UserDietPreferenceEntity existingEntity = jpaUserDietPreferenceRepository
-                .findByUserId(preference.getUserid())
+                .findByUserId(preference.getUser().getId())
                 .orElseThrow(() ->
-                        new IllegalArgumentException("UserDietPreference for user ID " + preference.getUserid() + " does not exist.")
+                        new IllegalArgumentException("UserDietPreference for user ID " + preference.getUser().getId() + " does not exist.")
                 );
 
         // Update fields in the existing entity

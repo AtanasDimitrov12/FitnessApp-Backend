@@ -9,9 +9,12 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserEntity {
 
     @Id
@@ -29,12 +32,10 @@ public class UserEntity {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "diet_preference_id")
-    @ToString.Exclude // Avoid fetching diet preference in toString
     private UserDietPreferenceEntity dietPreference;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "workout_preference_id")
-    @ToString.Exclude // Avoid fetching workout preference in toString
     private UserWorkoutPreferenceEntity workoutPreference;
 
     @Column(name = "picture_url")
@@ -42,18 +43,14 @@ public class UserEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workout_plan_id")
-    @ToString.Exclude // Avoid fetching workout plan in toString
     private WorkoutPlanEntity workoutPlan;
 
-    @ManyToMany(mappedBy = "users")
-    @ToString.Exclude // Avoid fetching diets in toString
-    private List<DietEntity> diets;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private DietEntity diet;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
-    @ToString.Exclude // Avoid fetching progress notes in toString
     private List<ProgressNoteEntity> notes;
 
-    // New Fields
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -63,10 +60,9 @@ public class UserEntity {
     @Column(name = "is_active")
     private Boolean isActive = true;
 
-    @Enumerated(EnumType.STRING) // Store as string in the database
+    @Enumerated(EnumType.STRING)
     private Role role;
 
-    // Automatically set createdAt and updatedAt timestamps
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -76,5 +72,14 @@ public class UserEntity {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

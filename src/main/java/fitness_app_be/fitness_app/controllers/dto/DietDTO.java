@@ -1,19 +1,18 @@
 package fitness_app_be.fitness_app.controllers.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class DietDTO {
     private Long id;
-    private String name;
-    private String description;
-    private String pictureURL;
-    private List<UserDTO> users;
+    private UserDTO user;
     private List<MealDTO> meals;
 }

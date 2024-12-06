@@ -3,12 +3,14 @@ package fitness_app_be.fitness_app.persistence.mapper;
 import fitness_app_be.fitness_app.domain.UserDietPreference;
 import fitness_app_be.fitness_app.persistence.entity.UserDietPreferenceEntity;
 import fitness_app_be.fitness_app.persistence.entity.UserEntity;
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@NoArgsConstructor
+@AllArgsConstructor
 public class UserDietPreferenceEntityMapper {
+
+    private final UserEntityMapper userEntityMapper;
 
     public UserDietPreference toDomain(UserDietPreferenceEntity userDietPreferenceEntity) {
         if (userDietPreferenceEntity == null) {
@@ -17,9 +19,22 @@ public class UserDietPreferenceEntityMapper {
 
         return new UserDietPreference(
                 userDietPreferenceEntity.getId(),
-                userDietPreferenceEntity.getUser() != null ? userDietPreferenceEntity.getUser().getId() : null,
+                userEntityMapper.toDomain(userDietPreferenceEntity.getUser()),
                 userDietPreferenceEntity.getCalories(),
                 userDietPreferenceEntity.getMealFrequency()
+        );
+    }
+
+    public UserDietPreferenceEntity toEntity(UserDietPreference userDietPreference) {
+        if (userDietPreference == null) {
+            return null;
+        }
+
+        return new UserDietPreferenceEntity(
+                userDietPreference.getId(),
+                userEntityMapper.toEntity(userDietPreference.getUser()),
+                userDietPreference.getCalories(),
+                userDietPreference.getMealFrequency()
         );
     }
 

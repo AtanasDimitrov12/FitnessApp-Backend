@@ -7,6 +7,7 @@ import java.util.List;
 public interface DietService {
     List<Diet> getAllDiets();
     Diet getDietById(Long id);
+    Diet getDietByUserId(Long userId);
     Diet createDiet(Diet diet);
     void deleteDiet(Long id);
     Diet updateDiet(Diet diet);

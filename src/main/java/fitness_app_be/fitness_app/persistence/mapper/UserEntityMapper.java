@@ -7,23 +7,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 @Component
 @NoArgsConstructor
 public class UserEntityMapper {
 
-    private ProgressNoteEntityMapper progressNoteEntityMapperImpl;
+    private ProgressNoteEntityMapper progressNoteEntityMapper;
     private UserDietPreferenceEntityMapper userDietPreferenceEntityMapper;
     private UserWorkoutPreferenceEntityMapper userWorkoutPreferenceEntityMapper;
     private WorkoutPlanEntityMapper workoutPlanEntityMapper;
     private DietEntityMapper dietEntityMapper;
 
     @Autowired
-    public UserEntityMapper(@Lazy ProgressNoteEntityMapper progressNoteEntityMapperImpl,
+    public UserEntityMapper(@Lazy ProgressNoteEntityMapper progressNoteEntityMapper,
                             @Lazy UserDietPreferenceEntityMapper userDietPreferenceEntityMapper,
                             @Lazy UserWorkoutPreferenceEntityMapper userWorkoutPreferenceEntityMapper,
                             @Lazy WorkoutPlanEntityMapper workoutPlanEntityMapper,
                             @Lazy DietEntityMapper dietEntityMapper) {
-        this.progressNoteEntityMapperImpl = progressNoteEntityMapperImpl;
+        this.progressNoteEntityMapper = progressNoteEntityMapper;
         this.userDietPreferenceEntityMapper = userDietPreferenceEntityMapper;
         this.userWorkoutPreferenceEntityMapper = userWorkoutPreferenceEntityMapper;
         this.workoutPlanEntityMapper = workoutPlanEntityMapper;
@@ -44,12 +47,10 @@ public class UserEntityMapper {
                 .workoutPreference(userWorkoutPreferenceEntityMapper.toDomain(userEntity.getWorkoutPreference()))
                 .pictureURL(userEntity.getPictureURL())
                 .workoutPlan(workoutPlanEntityMapper.toDomain(userEntity.getWorkoutPlan()))
-                .diets(userEntity.getDiets() != null
-                        ? userEntity.getDiets().stream().map(dietEntityMapper::toDomain).toList()
-                        : null)
+                .diet(userEntity.getDiet() != null ? dietEntityMapper.toDomain(userEntity.getDiet()) : null)
                 .notes(userEntity.getNotes() != null
-                        ? userEntity.getNotes().stream().map(progressNoteEntityMapperImpl::toDomain).toList()
-                        : null)
+                        ? userEntity.getNotes().stream().map(progressNoteEntityMapper::toDomain).collect(Collectors.toList())
+                        : Collections.emptyList())
                 .createdAt(userEntity.getCreatedAt())
                 .updatedAt(userEntity.getUpdatedAt())
                 .isActive(userEntity.getIsActive())
@@ -74,27 +75,29 @@ public class UserEntityMapper {
         userEntity.setRole(user.getRole());
 
         // Map diet preference and workout preference
-        userEntity.setDietPreference(userDietPreferenceEntityMapper.toEntity(user.getDietPreference(), userEntity));
-        userEntity.setWorkoutPreference(userWorkoutPreferenceEntityMapper.toEntity(user.getWorkoutPreference(), userEntity));
+        if (user.getDietPreference() != null) {
+            userEntity.setDietPreference(userDietPreferenceEntityMapper.toEntity(user.getDietPreference(), userEntity));
+        }
+        if (user.getWorkoutPreference() != null) {
+            userEntity.setWorkoutPreference(userWorkoutPreferenceEntityMapper.toEntity(user.getWorkoutPreference(), userEntity));
+        }
 
         // Map workout plan
-        userEntity.setWorkoutPlan(workoutPlanEntityMapper.toEntity(user.getWorkoutPlan()));
+        if (user.getWorkoutPlan() != null) {
+            userEntity.setWorkoutPlan(workoutPlanEntityMapper.toEntity(user.getWorkoutPlan()));
+        }
 
-        // Map diets
-        if (user.getDiets() != null) {
-            userEntity.setDiets(
-                    user.getDiets().stream()
-                            .map(dietEntityMapper::toEntity)
-                            .toList()
-            );
+        // Map diet
+        if (user.getDiet() != null) {
+            userEntity.setDiet(dietEntityMapper.toEntity(user.getDiet()));
         }
 
         // Map progress notes
         if (user.getNotes() != null) {
             userEntity.setNotes(
                     user.getNotes().stream()
-                            .map(progressNoteEntityMapperImpl::toEntity)
-                            .toList()
+                            .map(progressNoteEntityMapper::toEntity)
+                            .collect(Collectors.toList())
             );
         }
 

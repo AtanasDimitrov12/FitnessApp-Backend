@@ -18,7 +18,5 @@ public interface DietRepository {
 
     Optional<Diet> getDietById(long dietId);
 
-    Optional<Diet> findByName(String name);
-
-    List<Diet> findByDescriptionContainingIgnoreCase(String description);
+    Optional<Diet> getDietByUserId(long userId);
 }

@@ -56,15 +56,9 @@ public class DietRepositoryImpl implements DietRepository {
     }
 
     @Override
-    public Optional<Diet> findByName(String name) {
-        return jpaDietRepository.findByName(name)
+    public Optional<Diet> getDietByUserId(long userId) {
+        return jpaDietRepository.findDietEntitiesByUserId(userId)
                 .map(dietEntityMapperImpl::toDomain);
     }
 
-    @Override
-    public List<Diet> findByDescriptionContainingIgnoreCase(String description) {
-        return jpaDietRepository.findByDescriptionContainingIgnoreCase(description).stream()
-                .map(dietEntityMapperImpl::toDomain)
-                .toList();
-    }
 }

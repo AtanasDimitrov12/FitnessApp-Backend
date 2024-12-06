@@ -38,13 +38,12 @@ class DietRepositoryImplTest {
     @BeforeEach
     void setUp() {
         List<Meal> meals = new ArrayList<>();
-        List<User> users = new ArrayList<>();
+        User user = new User();
 
-        diet = new Diet(1L, "Keto", "Low-carb diet", "picturePath", users, meals);
+        diet = new Diet(1L, user, meals);
 
         dietEntity = new DietEntity();
         dietEntity.setId(1L);
-        dietEntity.setName("Keto");
     }
 
 
@@ -143,41 +142,5 @@ class DietRepositoryImplTest {
         verify(dietEntityMapperImpl, never()).toDomain(any());
     }
 
-    @Test
-    void findByName_ShouldReturnDiet_WhenDietWithNameExists() {
-        when(jpaDietRepository.findByName("Keto")).thenReturn(Optional.of(dietEntity));
-        when(dietEntityMapperImpl.toDomain(dietEntity)).thenReturn(diet);
 
-        Optional<Diet> foundDiet = dietRepository.findByName("Keto");
-
-        assertTrue(foundDiet.isPresent());
-        assertEquals(diet, foundDiet.get());
-        verify(jpaDietRepository, times(1)).findByName("Keto");
-        verify(dietEntityMapperImpl, times(1)).toDomain(dietEntity);
-    }
-
-    @Test
-    void findByName_ShouldReturnEmpty_WhenDietWithNameDoesNotExist() {
-        when(jpaDietRepository.findByName("Keto")).thenReturn(Optional.empty());
-
-        Optional<Diet> foundDiet = dietRepository.findByName("Keto");
-
-        assertTrue(foundDiet.isEmpty());
-        verify(jpaDietRepository, times(1)).findByName("Keto");
-        verify(dietEntityMapperImpl, never()).toDomain(any());
-    }
-
-    @Test
-    void findByDescriptionContainingIgnoreCase_ShouldReturnListOfDiets() {
-        when(jpaDietRepository.findByDescriptionContainingIgnoreCase("low carb")).thenReturn(List.of(dietEntity));
-        when(dietEntityMapperImpl.toDomain(dietEntity)).thenReturn(diet);
-
-        List<Diet> diets = dietRepository.findByDescriptionContainingIgnoreCase("low carb");
-
-        assertNotNull(diets);
-        assertEquals(1, diets.size());
-        assertEquals(diet, diets.get(0));
-        verify(jpaDietRepository, times(1)).findByDescriptionContainingIgnoreCase("low carb");
-        verify(dietEntityMapperImpl, times(1)).toDomain(dietEntity);
-    }
 }

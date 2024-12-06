@@ -35,111 +35,125 @@ class UserDietPreferenceRepositoryImplTest {
     private UserRepository userRepository;
 
     @Mock
-    private UserEntityMapper mapper;
+    private UserEntityMapper userEntityMapper;
 
     @InjectMocks
     private UserDietPreferenceRepositoryImpl userDietPreferenceRepository;
 
+    private User user;
+    private UserEntity userEntity;
     private UserDietPreference preference;
     private UserDietPreferenceEntity preferenceEntity;
-    private UserEntity userEntity;
-    private User user;
 
     @BeforeEach
     void setUp() {
-        preference = new UserDietPreference(1L, 101L, 2000, 3);
-        userEntity = new UserEntity(1L, "testUser", "test@example.com", "password", null, null, "pictureURL", null, null, null, LocalDateTime.now(), LocalDateTime.now(), true, Role.USER);
+        user = User.builder()
+                .id(1L)
+                .username("testUser")
+                .email("test@example.com")
+                .password("password")
+                .role(Role.USER)
+                .isActive(true)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        userEntity = new UserEntity(
+                1L, "testUser", "test@example.com", "password", null, null,
+                "pictureURL", null, null, null,
+                LocalDateTime.now(), LocalDateTime.now(), true, Role.USER
+        );
+
+        preference = new UserDietPreference(1L, user, 2000, 3);
         preferenceEntity = new UserDietPreferenceEntity(1L, userEntity, 2000, 3);
-        user = new User(101L, "testUser", "test@example.com", "password", null, null, "pictureURL", LocalDateTime.now(), LocalDateTime.now(), Role.USER, null, null, null, true);
     }
 
     @Test
     void exists_ShouldReturnTrue_WhenPreferenceExists() {
         when(jpaUserDietPreferenceRepository.existsById(1L)).thenReturn(true);
+
         assertTrue(userDietPreferenceRepository.exists(1L));
+
         verify(jpaUserDietPreferenceRepository, times(1)).existsById(1L);
     }
 
     @Test
     void exists_ShouldReturnFalse_WhenPreferenceDoesNotExist() {
         when(jpaUserDietPreferenceRepository.existsById(1L)).thenReturn(false);
+
         assertFalse(userDietPreferenceRepository.exists(1L));
+
         verify(jpaUserDietPreferenceRepository, times(1)).existsById(1L);
     }
 
     @Test
     void create_ShouldReturnCreatedPreference() {
-        // Mock the user repository to return a valid UserEntity
-        when(userRepository.findEntityById(preference.getUserid())).thenReturn(userEntity);
-
-        // Mock the mapper to convert the domain object to the entity
+        when(userRepository.findEntityById(user.getId())).thenReturn(userEntity);
         when(userDietPreferenceEntityMapper.toEntity(preference, userEntity)).thenReturn(preferenceEntity);
-
-        // Mock the repository save operation
         when(jpaUserDietPreferenceRepository.save(preferenceEntity)).thenReturn(preferenceEntity);
-
-        // Mock the mapper to convert the saved entity back to the domain object
         when(userDietPreferenceEntityMapper.toDomain(preferenceEntity)).thenReturn(preference);
 
-        // Mock the mapper for user update
-        when(mapper.toDomain(userEntity)).thenReturn(user);
-
-        // Call the create method
         UserDietPreference createdPreference = userDietPreferenceRepository.create(preference);
 
-        // Verify the results
         assertNotNull(createdPreference);
         assertEquals(preference, createdPreference);
 
-        // Verify method interactions
-        verify(userRepository, times(1)).findEntityById(preference.getUserid());
+        verify(userRepository, times(1)).findEntityById(user.getId());
         verify(jpaUserDietPreferenceRepository, times(1)).save(preferenceEntity);
-        verify(userRepository, times(1)).update(user);
+        verify(userDietPreferenceEntityMapper, times(1)).toDomain(preferenceEntity);
     }
 
+    @Test
+    void create_ShouldThrowException_WhenUserDoesNotExist() {
+        when(userRepository.findEntityById(user.getId())).thenReturn(null);
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> userDietPreferenceRepository.create(preference)
+        );
+
+        assertEquals("User with ID 1 does not exist.", exception.getMessage());
+
+        verify(userRepository, times(1)).findEntityById(user.getId());
+        verify(jpaUserDietPreferenceRepository, never()).save(any());
+    }
 
     @Test
-    void update_ShouldReturnUpdatedPreference_WhenPreferenceExists() {
-        // Mock an existing preference entity
-        when(jpaUserDietPreferenceRepository.findByUserId(preference.getUserid()))
-                .thenReturn(Optional.of(preferenceEntity));
-
-        // Mock the save operation
+    void update_ShouldReturnUpdatedPreference() {
+        when(jpaUserDietPreferenceRepository.findByUserId(user.getId())).thenReturn(Optional.of(preferenceEntity));
         when(jpaUserDietPreferenceRepository.save(preferenceEntity)).thenReturn(preferenceEntity);
-
-        // Mock the mapping back to domain
         when(userDietPreferenceEntityMapper.toDomain(preferenceEntity)).thenReturn(preference);
 
-        // Call the update method
         UserDietPreference updatedPreference = userDietPreferenceRepository.update(preference);
 
-        // Verify and assert the results
         assertNotNull(updatedPreference);
         assertEquals(preference, updatedPreference);
 
-        verify(jpaUserDietPreferenceRepository, times(1)).findByUserId(preference.getUserid());
+        verify(jpaUserDietPreferenceRepository, times(1)).findByUserId(user.getId());
         verify(jpaUserDietPreferenceRepository, times(1)).save(preferenceEntity);
     }
 
     @Test
     void update_ShouldThrowException_WhenPreferenceDoesNotExist() {
-        // Mock the repository to return an empty Optional
-        when(jpaUserDietPreferenceRepository.findByUserId(preference.getUserid()))
-                .thenReturn(Optional.empty());
+        when(jpaUserDietPreferenceRepository.findByUserId(user.getId())).thenReturn(Optional.empty());
 
-        // Assert that the exception is thrown
-        assertThrows(IllegalArgumentException.class, () -> userDietPreferenceRepository.update(preference));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> userDietPreferenceRepository.update(preference)
+        );
 
-        // Verify that the method interactions occurred as expected
-        verify(jpaUserDietPreferenceRepository, times(1)).findByUserId(preference.getUserid());
+        assertEquals("UserDietPreference for user ID 1 does not exist.", exception.getMessage());
+
+        verify(jpaUserDietPreferenceRepository, times(1)).findByUserId(user.getId());
         verify(jpaUserDietPreferenceRepository, never()).save(any());
     }
 
-
     @Test
-    void delete_ShouldDeletePreference_WhenExists() {
+    void delete_ShouldDeletePreference() {
         when(jpaUserDietPreferenceRepository.existsById(1L)).thenReturn(true);
-        userDietPreferenceRepository.delete(1L);
+
+        assertDoesNotThrow(() -> userDietPreferenceRepository.delete(1L));
+
         verify(jpaUserDietPreferenceRepository, times(1)).existsById(1L);
         verify(jpaUserDietPreferenceRepository, times(1)).deleteById(1L);
     }
@@ -147,8 +161,16 @@ class UserDietPreferenceRepositoryImplTest {
     @Test
     void delete_ShouldThrowException_WhenPreferenceDoesNotExist() {
         when(jpaUserDietPreferenceRepository.existsById(1L)).thenReturn(false);
-        assertThrows(IllegalArgumentException.class, () -> userDietPreferenceRepository.delete(1L));
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> userDietPreferenceRepository.delete(1L)
+        );
+
+        assertEquals("UserDietPreference with ID 1 does not exist.", exception.getMessage());
+
         verify(jpaUserDietPreferenceRepository, times(1)).existsById(1L);
+        verify(jpaUserDietPreferenceRepository, never()).deleteById(anyLong());
     }
 
     @Test
@@ -160,34 +182,42 @@ class UserDietPreferenceRepositoryImplTest {
 
         assertTrue(foundPreference.isPresent());
         assertEquals(preference, foundPreference.get());
+
         verify(jpaUserDietPreferenceRepository, times(1)).findById(1L);
     }
 
     @Test
     void getDietPreferenceById_ShouldReturnEmpty_WhenDoesNotExist() {
         when(jpaUserDietPreferenceRepository.findById(1L)).thenReturn(Optional.empty());
+
         Optional<UserDietPreference> foundPreference = userDietPreferenceRepository.getDietPreferenceById(1L);
+
         assertTrue(foundPreference.isEmpty());
+
         verify(jpaUserDietPreferenceRepository, times(1)).findById(1L);
     }
 
     @Test
     void findByUserId_ShouldReturnPreference_WhenExists() {
-        when(jpaUserDietPreferenceRepository.findByUserId(101L)).thenReturn(Optional.of(preferenceEntity));
+        when(jpaUserDietPreferenceRepository.findByUserId(1L)).thenReturn(Optional.of(preferenceEntity));
         when(userDietPreferenceEntityMapper.toDomain(preferenceEntity)).thenReturn(preference);
 
-        Optional<UserDietPreference> foundPreference = userDietPreferenceRepository.findByUserId(101L);
+        Optional<UserDietPreference> foundPreference = userDietPreferenceRepository.findByUserId(1L);
 
         assertTrue(foundPreference.isPresent());
         assertEquals(preference, foundPreference.get());
-        verify(jpaUserDietPreferenceRepository, times(1)).findByUserId(101L);
+
+        verify(jpaUserDietPreferenceRepository, times(1)).findByUserId(1L);
     }
 
     @Test
     void findByUserId_ShouldReturnEmpty_WhenDoesNotExist() {
-        when(jpaUserDietPreferenceRepository.findByUserId(101L)).thenReturn(Optional.empty());
-        Optional<UserDietPreference> foundPreference = userDietPreferenceRepository.findByUserId(101L);
+        when(jpaUserDietPreferenceRepository.findByUserId(1L)).thenReturn(Optional.empty());
+
+        Optional<UserDietPreference> foundPreference = userDietPreferenceRepository.findByUserId(1L);
+
         assertTrue(foundPreference.isEmpty());
-        verify(jpaUserDietPreferenceRepository, times(1)).findByUserId(101L);
+
+        verify(jpaUserDietPreferenceRepository, times(1)).findByUserId(1L);
     }
 }

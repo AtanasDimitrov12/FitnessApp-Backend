@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 @Component
 @NoArgsConstructor
@@ -28,18 +30,13 @@ public class DietEntityMapper {
 
         return Diet.builder()
                 .id(dietEntity.getId())
-                .name(dietEntity.getName())
-                .description(dietEntity.getDescription())
-                .pictureURL(dietEntity.getPictureURL())
                 .meals(dietEntity.getMeals() != null
                         ? dietEntity.getMeals().stream()
                         .map(mealEntityMapperImpl::toDomain)
-                        .toList()
-                        : null)
-                .users(dietEntity.getUsers() != null
-                        ? dietEntity.getUsers().stream()
-                        .map(userEntityMapper::toDomain)
-                        .toList()
+                        .collect(Collectors.toList())
+                        : Collections.emptyList())
+                .user(dietEntity.getUser() != null
+                        ? userEntityMapper.toDomain(dietEntity.getUser())
                         : null)
                 .build();
     }
@@ -51,20 +48,15 @@ public class DietEntityMapper {
 
         DietEntity dietEntity = new DietEntity();
         dietEntity.setId(diet.getId());
-        dietEntity.setName(diet.getName());
-        dietEntity.setDescription(diet.getDescription());
-        dietEntity.setPictureURL(diet.getPictureURL());
 
         if (diet.getMeals() != null) {
             dietEntity.setMeals(diet.getMeals().stream()
                     .map(mealEntityMapperImpl::toEntity)
-                    .toList());
+                    .collect(Collectors.toList()));
         }
 
-        if (diet.getUsers() != null) {
-            dietEntity.setUsers(diet.getUsers().stream()
-                    .map(userEntityMapper::toEntity)
-                    .toList());
+        if (diet.getUser() != null) {
+            dietEntity.setUser(userEntityMapper.toEntity(diet.getUser()));
         }
 
         return dietEntity;

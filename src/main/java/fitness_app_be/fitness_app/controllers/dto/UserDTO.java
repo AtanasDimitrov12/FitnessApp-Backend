@@ -26,7 +26,7 @@ public class UserDTO {
     private Boolean isActive;
     private Role role;
     private WorkoutPlanDTO workoutPlan;
-    private List<DietDTO> diets;
+    private DietDTO diet;
     private List<ProgressNoteDTO> notes;
 
 }

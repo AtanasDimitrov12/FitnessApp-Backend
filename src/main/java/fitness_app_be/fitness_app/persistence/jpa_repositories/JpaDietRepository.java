@@ -7,7 +7,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface JpaDietRepository extends JpaRepository<DietEntity, Long> {
-    Optional<DietEntity> findByName(String name);
-
-    List<DietEntity> findByDescriptionContainingIgnoreCase(String description);
+    Optional<DietEntity> findDietEntitiesByUserId(Long userId);
 }

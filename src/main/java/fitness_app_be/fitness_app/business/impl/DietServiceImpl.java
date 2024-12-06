@@ -27,6 +27,13 @@ public class DietServiceImpl implements DietService {
     }
 
     @Override
+    public Diet getDietByUserId(Long userId)
+    {
+        return dietRepository.getDietByUserId(userId)
+                .orElseThrow(() -> new DietNotFoundException(userId));
+    }
+
+    @Override
     public Diet createDiet(Diet diet) {
         return dietRepository.create(diet);
     }
@@ -41,11 +48,9 @@ public class DietServiceImpl implements DietService {
 
     @Override
     public Diet updateDiet(Diet diet) {
-        Diet existingDiet = dietRepository.getDietById(diet.getId())
+        Diet existingDiet = dietRepository.getDietByUserId(diet.getId())
                 .orElseThrow(() -> new DietNotFoundException("Diet with ID " + diet.getId() + " not found"));
 
-        existingDiet.setName(diet.getName());
-        existingDiet.setDescription(diet.getDescription());
         existingDiet.setMeals(diet.getMeals());
 
         return dietRepository.update(existingDiet);

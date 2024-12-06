@@ -21,7 +21,7 @@ public class User {
     private LocalDateTime updatedAt;
     private Role role;
     private WorkoutPlan workoutPlan;
-    private List<Diet> diets;
+    private Diet diet;
     private List<ProgressNote> notes;
 
 

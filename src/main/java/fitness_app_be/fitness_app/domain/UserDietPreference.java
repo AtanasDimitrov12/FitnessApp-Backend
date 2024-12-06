@@ -8,7 +8,7 @@ import lombok.*;
 public class UserDietPreference {
     @Setter(AccessLevel.NONE)
     private Long id;
-    private Long userid;
+    private User user;
     private int calories;
     private int mealFrequency;
 }
