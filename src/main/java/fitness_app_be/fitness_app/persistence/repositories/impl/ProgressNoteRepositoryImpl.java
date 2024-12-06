@@ -55,9 +55,13 @@ public class ProgressNoteRepositoryImpl implements ProgressNoteRepository {
         // Save the ProgressNoteEntity
         ProgressNoteEntity savedEntity = jpaProgressNoteRepository.save(progressNoteEntity);
 
+        // Update the UserEntity in the repository
+        userRepository.update(userEntityMapper.toDomain(userEntity)); // <-- This is the missing line
+
         // Return the saved entity as a domain object
         return progressNoteEntityMapperImpl.toDomain(savedEntity);
     }
+
 
 
 

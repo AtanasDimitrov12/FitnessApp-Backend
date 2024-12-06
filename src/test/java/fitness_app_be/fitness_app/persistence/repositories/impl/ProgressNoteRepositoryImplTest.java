@@ -1,12 +1,16 @@
 package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.ProgressNote;
+import fitness_app_be.fitness_app.domain.Role;
+import fitness_app_be.fitness_app.domain.User;
+import fitness_app_be.fitness_app.exception_handling.UserNotFoundException;
 import fitness_app_be.fitness_app.persistence.entity.ProgressNoteEntity;
 import fitness_app_be.fitness_app.persistence.entity.UserEntity;
 import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaProgressNoteRepository;
 import fitness_app_be.fitness_app.persistence.mapper.ProgressNoteEntityMapper;
 import fitness_app_be.fitness_app.persistence.mapper.UserEntityMapper;
 import fitness_app_be.fitness_app.persistence.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -87,23 +91,45 @@ class ProgressNoteRepositoryImplTest {
 
     @Test
     void create_ShouldReturnCreatedProgressNote() {
-        when(userRepository.findEntityById(101L)).thenReturn(userEntity);
-        when(progressNoteEntityMapper.toEntity(progressNote)).thenReturn(progressNoteEntity);
-        when(jpaProgressNoteRepository.save(progressNoteEntity)).thenReturn(progressNoteEntity);
-        when(progressNoteEntityMapper.toDomain(progressNoteEntity)).thenReturn(progressNote);
-        when(userEntityMapper.toDomain(userEntity)).thenReturn(any());
+        // Arrange
+        // Mock the User domain object
+        User user = new User(101L, "username", "email@example.com", "password", null, null, null, null, null, Role.USER, null, null, null, true);
+        when(userEntityMapper.toDomain(userEntity)).thenReturn(user); // Map UserEntity to User
 
+        // Mock the behavior of userRepository and entity mappers
+        when(userRepository.findEntityById(101L)).thenReturn(userEntity); // Return UserEntity when searched
+        when(progressNoteEntityMapper.toEntity(progressNote)).thenReturn(progressNoteEntity); // Map ProgressNote to ProgressNoteEntity
+        when(jpaProgressNoteRepository.save(progressNoteEntity)).thenReturn(progressNoteEntity); // Save ProgressNoteEntity
+        when(progressNoteEntityMapper.toDomain(progressNoteEntity)).thenReturn(progressNote); // Map ProgressNoteEntity to ProgressNote
+
+        // Act
         ProgressNote createdNote = progressNoteRepository.create(progressNote);
 
-        assertNotNull(createdNote);
-        assertEquals(progressNote, createdNote);
+        // Assert
+        assertNotNull(createdNote, "The created note should not be null");
+        assertEquals(progressNote, createdNote, "The created note should match the input");
 
-        verify(userRepository, times(1)).findEntityById(101L);
-        verify(jpaProgressNoteRepository, times(1)).save(progressNoteEntity);
-        verify(progressNoteEntityMapper, times(1)).toEntity(progressNote);
-        verify(progressNoteEntityMapper, times(1)).toDomain(progressNoteEntity);
-        verify(userRepository, times(1)).update(any());
+        // Verify interactions
+        verify(userRepository, times(1)).findEntityById(101L); // Verify fetching user
+        verify(progressNoteEntityMapper, times(1)).toEntity(progressNote); // Verify mapping to entity
+        verify(jpaProgressNoteRepository, times(1)).save(progressNoteEntity); // Verify saving entity
+        verify(progressNoteEntityMapper, times(1)).toDomain(progressNoteEntity); // Verify mapping back to domain
+        verify(userRepository, times(1)).update(user); // Verify updating User domain object
     }
+
+
+    @Test
+    void create_ShouldThrowExceptionWhenUserNotFound() {
+        when(userRepository.findEntityById(101L)).thenReturn(null);
+
+        Exception exception = assertThrows(UserNotFoundException.class, () -> progressNoteRepository.create(progressNote));
+
+        assertEquals("User not found with ID: 101", exception.getMessage());
+        verify(userRepository, times(1)).findEntityById(101L);
+        verifyNoInteractions(progressNoteEntityMapper, jpaProgressNoteRepository);
+    }
+
+
 
     @Test
     void update_ShouldReturnUpdatedProgressNote() {
@@ -122,12 +148,36 @@ class ProgressNoteRepositoryImplTest {
 
     @Test
     void delete_ShouldDeleteProgressNoteById() {
-        doNothing().when(jpaProgressNoteRepository).deleteById(1L);
+        // Arrange
+        ProgressNoteEntity mockNote = new ProgressNoteEntity(1L, null, 85, "Sample Note", LocalDate.now());
+        when(jpaProgressNoteRepository.findById(1L)).thenReturn(Optional.of(mockNote)); // Simulate finding the note
+        doNothing().when(jpaProgressNoteRepository).delete(mockNote); // Simulate deletion behavior
 
+        // Act
         progressNoteRepository.delete(1L);
 
-        verify(jpaProgressNoteRepository, times(1)).deleteById(1L);
+        // Assert
+        verify(jpaProgressNoteRepository, times(1)).findById(1L); // Verify findById was called
+        verify(jpaProgressNoteRepository, times(1)).delete(mockNote); // Verify delete was called with the right entity
     }
+
+
+    @Test
+    void delete_ShouldThrowExceptionWhenNoteNotFound() {
+        // Arrange
+        when(jpaProgressNoteRepository.findById(1L)).thenReturn(Optional.empty()); // Simulate not finding the note
+
+        // Act & Assert
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> progressNoteRepository.delete(1L));
+        assertEquals("Note not found", exception.getMessage(), "Exception message should match");
+
+        // Verify interactions
+        verify(jpaProgressNoteRepository, times(1)).findById(1L); // Verify findById was called
+        verify(jpaProgressNoteRepository, never()).delete(any()); // Verify delete was not called
+    }
+
+
+
 
     @Test
     void getProgressNoteById_ShouldReturnProgressNote_WhenExists() {
