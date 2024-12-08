@@ -2,6 +2,7 @@ package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.business.DietService;
 import fitness_app_be.fitness_app.domain.Diet;
+import fitness_app_be.fitness_app.domain.Meal;
 import fitness_app_be.fitness_app.exception_handling.DietNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.DietRepository;
 import lombok.RequiredArgsConstructor;
@@ -55,4 +56,23 @@ public class DietServiceImpl implements DietService {
 
         return dietRepository.update(existingDiet);
     }
+
+    @Override
+    public void addMealToDiet(long dietId, Meal meal) {
+        dietRepository.addMealToDiet(dietId, meal);
+    }
+
+    @Override
+    public void removeMealFromDiet(long dietId, long mealId) {
+        dietRepository.removeMealFromDiet(dietId, mealId);
+    }
+
+    @Override
+    public void clearMealsFromDiet(Long dietId) {
+        Diet diet = dietRepository.getDietById(dietId)
+                .orElseThrow(() -> new IllegalArgumentException("Diet not found"));
+        diet.getMeals().clear(); // Clear all meals
+        dietRepository.update(diet); // Persist the cleared diet
+    }
+
 }

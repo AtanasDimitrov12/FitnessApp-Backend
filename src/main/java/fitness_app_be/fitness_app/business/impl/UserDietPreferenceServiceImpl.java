@@ -4,11 +4,13 @@ import fitness_app_be.fitness_app.business.DietPlanService;
 import fitness_app_be.fitness_app.business.DietService;
 import fitness_app_be.fitness_app.business.UserDietPreferenceService;
 import fitness_app_be.fitness_app.domain.Diet;
+import fitness_app_be.fitness_app.domain.Meal;
 import fitness_app_be.fitness_app.domain.UserDietPreference;
 import fitness_app_be.fitness_app.exception_handling.UserDietPreferenceNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.UserDietPreferenceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -26,15 +28,23 @@ public class UserDietPreferenceServiceImpl implements UserDietPreferenceService 
         return userDietPreferenceRepository.findByUserId(userId).orElseThrow(() -> new UserDietPreferenceNotFoundException(userId));
     }
 
+    @Override
     public UserDietPreference createUserDietPreference(UserDietPreference userDietPreference) {
+        // Step 1: Calculate the diet
+        Diet calculatedDiet = dietPlanService.calculateDiet(userDietPreference);
+        System.out.println("User from diet preference: " + userDietPreference.getUser().getId() );
+        // Step 2: Create and persist the diet
+        Diet newDiet = new Diet();
+        newDiet.setUser(userDietPreference.getUser());
+        newDiet.setMeals(calculatedDiet.getMeals());
+        Diet createdDiet = dietService.createDiet(newDiet);
 
-        Diet userDiet = dietPlanService.calculateDiet(userDietPreference);
-        userDiet.setUser(userDietPreference.getUser());
+        // Step 3: Add meals
+//        for (Meal meal : calculatedDiet.getMeals()) {
+//            dietService.addMealToDiet(createdDiet.getId(), meal);
+//        }
 
-        dietService.createDiet(userDiet);
-
-
-
+        // Step 4: Persist UserDietPreference
         return userDietPreferenceRepository.create(userDietPreference);
     }
 
@@ -46,18 +56,23 @@ public class UserDietPreferenceServiceImpl implements UserDietPreferenceService 
 
     @Override
     public UserDietPreference updateUserDietPreference(UserDietPreference userDietPreference) {
-        // Update the user's diet preference
-        UserDietPreference updatedDietPreference = userDietPreferenceRepository.update(userDietPreference);
+        // Step 1: Recalculate the diet based on updated preferences
+        Diet recalculatedDiet = dietPlanService.calculateDiet(userDietPreference);
 
-        // Recalculate the diet based on updated preferences
-        Diet oldDiet = dietService.getDietByUserId(updatedDietPreference.getUser().getId());
-        Diet userDiet = dietPlanService.calculateDiet(updatedDietPreference);
-        Diet newDiet = new Diet(oldDiet.getId(), updatedDietPreference.getUser(), userDiet.getMeals());
+        // Step 2: Update the existing diet
+        Diet existingDiet = dietService.getDietByUserId(userDietPreference.getUser().getId());
+        existingDiet.setUser(userDietPreference.getUser());
 
-        dietService.updateDiet(newDiet);
+        // Clear existing meals and add the recalculated meals
+        dietService.clearMealsFromDiet(existingDiet.getId()); // A method to clear meals
+//        for (Meal meal : recalculatedDiet.getMeals()) {
+//            dietService.addMealToDiet(existingDiet.getId(), meal);
+//        }
 
-        return updatedDietPreference;
+        // Step 3: Persist updated UserDietPreference
+        return userDietPreferenceRepository.update(userDietPreference);
     }
+
 
 
 

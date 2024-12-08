@@ -42,6 +42,13 @@ public class DietController {
         return dietMapper.domainToDto(diet);
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @GetMapping("/user/{userId}")
+    public DietDTO getDietByUserId(@PathVariable Long userId) {
+        Diet diet = dietService.getDietByUserId(userId);
+        return dietMapper.domainToDto(diet);
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(consumes = "multipart/form-data")
     public DietDTO createDiet(
@@ -50,8 +57,6 @@ public class DietController {
 
         DietDTO dietDTO = parseDietJson(dietJson);
         Diet diet = dietMapper.toDomain(dietDTO);
-
-        // Handle image file logic here if needed (e.g., save to storage and associate with the diet)
 
         Diet createdDiet = dietService.createDiet(diet);
         return dietMapper.domainToDto(createdDiet);

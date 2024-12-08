@@ -5,6 +5,7 @@ import fitness_app_be.fitness_app.persistence.entity.MealEntity;
 import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaMealRepository;
 import fitness_app_be.fitness_app.persistence.mapper.MealEntityMapper;
 import fitness_app_be.fitness_app.persistence.repositories.MealRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -30,6 +31,7 @@ public class MealRepositoryImpl implements MealRepository {
                 .toList();
     }
 
+    @Transactional
     @Override
     public Meal create(Meal meal) {
         MealEntity mealEntity = mealEntityMapperImpl.toEntity(meal);
@@ -37,6 +39,7 @@ public class MealRepositoryImpl implements MealRepository {
         return mealEntityMapperImpl.toDomain(savedEntity);
     }
 
+    @Transactional
     @Override
     public Meal update(Meal meal) {
         MealEntity mealEntity = mealEntityMapperImpl.toEntity(meal);
@@ -44,6 +47,7 @@ public class MealRepositoryImpl implements MealRepository {
         return mealEntityMapperImpl.toDomain(updatedEntity);
     }
 
+    @Transactional
     @Override
     public void delete(long mealId) {
         jpaMealRepository.deleteById(mealId);

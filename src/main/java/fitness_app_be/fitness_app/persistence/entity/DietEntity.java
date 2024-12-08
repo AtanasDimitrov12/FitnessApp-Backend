@@ -3,13 +3,13 @@ package fitness_app_be.fitness_app.persistence.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "diet")
 @Getter
 @Setter
-@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -23,19 +23,31 @@ public class DietEntity {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserEntity user;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "diet_meal",
             joinColumns = @JoinColumn(name = "diet_id"),
             inverseJoinColumns = @JoinColumn(name = "meal_id")
     )
-    private List<MealEntity> meals;
+    private List<MealEntity> meals = new ArrayList<>();
 
-    @Override
-    public String toString() {
-        return "DietEntity{" +
-                "id=" + id +
-                ", mealsCount=" + (meals != null ? meals.size() : 0) +
-                '}';
+
+    public void addMeal(MealEntity meal) {
+        if (meals == null) {
+            meals = new ArrayList<>(); // Ensure mutability
+        }
+        if (!meals.contains(meal)) {
+            meals.add(meal);
+            meal.getDiets().add(this); // Maintain bidirectional sync
+        }
     }
+
+
+    public void removeMeal(MealEntity meal) {
+        if (meals != null && meals.contains(meal)) {
+            meals.remove(meal);
+            meal.removeDiet(this); // Maintain bidirectional relationship
+        }
+    }
+
 }

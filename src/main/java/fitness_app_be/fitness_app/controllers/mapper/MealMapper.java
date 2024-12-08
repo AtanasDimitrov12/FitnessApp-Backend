@@ -2,21 +2,14 @@ package fitness_app_be.fitness_app.controllers.mapper;
 
 import fitness_app_be.fitness_app.controllers.dto.MealDTO;
 import fitness_app_be.fitness_app.domain.Meal;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
 @Component
+@AllArgsConstructor
 public class MealMapper {
-
-    private final DietMapper dietMapper;
-
-    @Autowired
-    public MealMapper(@Lazy DietMapper dietMapper) {
-        this.dietMapper = dietMapper;
-    }
 
     public Meal toDomain(MealDTO mealDTO) {
         if (mealDTO == null) {
@@ -30,11 +23,7 @@ public class MealMapper {
                 mealDTO.getProtein(),
                 mealDTO.getCarbs(),
                 mealDTO.getCookingTime(),
-                mealDTO.getDiets() != null
-                        ? mealDTO.getDiets().stream()
-                        .map(dietMapper::toDomain)
-                        .toList()
-                        : new ArrayList<>()
+                new ArrayList<>() // Avoid mapping diets here
         );
     }
 
@@ -50,11 +39,7 @@ public class MealMapper {
                 meal.getProtein(),
                 meal.getCarbs(),
                 meal.getCookingTime(),
-                meal.getDiets() != null
-                        ? meal.getDiets().stream()
-                        .map(dietMapper::domainToDto)
-                        .toList()
-                        : new ArrayList<>()
+                new ArrayList<>() // Avoid mapping diets here
         );
     }
 }

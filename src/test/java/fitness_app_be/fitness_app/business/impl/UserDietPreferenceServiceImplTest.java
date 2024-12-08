@@ -3,6 +3,7 @@ package fitness_app_be.fitness_app.business.impl;
 import fitness_app_be.fitness_app.business.DietPlanService;
 import fitness_app_be.fitness_app.business.DietService;
 import fitness_app_be.fitness_app.domain.Diet;
+import fitness_app_be.fitness_app.domain.Meal;
 import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.domain.UserDietPreference;
 import fitness_app_be.fitness_app.exception_handling.UserDietPreferenceNotFoundException;
@@ -14,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,36 +52,56 @@ class UserDietPreferenceServiceImplTest {
 
     @Test
     void createUserDietPreference_ShouldCreateUserDietPreferenceAndAssociateDiet() {
+        // Arrange
+        List<Meal> meals = new ArrayList<>(); // Initialize meals list
+        Meal testMeal = new Meal();
+        meals.add(testMeal); // Add a test meal
+
+        // Mock userDiet to have meals initialized
+        userDiet.setMeals(meals);
+
         when(dietPlanService.calculateDiet(userDietPreference)).thenReturn(userDiet);
-        when(dietService.createDiet(userDiet)).thenReturn(userDiet);
+        when(dietService.createDiet(any(Diet.class))).thenReturn(userDiet);
         when(userDietPreferenceRepository.create(userDietPreference)).thenReturn(userDietPreference);
 
+        // Act
         UserDietPreference result = userDietPreferenceService.createUserDietPreference(userDietPreference);
 
+        // Assert
         assertNotNull(result);
         assertEquals(userDietPreference, result);
 
+        // Verify
         verify(dietPlanService, times(1)).calculateDiet(userDietPreference);
-        verify(dietService, times(1)).createDiet(userDiet);
+        verify(dietService, times(1)).createDiet(argThat(diet ->
+                diet.getUser().equals(userDietPreference.getUser()) &&
+                        diet.getMeals().equals(userDiet.getMeals())
+        ));
         verify(userDietPreferenceRepository, times(1)).create(userDietPreference);
     }
 
+
     @Test
     void updateUserDietPreference_ShouldUpdateDietPreferenceAndRecalculateDiet() {
-        when(userDietPreferenceRepository.update(userDietPreference)).thenReturn(userDietPreference);
+        // Arrange
         when(dietService.getDietByUserId(user.getId())).thenReturn(oldDiet);
         when(dietPlanService.calculateDiet(userDietPreference)).thenReturn(userDiet);
+        when(userDietPreferenceRepository.update(userDietPreference)).thenReturn(userDietPreference);
 
+        // Act
         UserDietPreference result = userDietPreferenceService.updateUserDietPreference(userDietPreference);
 
+        // Assert
         assertNotNull(result);
         assertEquals(userDietPreference, result);
 
-        verify(userDietPreferenceRepository, times(1)).update(userDietPreference);
-        verify(dietService, times(1)).getDietByUserId(user.getId());
+        // Verify
         verify(dietPlanService, times(1)).calculateDiet(userDietPreference);
-        verify(dietService, times(1)).updateDiet(any(Diet.class));
+        verify(dietService, times(1)).getDietByUserId(user.getId());
+        verify(dietService, times(1)).clearMealsFromDiet(oldDiet.getId());
+        verify(userDietPreferenceRepository, times(1)).update(userDietPreference);
     }
+
 
     @Test
     void getUserDietPreferenceByUserId_ShouldReturnUserDietPreference_WhenExists() {

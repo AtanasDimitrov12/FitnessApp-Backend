@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 public class UserDietPreferenceDTO {
     private Long id;
-    private User user;
+    private Long userId;
     private int calories;
     private int mealFrequency;
 }
