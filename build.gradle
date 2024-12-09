@@ -2,7 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.3'
 	id 'io.spring.dependency-management' version '1.1.6'
-	id "org.sonarqube" version "5.1.0.4882"
+	id 'org.sonarqube' version '5.1.0.4882'
+	id 'jacoco'
 }
 
 group = 'fitness-app-be'
@@ -23,7 +24,6 @@ configurations {
 repositories {
 	mavenCentral()
 }
-
 
 dependencies {
 	// Spring Boot Starters
@@ -54,23 +54,38 @@ dependencies {
 	implementation 'com.cloudinary:cloudinary-http44:1.27.0'
 }
 
-
 task populateMeals(type: JavaExec) {
 	classpath = sourceSets.main.runtimeClasspath
-	mainClass = 'com.yourpackage.MainClass'
+	mainClass = 'com.fitnessapp.PopulateMeals'
 	args = ['populateMeals']
 }
 
-
-
-sonar {
+sonarqube {
 	properties {
 		property "sonar.projectKey", "FitnessApp"
 		property "sonar.projectName", "FitnessApp"
-		property "sonar.qualitygate.wait", true
+		property "sonar.qualitygate.wait", "true"
+		property "sonar.java.coveragePlugin", "jacoco"
+		property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+		property "sonar.login", "your_sonar_token" // Add your SonarQube token
 	}
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+jacoco {
+	toolVersion = "0.8.10"
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required = true
+		html.required = true
+	}
+	classDirectories.setFrom(
+			fileTree(dir: "${buildDir}/classes/java/main", include: ["fitness_app_be/fitness_app/business/**"])
+	)
 }

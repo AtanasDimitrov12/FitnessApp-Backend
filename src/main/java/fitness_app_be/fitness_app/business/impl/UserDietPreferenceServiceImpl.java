@@ -59,6 +59,7 @@ public class UserDietPreferenceServiceImpl implements UserDietPreferenceService 
         // Step 2: Update the existing diet
         Diet existingDiet = dietService.getDietByUserId(userDietPreference.getUser().getId());
         existingDiet.setUser(userDietPreference.getUser());
+        dietService.clearMealsFromDiet(existingDiet.getId());
         existingDiet.setMeals(recalculatedDiet.getMeals());
         dietService.updateDiet(existingDiet);
 

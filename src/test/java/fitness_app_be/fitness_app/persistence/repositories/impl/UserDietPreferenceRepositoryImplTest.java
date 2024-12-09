@@ -3,6 +3,8 @@ package fitness_app_be.fitness_app.persistence.repositories.impl;
 import fitness_app_be.fitness_app.domain.Role;
 import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.domain.UserDietPreference;
+import fitness_app_be.fitness_app.exception_handling.UserDietPreferenceNotFoundException;
+import fitness_app_be.fitness_app.exception_handling.UserNotFoundException;
 import fitness_app_be.fitness_app.persistence.entity.UserDietPreferenceEntity;
 import fitness_app_be.fitness_app.persistence.entity.UserEntity;
 import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaUserDietPreferenceRepository;
@@ -107,12 +109,13 @@ class UserDietPreferenceRepositoryImplTest {
     void create_ShouldThrowException_WhenUserDoesNotExist() {
         when(userRepository.findEntityById(user.getId())).thenReturn(null);
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        UserNotFoundException exception = assertThrows(
+                UserNotFoundException.class,
                 () -> userDietPreferenceRepository.create(preference)
         );
 
-        assertEquals("User with ID 1 does not exist.", exception.getMessage());
+        // Update expected message to match the actual exception message
+        assertEquals("User not found with ID: 1", exception.getMessage());
 
         verify(userRepository, times(1)).findEntityById(user.getId());
         verify(jpaUserDietPreferenceRepository, never()).save(any());
@@ -137,12 +140,13 @@ class UserDietPreferenceRepositoryImplTest {
     void update_ShouldThrowException_WhenPreferenceDoesNotExist() {
         when(jpaUserDietPreferenceRepository.findByUserId(user.getId())).thenReturn(Optional.empty());
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        UserDietPreferenceNotFoundException exception = assertThrows(
+                UserDietPreferenceNotFoundException.class,
                 () -> userDietPreferenceRepository.update(preference)
         );
 
-        assertEquals("UserDietPreference for user ID 1 does not exist.", exception.getMessage());
+        // Update expected message to match the actual exception message
+        assertEquals("User diet preference not found with ID: 1", exception.getMessage());
 
         verify(jpaUserDietPreferenceRepository, times(1)).findByUserId(user.getId());
         verify(jpaUserDietPreferenceRepository, never()).save(any());
@@ -162,12 +166,13 @@ class UserDietPreferenceRepositoryImplTest {
     void delete_ShouldThrowException_WhenPreferenceDoesNotExist() {
         when(jpaUserDietPreferenceRepository.existsById(1L)).thenReturn(false);
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        UserDietPreferenceNotFoundException exception = assertThrows(
+                UserDietPreferenceNotFoundException.class,
                 () -> userDietPreferenceRepository.delete(1L)
         );
 
-        assertEquals("UserDietPreference with ID 1 does not exist.", exception.getMessage());
+        // Update expected message to match the actual exception message
+        assertEquals("User diet preference not found with ID: 1", exception.getMessage());
 
         verify(jpaUserDietPreferenceRepository, times(1)).existsById(1L);
         verify(jpaUserDietPreferenceRepository, never()).deleteById(anyLong());

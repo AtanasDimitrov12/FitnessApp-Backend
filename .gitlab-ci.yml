@@ -23,22 +23,24 @@ build:
 test:
   stage: test
   script:
-    - ./gradlew test
+    - ./gradlew test jacocoTestReport
+  artifacts:
+    paths:
+      - build/reports/jacoco/test/jacocoTestReport.xml
+    expire_in: 1 day
 
 sonarqube-check:
   stage: sonarqube-check
   script:
     - echo "Waiting for SonarQube to initialize..."
     - sleep 30
-    - ./gradlew sonarqube #-Dsonar.host.url="${SONAR_HOST_URL}"
+    - ./gradlew sonarqube -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml
   allow_failure: true
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_BRANCH == 'master'
     - if: $CI_COMMIT_BRANCH == 'main'
     - if: $CI_COMMIT_BRANCH == 'develop'
-
-
 
 sonarqube-vulnerability-report:
   stage: sonarqube-vulnerability-report
