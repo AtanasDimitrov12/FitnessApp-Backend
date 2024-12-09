@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -111,14 +110,11 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("File must not be null or empty.");
         }
 
-        // Get the current system time
-        Date currentDate = new Date();
+
 
         // Get the current timestamp in seconds
         long timestamp = System.currentTimeMillis() / 1000L;
 
-        // Convert timestamp to readable date for comparison
-        Date timestampDate = new Date(timestamp * 1000L);
 
         // Upload parameters
         Map<String, Object> uploadParams = ObjectUtils.asMap(
@@ -132,8 +128,8 @@ public class UserServiceImpl implements UserService {
         );
 
         Object url = uploadResult.get("url");
-        if (url instanceof String) {
-            return (String) url;
+        if (url instanceof String string) {
+            return string;
         } else {
             throw new IOException("Failed to retrieve image URL from upload result.");
         }

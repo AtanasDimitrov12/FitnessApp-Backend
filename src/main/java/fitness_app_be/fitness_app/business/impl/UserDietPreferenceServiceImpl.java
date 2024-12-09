@@ -36,11 +36,6 @@ public class UserDietPreferenceServiceImpl implements UserDietPreferenceService 
         newDiet.setMeals(calculatedDiet.getMeals());
         dietService.createDiet(newDiet);
 
-        // Step 3: Add meals
-//        for (Meal meal : calculatedDiet.getMeals()) {
-//            dietService.addMealToDiet(createdDiet.getId(), meal);
-//        }
-
         // Step 4: Persist UserDietPreference
         return userDietPreferenceRepository.create(userDietPreference);
     }
@@ -62,12 +57,6 @@ public class UserDietPreferenceServiceImpl implements UserDietPreferenceService 
         dietService.clearMealsFromDiet(existingDiet.getId());
         existingDiet.setMeals(recalculatedDiet.getMeals());
         dietService.updateDiet(existingDiet);
-
-        // Clear existing meals and add the recalculated meals
-//        dietService.clearMealsFromDiet(existingDiet.getId()); // A method to clear meals
-//        for (Meal meal : recalculatedDiet.getMeals()) {
-//            dietService.addMealToDiet(existingDiet.getId(), meal);
-//        }
 
         // Step 3: Persist updated UserDietPreference
         return userDietPreferenceRepository.update(userDietPreference);

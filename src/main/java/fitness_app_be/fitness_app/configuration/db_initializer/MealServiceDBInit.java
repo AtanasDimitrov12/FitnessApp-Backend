@@ -1,8 +1,8 @@
-package fitness_app_be.fitness_app.configuration.dbInitializer;
+package fitness_app_be.fitness_app.configuration.db_initializer;
 
 import fitness_app_be.fitness_app.business.MealService;
-import fitness_app_be.fitness_app.configuration.dbInitializer.dto.ApiMeal;
-import fitness_app_be.fitness_app.configuration.dbInitializer.dto.ApiResponse;
+import fitness_app_be.fitness_app.configuration.db_initializer.dto.ApiMeal;
+import fitness_app_be.fitness_app.configuration.db_initializer.dto.ApiResponse;
 import fitness_app_be.fitness_app.domain.Meal;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -68,12 +68,11 @@ sonar {
 	properties {
 		property "sonar.projectKey", "FitnessApp"
 		property "sonar.projectName", "FitnessApp"
+		property "sonar.host.url", "http://localhost:9000"
+		property "sonar.login", "sqp_3e8b73dabeb9b942de2cf5f19cde9e864abb2754"
 		property "sonar.qualitygate.wait", true
 		property "sonar.java.coveragePlugin", "jacoco"
 		property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
-
-
-
 	}
 }
 
@@ -81,15 +80,39 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+tasks.named('sonarqube') {
+	dependsOn('test', 'jacocoTestReport')
+}
+
+
 
 
 jacocoTestReport {
-	dependsOn test
+	dependsOn test // Ensure tests are run before generating the report
 	reports {
 		xml.required = true
 		html.required = true
 	}
+
+	// Filter only the business layer classes
 	classDirectories.setFrom(
-			fileTree(dir: "${buildDir}/classes/java/main", include: ["fitness_app_be/fitness_app/business/**"])
+			fileTree(
+					dir: "${buildDir}/classes/java/main",
+					includes: ["fitness_app_be/fitness_app/business/**"],
+					excludes: ["**/configuration/**", "**/controllers/**", "**/domain/**", "**/exception_handling/**", "**/persistence/**"]
+			)
 	)
+
+	// Set the source directories only for the business layer
+	sourceDirectories.setFrom(
+			fileTree(
+					dir: "src/main/java",
+					includes: ["fitness_app_be/fitness_app/business/**"]
+			)
+	)
+
+	// Use the test execution data
+	executionData.setFrom(fileTree(dir: buildDir).include("jacoco/test.exec"))
 }
+
+

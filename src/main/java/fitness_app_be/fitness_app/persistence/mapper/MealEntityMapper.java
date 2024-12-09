@@ -30,6 +30,7 @@ public class MealEntityMapper {
             return null;
         }
 
+        // Avoid returning diets and keep the domain object simple
         return new Meal(
                 mealEntity.getId(),
                 mealEntity.getName(),
@@ -37,7 +38,7 @@ public class MealEntityMapper {
                 mealEntity.getProtein(),
                 mealEntity.getCarbs(),
                 mealEntity.getCookingTime(),
-                Collections.emptyList() // Prevent cycles
+                null // Explicitly set diets as null to distinguish from `toDomain`
         );
     }
 
@@ -53,7 +54,7 @@ public class MealEntityMapper {
         mealEntity.setProtein(meal.getProtein());
         mealEntity.setCarbs(meal.getCarbs());
         mealEntity.setCookingTime(meal.getCookingTime());
-        mealEntity.setDiets(Collections.emptyList()); // Prevent cycles
+        mealEntity.setDiets(Collections.emptyList()); // Prevent cycles or add specific mapping logic
         return mealEntity;
     }
 
