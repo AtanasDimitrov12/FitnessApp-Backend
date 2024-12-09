@@ -25,6 +25,10 @@ repositories {
 	mavenCentral()
 }
 
+jacoco {
+	toolVersion = "0.8.10"
+}
+
 dependencies {
 	// Spring Boot Starters
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -60,14 +64,12 @@ task populateMeals(type: JavaExec) {
 	args = ['populateMeals']
 }
 
-sonarqube {
+sonar {
 	properties {
 		property "sonar.projectKey", "FitnessApp"
-		property "sonar.projectName", "FitnessApp"
-		property "sonar.qualitygate.wait", "true"
 		property "sonar.java.coveragePlugin", "jacoco"
-		property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
-		property "sonar.login", "your_sonar_token" // Add your SonarQube token
+		property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
+		property "sonar.login", "sqb_b45589b044b93b6808edbefbb568b8626f751038"
 	}
 }
 
@@ -75,9 +77,7 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-jacoco {
-	toolVersion = "0.8.10"
-}
+
 
 jacocoTestReport {
 	dependsOn test
