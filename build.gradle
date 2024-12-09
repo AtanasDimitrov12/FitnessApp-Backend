@@ -60,16 +60,20 @@ dependencies {
 
 task populateMeals(type: JavaExec) {
 	classpath = sourceSets.main.runtimeClasspath
-	mainClass = 'com.fitnessapp.PopulateMeals'
+	mainClass = 'com.fitness_app_be.fitness_app.configuration.dbInitializer'
 	args = ['populateMeals']
 }
 
 sonar {
 	properties {
 		property "sonar.projectKey", "FitnessApp"
+		property "sonar.projectName", "FitnessApp"
+		property "sonar.qualitygate.wait", true
 		property "sonar.java.coveragePlugin", "jacoco"
 		property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
-		property "sonar.login", "sqb_b45589b044b93b6808edbefbb568b8626f751038"
+
+
+
 	}
 }
 
