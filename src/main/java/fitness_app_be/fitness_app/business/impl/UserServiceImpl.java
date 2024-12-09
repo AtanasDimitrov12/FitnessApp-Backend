@@ -2,9 +2,7 @@ package fitness_app_be.fitness_app.business.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import fitness_app_be.fitness_app.business.UserDietPreferenceService;
 import fitness_app_be.fitness_app.business.UserService;
-import fitness_app_be.fitness_app.business.UserWorkoutPreferenceService;
 import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.exception_handling.CustomFileUploadException;
 import fitness_app_be.fitness_app.exception_handling.UserNotFoundException;
@@ -28,8 +26,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final Cloudinary cloudinary;
     private final PasswordEncoder passwordEncoder;
-    private final UserDietPreferenceService userDietPreferenceService;
-    private final UserWorkoutPreferenceService userWorkoutPreferenceService;
 
 
     @Override
@@ -146,9 +142,6 @@ public class UserServiceImpl implements UserService {
             throw new IOException("Failed to retrieve image URL from upload result.");
         }
     }
-
-
-
 
 }
 
