@@ -34,7 +34,7 @@ sonarqube-check:
   script:
     - echo "Waiting for SonarQube to initialize..."
     - sleep 30
-    - ./gradlew sonarqube -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml
+    - ./gradlew sonarqube -Dsonar.coverage.jacoco.xmlReportPaths="build/reports/jacoco/test/jacocoTestReport.xml"
   allow_failure: true
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
