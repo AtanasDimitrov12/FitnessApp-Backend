@@ -5,7 +5,6 @@ import fitness_app_be.fitness_app.persistence.entity.MealEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 @Component
 public class MealEntityMapper {
@@ -22,7 +21,7 @@ public class MealEntityMapper {
                 mealEntity.getProtein(),
                 mealEntity.getCarbs(),
                 mealEntity.getCookingTime(),
-                mealEntity.getDiets() == null ? Collections.emptyList() : Collections.emptyList()
+                Collections.emptyList()
         );
     }
 

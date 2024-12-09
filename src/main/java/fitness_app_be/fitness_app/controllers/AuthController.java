@@ -69,11 +69,10 @@ public class AuthController {
                 return ResponseEntity.ok(new JwtResponse(jwtToken));
             } catch (UserNotFoundException e) {
                 // Log authentication failure
-                System.out.println("Invalid user credentials for username: " + loginRequest.getUsername());
+                throw new UserNotFoundException(e.getMessage());
             }
         }
 
-        System.out.println("Admin Log In!");
 
         // Admin Login Attempt
         Optional<Admin> adminOptional = adminService.findAdminByEmail(loginRequest.getUsername());
@@ -83,8 +82,7 @@ public class AuthController {
                 String jwtToken = authService.authenticateAdmin(admin.getEmail(), loginRequest.getPassword());
                 return ResponseEntity.ok(new JwtResponse(jwtToken));
             } catch (AdminNotFoundException e) {
-                // Log authentication failure
-                System.out.println("Invalid admin credentials for email: " + loginRequest.getUsername());
+                throw new AdminNotFoundException(e.getMessage());
             }
         }
 

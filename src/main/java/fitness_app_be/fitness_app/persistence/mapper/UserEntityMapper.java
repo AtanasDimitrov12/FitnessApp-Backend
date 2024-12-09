@@ -49,7 +49,7 @@ public class UserEntityMapper {
                 .workoutPlan(workoutPlanEntityMapper.toDomain(userEntity.getWorkoutPlan()))
                 .diet(userEntity.getDiet() != null ? dietEntityMapper.toDomain(userEntity.getDiet()) : null)
                 .notes(userEntity.getNotes() != null
-                        ? userEntity.getNotes().stream().map(progressNoteEntityMapper::toDomain).collect(Collectors.toList())
+                        ? userEntity.getNotes().stream().map(progressNoteEntityMapper::toDomain).toList()
                         : Collections.emptyList())
                 .createdAt(userEntity.getCreatedAt())
                 .updatedAt(userEntity.getUpdatedAt())
@@ -97,7 +97,7 @@ public class UserEntityMapper {
             userEntity.setNotes(
                     user.getNotes().stream()
                             .map(progressNoteEntityMapper::toEntity)
-                            .collect(Collectors.toList())
+                            .toList()
             );
         }
 

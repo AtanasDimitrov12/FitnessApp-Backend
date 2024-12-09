@@ -1,8 +1,6 @@
 package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.ProgressNote;
-import fitness_app_be.fitness_app.domain.Role;
-import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.exception_handling.UserNotFoundException;
 import fitness_app_be.fitness_app.persistence.entity.ProgressNoteEntity;
 import fitness_app_be.fitness_app.persistence.entity.UserEntity;
@@ -46,12 +44,11 @@ class ProgressNoteRepositoryImplTest {
 
     private ProgressNote progressNote;
     private ProgressNoteEntity progressNoteEntity;
-    private UserEntity userEntity;
 
 
     @BeforeEach
     void setUp() {
-        userEntity = new UserEntity();
+        UserEntity userEntity = new UserEntity();
         userEntity.setId(101L);
         userEntity.setNotes(new ArrayList<>());
 
@@ -92,9 +89,9 @@ class ProgressNoteRepositoryImplTest {
     @Test
     void create_ShouldReturnCreatedProgressNote() {
         // Arrange
-        ProgressNote progressNote = new ProgressNote(1L, 101L, 70.5, "Test note", LocalDate.now()); // Create domain object
-        ProgressNoteEntity progressNoteEntity = new ProgressNoteEntity(); // Mock entity equivalent
-        progressNoteEntity.setId(1L);
+        ProgressNote newprogressNote = new ProgressNote(1L, 101L, 70.5, "Test note", LocalDate.now()); // Create domain object
+        ProgressNoteEntity newprogressNoteEntity = new ProgressNoteEntity(); // Mock entity equivalent
+        newprogressNoteEntity.setId(1L);
 
         UserEntity userEntity = new UserEntity();
         userEntity.setId(101L);
@@ -103,25 +100,25 @@ class ProgressNoteRepositoryImplTest {
 
         // Mock the behavior of the userRepository and mappers
         when(userRepository.findEntityById(101L)).thenReturn(userEntity); // Return UserEntity when searched
-        when(progressNoteEntityMapper.toEntity(progressNote)).thenReturn(progressNoteEntity); // Map ProgressNote to ProgressNoteEntity
-        when(jpaProgressNoteRepository.save(progressNoteEntity)).thenReturn(progressNoteEntity); // Save ProgressNoteEntity
-        when(progressNoteEntityMapper.toDomain(progressNoteEntity)).thenReturn(progressNote); // Map ProgressNoteEntity back to ProgressNote
+        when(progressNoteEntityMapper.toEntity(newprogressNote)).thenReturn(newprogressNoteEntity); // Map ProgressNote to ProgressNoteEntity
+        when(jpaProgressNoteRepository.save(newprogressNoteEntity)).thenReturn(newprogressNoteEntity); // Save ProgressNoteEntity
+        when(progressNoteEntityMapper.toDomain(newprogressNoteEntity)).thenReturn(newprogressNote); // Map ProgressNoteEntity back to ProgressNote
 
         // Act
-        ProgressNote createdNote = progressNoteRepository.create(progressNote);
+        ProgressNote createdNote = progressNoteRepository.create(newprogressNote);
 
         // Assert
         assertNotNull(createdNote, "The created note should not be null");
-        assertEquals(progressNote, createdNote, "The created note should match the input");
+        assertEquals(newprogressNote, createdNote, "The created note should match the input");
 
         // Verify interactions
         verify(userRepository, times(1)).findEntityById(101L); // Verify fetching user
-        verify(progressNoteEntityMapper, times(1)).toEntity(progressNote); // Verify mapping to entity
-        verify(jpaProgressNoteRepository, times(1)).save(progressNoteEntity); // Verify saving entity
-        verify(progressNoteEntityMapper, times(1)).toDomain(progressNoteEntity); // Verify mapping back to domain
+        verify(progressNoteEntityMapper, times(1)).toEntity(newprogressNote); // Verify mapping to entity
+        verify(jpaProgressNoteRepository, times(1)).save(newprogressNoteEntity); // Verify saving entity
+        verify(progressNoteEntityMapper, times(1)).toDomain(newprogressNoteEntity); // Verify mapping back to domain
 
         // Ensure that the note was added to the user's notes
-        assertTrue(userEntity.getNotes().contains(progressNoteEntity), "The user's notes should contain the new progress note");
+        assertTrue(userEntity.getNotes().contains(newprogressNoteEntity), "The user's notes should contain the new progress note");
     }
 
 

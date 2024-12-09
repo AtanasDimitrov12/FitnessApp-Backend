@@ -15,7 +15,6 @@ import org.hibernate.Hibernate;
 import org.hibernate.collection.spi.PersistentBag;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

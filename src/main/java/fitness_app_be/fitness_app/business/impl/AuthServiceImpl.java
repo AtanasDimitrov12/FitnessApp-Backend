@@ -10,7 +10,6 @@ import fitness_app_be.fitness_app.domain.Role;
 import fitness_app_be.fitness_app.configuration.security.token.AccessToken;
 import fitness_app_be.fitness_app.configuration.security.token.impl.AccessTokenImpl;
 import fitness_app_be.fitness_app.exception_handling.InvalidCredentialsException;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,8 @@
 package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.UserDietPreference;
+import fitness_app_be.fitness_app.exception_handling.UserDietPreferenceNotFoundException;
+import fitness_app_be.fitness_app.exception_handling.UserNotFoundException;
 import fitness_app_be.fitness_app.persistence.entity.UserDietPreferenceEntity;
 import fitness_app_be.fitness_app.persistence.entity.UserEntity;
 import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaUserDietPreferenceRepository;
@@ -41,7 +43,7 @@ public class UserDietPreferenceRepositoryImpl implements UserDietPreferenceRepos
     public UserDietPreference create(UserDietPreference preference) {
         UserEntity userEntity = findUserEntityById(preference.getUser().getId()); // Fetch or obtain the UserEntity
         if (userEntity == null) {
-            throw new IllegalArgumentException("User with ID " + preference.getUser().getId() + " does not exist.");
+            throw new UserNotFoundException( preference.getUser().getId());
         }
         UserDietPreferenceEntity entity = userDietPreferenceEntityMapper.toEntity(preference, userEntity);
         UserDietPreferenceEntity savedEntity = jpaUserDietPreferenceRepository.save(entity);
@@ -56,7 +58,7 @@ public class UserDietPreferenceRepositoryImpl implements UserDietPreferenceRepos
         UserDietPreferenceEntity existingEntity = jpaUserDietPreferenceRepository
                 .findByUserId(preference.getUser().getId())
                 .orElseThrow(() ->
-                        new IllegalArgumentException("UserDietPreference for user ID " + preference.getUser().getId() + " does not exist.")
+                        new UserDietPreferenceNotFoundException(preference.getId())
                 );
 
         // Update fields in the existing entity
@@ -74,7 +76,7 @@ public class UserDietPreferenceRepositoryImpl implements UserDietPreferenceRepos
     @Override
     public void delete(long preferenceId) {
         if (!exists(preferenceId)) {
-            throw new IllegalArgumentException("UserDietPreference with ID " + preferenceId + " does not exist.");
+            throw new UserDietPreferenceNotFoundException(preferenceId);
         }
         jpaUserDietPreferenceRepository.deleteById(preferenceId);
     }

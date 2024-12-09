@@ -90,20 +90,20 @@ class UserServiceImplTest {
     @Test
     void createUser_ShouldCreateUserSuccessfully() {
         // Arrange
-        User user = new User(1L, "username", "email@example.com", "password", null, null, null, null, null, Role.USER, null, null, null, true);
+        User newUser = new User(1L, "username", "email@example.com", "password", null, null, null, null, null, Role.USER, null, null, null, true);
 
         // Mocking repository
-        when(userRepository.create(user)).thenReturn(user); // Mock user creation
+        when(userRepository.create(newUser)).thenReturn(newUser); // Mock user creation
 
         // Act
-        User createdUser = userService.createUser(user);
+        User createdUser = userService.createUser(newUser);
 
         // Assert
         assertNotNull(createdUser, "Created user should not be null");
-        assertEquals(user, createdUser, "Returned user should match the input");
+        assertEquals(newUser, createdUser, "Returned user should match the input");
 
         // Verify interactions
-        verify(userRepository, times(1)).create(user);
+        verify(userRepository, times(1)).create(newUser);
     }
 
 

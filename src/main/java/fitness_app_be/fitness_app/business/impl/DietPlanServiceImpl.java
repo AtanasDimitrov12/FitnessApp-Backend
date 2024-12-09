@@ -38,7 +38,7 @@ public class DietPlanServiceImpl implements DietPlanService {
         // Filter meals based on user preferences
         return allMeals.stream()
                 .filter(meal -> meal.getCalories() <= dietPreference.getCalories() / dietPreference.getMealFrequency())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private List<Diet> generateDietPlans(List<Meal> meals, UserDietPreference dietPreference) {

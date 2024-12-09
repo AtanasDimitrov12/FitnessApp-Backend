@@ -1,8 +1,8 @@
-package fitness_app_be.fitness_app.configuration.DBInitializer;
+package fitness_app_be.fitness_app.configuration.dbInitializer;
 
 import fitness_app_be.fitness_app.business.MealService;
-import fitness_app_be.fitness_app.configuration.DBInitializer.dto.ApiMeal;
-import fitness_app_be.fitness_app.configuration.DBInitializer.dto.ApiResponse;
+import fitness_app_be.fitness_app.configuration.dbInitializer.dto.ApiMeal;
+import fitness_app_be.fitness_app.configuration.dbInitializer.dto.ApiResponse;
 import fitness_app_be.fitness_app.domain.Meal;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,6 @@ public class MealServiceDBInit {
     public void populateMeals() {
         long mealCount = mealService.getAllMeals().stream().count();
         if (mealCount >= 50) {
-            System.out.println("Database already has 50 or more meals. Skipping population.");
             return;
         }
 
@@ -45,6 +44,5 @@ public class MealServiceDBInit {
             mealService.createMeal(newMeal);
         }
 
-        System.out.println("Meals have been populated in the database.");
     }
 }

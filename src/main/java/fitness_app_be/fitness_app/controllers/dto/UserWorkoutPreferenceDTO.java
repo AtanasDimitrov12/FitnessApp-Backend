@@ -5,7 +5,7 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserWorkoutPreferenceDTO {
+public class    UserWorkoutPreferenceDTO {
     private Long id;
     private Long userid;
     private String fitnessGoal;

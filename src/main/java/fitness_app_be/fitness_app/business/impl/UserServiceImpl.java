@@ -113,15 +113,12 @@ public class UserServiceImpl implements UserService {
 
         // Get the current system time
         Date currentDate = new Date();
-        System.out.println("Current system time: " + currentDate);
 
         // Get the current timestamp in seconds
         long timestamp = System.currentTimeMillis() / 1000L;
-        System.out.println("Timestamp sent to Cloudinary: " + timestamp);
 
         // Convert timestamp to readable date for comparison
         Date timestampDate = new Date(timestamp * 1000L);
-        System.out.println("Timestamp date: " + timestampDate);
 
         // Upload parameters
         Map<String, Object> uploadParams = ObjectUtils.asMap(
@@ -129,12 +126,11 @@ public class UserServiceImpl implements UserService {
         );
 
         // Upload the image to Cloudinary
-        Map uploadResult = cloudinary.uploader().upload(
+        Map<String, Object> uploadResult = cloudinary.uploader().upload(
                 multipartFile.getBytes(),
                 uploadParams
         );
 
-        // Retrieve the URL
         Object url = uploadResult.get("url");
         if (url instanceof String) {
             return (String) url;

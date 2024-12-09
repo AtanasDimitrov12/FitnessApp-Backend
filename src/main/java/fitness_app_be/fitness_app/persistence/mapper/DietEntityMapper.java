@@ -24,7 +24,7 @@ public class DietEntityMapper {
                 .meals(dietEntity.getMeals() == null ? Collections.emptyList()
                         : dietEntity.getMeals().stream()
                         .map(mealEntityMapper::toDomainWithoutDiets)
-                        .collect(Collectors.toList()))
+                        .toList())
                 .build();
     }
 
@@ -38,7 +38,7 @@ public class DietEntityMapper {
         dietEntity.setMeals(diet.getMeals() == null ? Collections.emptyList()
                 : diet.getMeals().stream()
                 .map(mealEntityMapper::toEntityWithoutDiets)
-                .collect(Collectors.toList()));
+                .toList());
         return dietEntity;
     }
 }

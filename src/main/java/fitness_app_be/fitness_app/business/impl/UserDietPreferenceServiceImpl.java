@@ -4,13 +4,11 @@ import fitness_app_be.fitness_app.business.DietPlanService;
 import fitness_app_be.fitness_app.business.DietService;
 import fitness_app_be.fitness_app.business.UserDietPreferenceService;
 import fitness_app_be.fitness_app.domain.Diet;
-import fitness_app_be.fitness_app.domain.Meal;
 import fitness_app_be.fitness_app.domain.UserDietPreference;
 import fitness_app_be.fitness_app.exception_handling.UserDietPreferenceNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.UserDietPreferenceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -32,12 +30,11 @@ public class UserDietPreferenceServiceImpl implements UserDietPreferenceService 
     public UserDietPreference createUserDietPreference(UserDietPreference userDietPreference) {
         // Step 1: Calculate the diet
         Diet calculatedDiet = dietPlanService.calculateDiet(userDietPreference);
-        System.out.println("User from diet preference: " + userDietPreference.getUser().getId() );
         // Step 2: Create and persist the diet
         Diet newDiet = new Diet();
         newDiet.setUser(userDietPreference.getUser());
         newDiet.setMeals(calculatedDiet.getMeals());
-        Diet createdDiet = dietService.createDiet(newDiet);
+        dietService.createDiet(newDiet);
 
         // Step 3: Add meals
 //        for (Meal meal : calculatedDiet.getMeals()) {
@@ -62,9 +59,11 @@ public class UserDietPreferenceServiceImpl implements UserDietPreferenceService 
         // Step 2: Update the existing diet
         Diet existingDiet = dietService.getDietByUserId(userDietPreference.getUser().getId());
         existingDiet.setUser(userDietPreference.getUser());
+        existingDiet.setMeals(recalculatedDiet.getMeals());
+        dietService.updateDiet(existingDiet);
 
         // Clear existing meals and add the recalculated meals
-        dietService.clearMealsFromDiet(existingDiet.getId()); // A method to clear meals
+//        dietService.clearMealsFromDiet(existingDiet.getId()); // A method to clear meals
 //        for (Meal meal : recalculatedDiet.getMeals()) {
 //            dietService.addMealToDiet(existingDiet.getId(), meal);
 //        }

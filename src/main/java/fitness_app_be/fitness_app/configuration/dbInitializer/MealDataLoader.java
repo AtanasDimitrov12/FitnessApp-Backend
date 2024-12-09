@@ -1,4 +1,4 @@
-package fitness_app_be.fitness_app.configuration.DBInitializer;
+package fitness_app_be.fitness_app.configuration.dbInitializer;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

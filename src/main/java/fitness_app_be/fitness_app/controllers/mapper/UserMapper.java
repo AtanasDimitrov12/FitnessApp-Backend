@@ -54,7 +54,7 @@ public class UserMapper {
                 .notes(userDTO.getNotes() != null
                         ? userDTO.getNotes().stream()
                         .map(progressNoteMapper::toDomain)
-                        .collect(Collectors.toList())
+                        .toList()
                         : Collections.emptyList())
                 .isActive(userDTO.getIsActive())
                 .build();
@@ -83,7 +83,7 @@ public class UserMapper {
                 .notes(user.getNotes() != null
                         ? user.getNotes().stream()
                         .map(progressNoteMapper::domainToDto)
-                        .collect(Collectors.toList())
+                        .toList()
                         : Collections.emptyList())
                 .isActive(user.getIsActive())
                 .build();
