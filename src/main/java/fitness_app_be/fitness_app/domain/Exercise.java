@@ -14,5 +14,4 @@ public class Exercise {
     private int sets;
     private int reps;
     private String muscleGroup;
-    private List<Workout> workouts;
 }

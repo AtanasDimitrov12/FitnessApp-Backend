@@ -64,20 +64,44 @@ public class WorkoutController {
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(consumes = "multipart/form-data")
     public WorkoutDTO updateWorkout(
-            @RequestPart("workout") WorkoutDTO workoutDTO,
+            @RequestPart("workout") String workoutDTOJson,
             @RequestPart(value = "image", required = false) MultipartFile image) {
 
+        try {
+            // Parse the JSON string into a WorkoutDTO object
+            ObjectMapper objectMapper = new ObjectMapper();
+            WorkoutDTO workoutDTO = objectMapper.readValue(workoutDTOJson, WorkoutDTO.class);
 
-            try {
-                File file = convertMultipartFileToFile(image);
-                Workout workout = workoutMapper.toDomain(workoutDTO);
-                Workout updatedWorkout = workoutService.updateWorkout(workout, file);
-                return workoutMapper.domainToDto(updatedWorkout);
-            } catch (IOException e) {
-                throw new CreationException("Error while saving workout image", e);
+            // Convert image to File if it's provided
+            File file = null;
+            if (image != null) {
+                file = convertMultipartFileToFile(image);
             }
 
+            Workout workout = workoutMapper.toDomain(workoutDTO);
+            Workout updatedWorkout = workoutService.updateWorkout(workout, file);
+
+            // Clean up temporary file
+            if (file != null && file.exists()) {
+                file.delete();
+            }
+
+            return workoutMapper.domainToDto(updatedWorkout);
+        } catch (IOException e) {
+            throw new CreationException("Error while saving workout image", e);
+        }
     }
+
+
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/basic")
+    public WorkoutDTO updateWorkoutWithoutPicture(@RequestBody WorkoutDTO workoutDTO) {
+        Workout workout = workoutMapper.toDomain(workoutDTO);
+        Workout updatedWorkout = workoutService.updateWorkoutWithoutPicture(workout);
+        return workoutMapper.domainToDto(updatedWorkout);
+    }
+
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")

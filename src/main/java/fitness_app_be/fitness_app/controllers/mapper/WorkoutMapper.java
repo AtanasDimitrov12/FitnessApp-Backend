@@ -33,11 +33,6 @@ public class WorkoutMapper {
                         ? workoutDTO.getExercises().stream()
                         .map(exerciseMapper::toDomain)
                         .toList()
-                        : null,
-                workoutDTO.getWorkoutPlans() != null
-                        ? workoutDTO.getWorkoutPlans().stream()
-                        .map(workoutPlanMapper::toDomain)
-                        .toList()
                         : null
         );
     }
@@ -55,11 +50,6 @@ public class WorkoutMapper {
                 workout.getExercises() != null
                         ? workout.getExercises().stream()
                         .map(exerciseMapper::toDto)
-                        .toList()
-                        : null,
-                workout.getWorkoutPlans() != null
-                        ? workout.getWorkoutPlans().stream()
-                        .map(workoutPlanMapper::domainToDto)
                         .toList()
                         : null
         );

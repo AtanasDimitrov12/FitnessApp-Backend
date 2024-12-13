@@ -16,5 +16,4 @@ public class MealDTO {
     private int protein;
     private int carbs;
     private double cookingTime;
-    private List<DietDTO> diets;
 }

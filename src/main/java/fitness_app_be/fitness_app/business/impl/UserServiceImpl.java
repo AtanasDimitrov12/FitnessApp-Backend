@@ -3,6 +3,7 @@ package fitness_app_be.fitness_app.business.impl;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import fitness_app_be.fitness_app.business.UserService;
+import fitness_app_be.fitness_app.domain.Diet;
 import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.exception_handling.CustomFileUploadException;
 import fitness_app_be.fitness_app.exception_handling.UserNotFoundException;
@@ -133,6 +134,15 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new IOException("Failed to retrieve image URL from upload result.");
         }
+    }
+
+    @Override
+    public User attachedDietToUser(Long UserId, Diet diet){
+        User user = getUserById(UserId);
+        user.setDiet(diet);
+        diet.setUser(user);
+        userRepository.update(user);
+        return user;
     }
 
 }

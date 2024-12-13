@@ -20,7 +20,7 @@ public class DietMapper {
 
         return Diet.builder()
                 .id(dietDTO.getId())
-                .user(dietDTO.getUser() != null ? userMapper.toDomain(dietDTO.getUser()) : null) // Map single User
+                .user(userMapper.toDomain(dietDTO.getUser()))
                 .meals(new ArrayList<>()) // Avoid mapping meals here
                 .build();
     }
@@ -32,7 +32,7 @@ public class DietMapper {
 
         return DietDTO.builder()
                 .id(diet.getId())
-                .user(diet.getUser() != null ? userMapper.domainToDto(diet.getUser()) : null) // Map single User
+                .user(userMapper.domainToDto(diet.getUser()))
                 .meals(new ArrayList<>()) // Avoid mapping meals here
                 .build();
     }

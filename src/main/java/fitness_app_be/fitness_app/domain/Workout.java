@@ -16,5 +16,4 @@ public class Workout {
     private String description;
     private String pictureURL;
     private List<Exercise> exercises;
-    private List<WorkoutPlan> workoutPlans;
 }

@@ -111,6 +111,17 @@ public class WorkoutServiceImpl implements WorkoutService {
         return workoutRepository.update(existingWorkout);
     }
 
+    @Override
+    public Workout updateWorkoutWithoutPicture(Workout workout){
+        Workout existingWorkout = workoutRepository.getWorkoutById(workout.getId())
+                .orElseThrow(() -> new WorkoutNotFoundException("Workout with ID " + workout.getId() + " not found"));
+        existingWorkout.setName(workout.getName());
+        existingWorkout.setDescription(workout.getDescription());
+        existingWorkout.setExercises(workout.getExercises());
+
+        return workoutRepository.update(existingWorkout);
+    }
+
 
     @Override
     public String saveImage(MultipartFile image) throws IOException {

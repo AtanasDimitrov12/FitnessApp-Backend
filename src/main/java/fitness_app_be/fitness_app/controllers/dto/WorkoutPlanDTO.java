@@ -11,7 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 public class WorkoutPlanDTO {
     private Long id;
-    private List<UserDTO> users;
     private List<WorkoutDTO> workouts;
     private List<String> fitnessGoals;
     private List<String> trainingStyles;

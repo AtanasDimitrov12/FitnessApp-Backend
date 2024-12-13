@@ -28,12 +28,7 @@ public class ExerciseEntityMapper {
                 exerciseEntity.getName(),
                 exerciseEntity.getSets(),
                 exerciseEntity.getReps(),
-                exerciseEntity.getMuscleGroup(),
-                exerciseEntity.getWorkouts() != null
-                        ? exerciseEntity.getWorkouts().stream()
-                        .map(workoutEntityMapper::toDomain)
-                        .toList()
-                        : null
+                exerciseEntity.getMuscleGroup()
         );
     }
 
@@ -49,14 +44,6 @@ public class ExerciseEntityMapper {
                 .reps(exercise.getReps())
                 .muscleGroup(exercise.getMuscleGroup())
                 .build();
-
-        if (exercise.getWorkouts() != null) {
-            exerciseEntity.setWorkouts(
-                    exercise.getWorkouts().stream()
-                            .map(workoutEntityMapper::toEntity)
-                            .toList()
-            );
-        }
 
         return exerciseEntity;
     }

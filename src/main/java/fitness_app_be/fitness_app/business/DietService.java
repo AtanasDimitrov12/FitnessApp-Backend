@@ -14,5 +14,4 @@ public interface DietService {
     Diet updateDiet(Diet diet);
     void addMealToDiet(long dietId, Meal meal);
     void removeMealFromDiet(long dietId, long mealId);
-    void clearMealsFromDiet(Long dietId);
 }

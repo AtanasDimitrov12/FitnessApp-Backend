@@ -7,7 +7,9 @@ import fitness_app_be.fitness_app.exception_handling.DietNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.DietRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -48,14 +50,22 @@ public class DietServiceImpl implements DietService {
     }
 
     @Override
+    @Transactional
     public Diet updateDiet(Diet diet) {
-        Diet existingDiet = dietRepository.getDietByUserId(diet.getId())
+        Diet existingDiet = dietRepository.getDietById(diet.getId())
                 .orElseThrow(() -> new DietNotFoundException("Diet with ID " + diet.getId() + " not found"));
 
-        existingDiet.setMeals(diet.getMeals());
+        // Replace the meals with a mutable copy
+        List<Meal> updatedMeals = new ArrayList<>(diet.getMeals());
+        existingDiet.setMeals(updatedMeals);
+
+        // Update other fields as needed
+        existingDiet.setUser(diet.getUser());
 
         return dietRepository.update(existingDiet);
     }
+
+
 
     @Override
     public void addMealToDiet(long dietId, Meal meal) {
@@ -67,12 +77,5 @@ public class DietServiceImpl implements DietService {
         dietRepository.removeMealFromDiet(dietId, mealId);
     }
 
-    @Override
-    public void clearMealsFromDiet(Long dietId) {
-        Diet diet = dietRepository.getDietById(dietId)
-                .orElseThrow(() -> new IllegalArgumentException("Diet not found"));
-        diet.getMeals().clear(); // Clear all meals
-        dietRepository.update(diet); // Persist the cleared diet
-    }
 
 }

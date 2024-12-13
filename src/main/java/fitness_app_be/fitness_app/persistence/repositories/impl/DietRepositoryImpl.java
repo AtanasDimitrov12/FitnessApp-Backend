@@ -16,7 +16,11 @@ import org.hibernate.collection.spi.PersistentBag;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -62,18 +66,30 @@ public class DietRepositoryImpl implements DietRepository {
     public Diet update(Diet diet) {
         DietEntity dietEntity = dietEntityMapperImpl.toEntity(diet);
 
+        // Fetch all meals in a single query to avoid N+1 problem
         if (dietEntity.getMeals() != null) {
+            Map<Long, MealEntity> existingMealsMap = jpaMealRepository.findAllById(
+                    dietEntity.getMeals().stream()
+                            .map(MealEntity::getId)
+                            .filter(Objects::nonNull)
+                            .toList()
+            ).stream().collect(Collectors.toMap(MealEntity::getId, Function.identity()));
+
             List<MealEntity> managedMeals = dietEntity.getMeals().stream()
                     .map(meal -> meal.getId() != null
-                            ? jpaMealRepository.findById(meal.getId()).orElse(meal)
+                            ? existingMealsMap.getOrDefault(meal.getId(), meal)
                             : meal)
                     .toList();
             dietEntity.setMeals(managedMeals);
         }
 
+        // Save the updated DietEntity
         DietEntity updatedEntity = jpaDietRepository.save(dietEntity);
+
+        // Map back to domain and return
         return dietEntityMapperImpl.toDomain(updatedEntity);
     }
+
 
     @Transactional
     @Override

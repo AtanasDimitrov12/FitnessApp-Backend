@@ -28,11 +28,6 @@ public class WorkoutPlanEntityMapper {
 
         return new WorkoutPlan(
                 workoutPlanEntity.getId(),
-                workoutPlanEntity.getUsers() != null
-                        ? workoutPlanEntity.getUsers().stream()
-                        .map(userEntityMapper::toDomain)
-                        .toList()
-                        : null,
                 workoutPlanEntity.getWorkouts() != null
                         ? workoutPlanEntity.getWorkouts().stream()
                         .map(workoutEntityMapper::toDomain)
@@ -52,13 +47,6 @@ public class WorkoutPlanEntityMapper {
         workoutPlanEntity.setId(workoutPlan.getId());
 
 
-        if (workoutPlan.getUsers() != null) {
-            workoutPlanEntity.setUsers(
-                    workoutPlan.getUsers().stream()
-                            .map(userEntityMapper::toEntity)
-                            .toList()
-            );
-        }
 
         if (workoutPlan.getWorkouts() != null) {
             workoutPlanEntity.setWorkouts(

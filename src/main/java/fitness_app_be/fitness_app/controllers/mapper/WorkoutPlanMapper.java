@@ -27,11 +27,6 @@ public class WorkoutPlanMapper {
 
         return new WorkoutPlan(
                 workoutPlanDTO.getId(),
-                workoutPlanDTO.getUsers() != null
-                        ? workoutPlanDTO.getUsers().stream()
-                        .map(userMapper::toDomain)
-                        .toList()
-                        : null,
                 workoutPlanDTO.getWorkouts() != null
                         ? workoutPlanDTO.getWorkouts().stream()
                         .map(workoutMapper::toDomain)
@@ -53,11 +48,6 @@ public class WorkoutPlanMapper {
 
         return new WorkoutPlanDTO(
                 workoutPlan.getId(),
-                workoutPlan.getUsers() != null
-                        ? workoutPlan.getUsers().stream()
-                        .map(userMapper::domainToDto)
-                        .toList()
-                        : null,
                 workoutPlan.getWorkouts() != null
                         ? workoutPlan.getWorkouts().stream()
                         .map(workoutMapper::domainToDto)

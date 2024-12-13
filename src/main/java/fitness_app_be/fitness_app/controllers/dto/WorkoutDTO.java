@@ -16,7 +16,6 @@ public class WorkoutDTO {
     private String description;
     private String pictureURL;
     private List<ExerciseDTO> exercises;
-    private List<WorkoutPlanDTO> workoutPlans;
 }
 
 

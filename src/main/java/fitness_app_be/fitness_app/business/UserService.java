@@ -1,5 +1,6 @@
 package fitness_app_be.fitness_app.business;
 
+import fitness_app_be.fitness_app.domain.Diet;
 import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.exception_handling.CustomFileUploadException;
 import fitness_app_be.fitness_app.exception_handling.UserProfileUpdateException;
@@ -18,4 +19,5 @@ public interface UserService {
     List<User> searchUsersByPartialUsername(String partialUsername);
     User updateUser(User user);
     User uploadUserProfilePicture(Long userId, MultipartFile imageFile) throws CustomFileUploadException, UserProfileUpdateException;
+    User attachedDietToUser(Long UserId, Diet diet);
 }

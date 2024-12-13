@@ -22,8 +22,7 @@ public class MealMapper {
                 mealDTO.getCalories(),
                 mealDTO.getProtein(),
                 mealDTO.getCarbs(),
-                mealDTO.getCookingTime(),
-                new ArrayList<>() // Avoid mapping diets here
+                mealDTO.getCookingTime()
         );
     }
 
@@ -38,8 +37,7 @@ public class MealMapper {
                 meal.getCalories(),
                 meal.getProtein(),
                 meal.getCarbs(),
-                meal.getCookingTime(),
-                new ArrayList<>() // Avoid mapping diets here
+                meal.getCookingTime()
         );
     }
 }

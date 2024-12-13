@@ -20,8 +20,7 @@ public class MealEntityMapper {
                 mealEntity.getCalories(),
                 mealEntity.getProtein(),
                 mealEntity.getCarbs(),
-                mealEntity.getCookingTime(),
-                Collections.emptyList()
+                mealEntity.getCookingTime()
         );
     }
 
@@ -37,8 +36,7 @@ public class MealEntityMapper {
                 mealEntity.getCalories(),
                 mealEntity.getProtein(),
                 mealEntity.getCarbs(),
-                mealEntity.getCookingTime(),
-                null // Explicitly set diets as null to distinguish from `toDomain`
+                mealEntity.getCookingTime()
         );
     }
 

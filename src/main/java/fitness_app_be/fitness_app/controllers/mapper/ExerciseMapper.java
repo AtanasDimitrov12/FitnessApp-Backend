@@ -28,12 +28,7 @@ public class ExerciseMapper {
                 exerciseDTO.getName(),
                 exerciseDTO.getSets(),
                 exerciseDTO.getReps(),
-                exerciseDTO.getMuscleGroup(),
-                exerciseDTO.getWorkouts() != null
-                        ? exerciseDTO.getWorkouts().stream()
-                        .map(workoutMapper::toDomain)
-                        .toList()
-                        : new ArrayList<>()
+                exerciseDTO.getMuscleGroup()
         );
     }
 
@@ -47,12 +42,7 @@ public class ExerciseMapper {
                 exercise.getName(),
                 exercise.getSets(),
                 exercise.getReps(),
-                exercise.getMuscleGroup(),
-                exercise.getWorkouts() != null
-                        ? exercise.getWorkouts().stream()
-                        .map(workoutMapper::domainToDto)
-                        .toList()
-                        : new ArrayList<>()
+                exercise.getMuscleGroup()
         );
     }
 }

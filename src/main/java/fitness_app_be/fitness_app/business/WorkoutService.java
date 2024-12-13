@@ -14,5 +14,6 @@ public interface WorkoutService {
     void deleteWorkout(Long id);
     List<Workout> searchWorkoutsByPartialUsername(String partialUsername);
     Workout updateWorkout(Workout workout, File imageFile) throws IOException;
+    Workout updateWorkoutWithoutPicture(Workout workout);
     String saveImage(MultipartFile image) throws IOException;
 }

@@ -15,5 +15,4 @@ public class Meal {
     private int protein;
     private int carbs;
     private double cookingTime;
-    private List<Diet> diets;
 }
