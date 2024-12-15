@@ -27,16 +27,11 @@ public class WorkoutPlanMapper {
 
         return new WorkoutPlan(
                 workoutPlanDTO.getId(),
+                workoutPlanDTO.getUserId(),
                 workoutPlanDTO.getWorkouts() != null
                         ? workoutPlanDTO.getWorkouts().stream()
                         .map(workoutMapper::toDomain)
                         .toList()
-                        : null,
-                workoutPlanDTO.getFitnessGoals() != null
-                        ? new ArrayList<>(workoutPlanDTO.getFitnessGoals())
-                        : null,
-                workoutPlanDTO.getTrainingStyles() != null
-                        ? new ArrayList<>(workoutPlanDTO.getTrainingStyles())
                         : null
         );
     }
@@ -48,16 +43,11 @@ public class WorkoutPlanMapper {
 
         return new WorkoutPlanDTO(
                 workoutPlan.getId(),
+                workoutPlan.getUserId(),
                 workoutPlan.getWorkouts() != null
                         ? workoutPlan.getWorkouts().stream()
                         .map(workoutMapper::domainToDto)
                         .toList()
-                        : null,
-                workoutPlan.getFitnessGoals() != null
-                        ? new ArrayList<>(workoutPlan.getFitnessGoals())
-                        : null,
-                workoutPlan.getTrainingStyles() != null
-                        ? new ArrayList<>(workoutPlan.getTrainingStyles())
                         : null
         );
     }

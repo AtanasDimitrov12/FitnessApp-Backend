@@ -49,6 +49,7 @@ public class AuthServiceImpl implements AuthService {
         if (userOptional.isEmpty()) {
             throw new InvalidCredentialsException();
         }
+        
 
         User storedUser = userOptional.get();
         if (!passwordEncoder.matches(password, storedUser.getPassword())) {

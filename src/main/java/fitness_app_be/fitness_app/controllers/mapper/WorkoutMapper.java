@@ -6,17 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class WorkoutMapper {
 
     private final ExerciseMapper exerciseMapper;
-    private final WorkoutPlanMapper workoutPlanMapper;
 
     @Autowired
-    public WorkoutMapper(@Lazy ExerciseMapper exerciseMapper, @Lazy WorkoutPlanMapper workoutPlanMapper) {
+    public WorkoutMapper(@Lazy ExerciseMapper exerciseMapper) {
         this.exerciseMapper = exerciseMapper;
-        this.workoutPlanMapper = workoutPlanMapper;
     }
 
     public Workout toDomain(WorkoutDTO workoutDTO) {
@@ -32,8 +33,17 @@ public class WorkoutMapper {
                 workoutDTO.getExercises() != null
                         ? workoutDTO.getExercises().stream()
                         .map(exerciseMapper::toDomain)
-                        .toList()
-                        : null
+                        .collect(Collectors.toList())
+                        : Collections.emptyList(),
+                workoutDTO.getFitnessGoals() != null
+                        ? List.copyOf(workoutDTO.getFitnessGoals())
+                        : Collections.emptyList(),
+                workoutDTO.getFitnessLevels() != null
+                        ? List.copyOf(workoutDTO.getFitnessLevels())
+                        : Collections.emptyList(),
+                workoutDTO.getTrainingStyles() != null
+                        ? List.copyOf(workoutDTO.getTrainingStyles())
+                        : Collections.emptyList()
         );
     }
 
@@ -50,8 +60,17 @@ public class WorkoutMapper {
                 workout.getExercises() != null
                         ? workout.getExercises().stream()
                         .map(exerciseMapper::toDto)
-                        .toList()
-                        : null
+                        .collect(Collectors.toList())
+                        : Collections.emptyList(),
+                workout.getFitnessGoals() != null
+                        ? List.copyOf(workout.getFitnessGoals())
+                        : Collections.emptyList(),
+                workout.getFitnessLevels() != null
+                        ? List.copyOf(workout.getFitnessLevels())
+                        : Collections.emptyList(),
+                workout.getTrainingStyles() != null
+                        ? List.copyOf(workout.getTrainingStyles())
+                        : Collections.emptyList()
         );
     }
 }

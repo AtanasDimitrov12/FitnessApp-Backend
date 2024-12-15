@@ -16,8 +16,8 @@ public class WorkoutPlanEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "workoutPlan", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<UserEntity> users;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
@@ -27,13 +27,4 @@ public class WorkoutPlanEntity {
     )
     private List<WorkoutEntity> workouts;
 
-    @ElementCollection
-    @CollectionTable(name = "workout_plan_fitness_goals", joinColumns = @JoinColumn(name = "workout_plan_id"))
-    @Column(name = "fitness_goal")
-    private List<String> fitnessGoals;
-
-    @ElementCollection
-    @CollectionTable(name = "workout_plan_training_styles", joinColumns = @JoinColumn(name = "workout_plan_id"))
-    @Column(name = "training_style")
-    private List<String> trainingStyle;
 }

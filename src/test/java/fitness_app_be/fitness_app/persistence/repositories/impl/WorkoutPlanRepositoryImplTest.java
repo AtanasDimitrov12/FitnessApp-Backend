@@ -35,7 +35,7 @@ class WorkoutPlanRepositoryImplTest {
 
     @BeforeEach
     void setUp() {
-        workoutPlan = new WorkoutPlan(1L, List.of(), List.of(), List.of());
+        workoutPlan = new WorkoutPlan(1L,1L, List.of());
         workoutPlanEntity = new WorkoutPlanEntity();
     }
 

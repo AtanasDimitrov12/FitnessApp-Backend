@@ -10,7 +10,6 @@ import java.util.List;
 public class WorkoutPlan {
     @Setter(AccessLevel.NONE)
     private Long id;
+    private Long userId;
     private List<Workout> workouts;
-    private List<String> fitnessGoals;
-    private List<String> trainingStyles;
 }

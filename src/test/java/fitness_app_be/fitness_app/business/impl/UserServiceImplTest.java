@@ -48,7 +48,7 @@ class UserServiceImplTest {
         List<User> users = new ArrayList<>();
         List<String> goal = new ArrayList<>();
         List<String> style = new ArrayList<>();
-        WorkoutPlan workoutPlan = new WorkoutPlan(1L, workouts, goal, style);
+        WorkoutPlan workoutPlan = new WorkoutPlan(1L,1L, workouts);
         List<ProgressNote> notes = new ArrayList<>();
         UserDietPreference userDietPreference = new UserDietPreference(1L, 1L, 2500, 3);
         UserWorkoutPreference userWorkoutPreference = new UserWorkoutPreference(1L, 1L, "Strength", "Beginner", "Evening", 4);
