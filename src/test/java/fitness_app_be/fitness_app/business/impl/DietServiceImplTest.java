@@ -35,7 +35,7 @@ class DietServiceImplTest {
     void setUp() {
         List<Meal> meals = new ArrayList<>();
         user = new User();
-        diet = new Diet(1L, user, meals);
+        diet = new Diet(1L, user.getId(), meals);
     }
 
     @Test
@@ -119,29 +119,41 @@ class DietServiceImplTest {
 
     @Test
     void updateDiet_ShouldReturnUpdatedDiet_WhenDietExists() {
-        List<Meal> newMeals = new ArrayList<>();
-        Diet updatedDiet = new Diet(1L, user, newMeals);
+        // Arrange
+        List<Meal> existingMeals = List.of(new Meal(1L, "Old Meal", 200, 10, 20, 30.0));
+        Diet existingDiet = new Diet(1L, user.getId(), existingMeals);
 
-        when(dietRepository.getDietByUserId(1L)).thenReturn(Optional.of(diet));
+        List<Meal> newMeals = List.of(new Meal(2L, "New Meal", 300, 15, 25, 35.0));
+        Diet updatedDietInput = new Diet(1L, user.getId(), newMeals); // Input diet
+        Diet updatedDiet = new Diet(1L, user.getId(), newMeals); // Returned updated diet
+
+        when(dietRepository.getDietById(1L)).thenReturn(Optional.of(existingDiet));
         when(dietRepository.update(any(Diet.class))).thenReturn(updatedDiet);
 
-        Diet result = dietService.updateDiet(updatedDiet);
+        // Act
+        Diet result = dietService.updateDiet(updatedDietInput);
 
+        // Assert
         assertNotNull(result);
-        assertEquals(updatedDiet.getMeals(), result.getMeals());
-        verify(dietRepository, times(1)).getDietByUserId(1L);
-        verify(dietRepository, times(1)).update(diet);
+        assertEquals(newMeals, result.getMeals());
+        verify(dietRepository, times(1)).getDietById(1L);
+        verify(dietRepository, times(1)).update(any(Diet.class));
     }
+
 
     @Test
     void updateDiet_ShouldThrowException_WhenDietNotFound() {
-        List<Meal> newMeals = new ArrayList<>();
-        Diet updatedDiet = new Diet(1L, user, newMeals);
+        // Arrange
+        List<Meal> newMeals = List.of(new Meal(2L, "New Meal", 300, 15, 25, 35.0));
+        Diet updatedDietInput = new Diet(1L, user.getId(), newMeals);
 
-        when(dietRepository.getDietByUserId(1L)).thenReturn(Optional.empty());
+        when(dietRepository.getDietById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(DietNotFoundException.class, () -> dietService.updateDiet(updatedDiet));
-        verify(dietRepository, times(1)).getDietByUserId(1L);
+        // Act & Assert
+        assertThrows(DietNotFoundException.class, () -> dietService.updateDiet(updatedDietInput));
+
+        verify(dietRepository, times(1)).getDietById(1L);
         verify(dietRepository, never()).update(any(Diet.class));
     }
+
 }

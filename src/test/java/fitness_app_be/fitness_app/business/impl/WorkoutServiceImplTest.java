@@ -44,7 +44,7 @@ class WorkoutServiceImplTest {
     void setUp() throws IOException {
         List<Exercise> exercises = new ArrayList<>();
         List<WorkoutPlan> plans = new ArrayList<>();
-        workout = new Workout(1L, "Test Workout", "Description", "http://example.com/image.jpg", exercises, plans);
+        workout = new Workout(1L, "Test Workout", "Description", "http://example.com/image.jpg", exercises);
 
         // Use lenient() to prevent unnecessary stubbing exception
         lenient().when(cloudinary.uploader()).thenReturn(uploader);

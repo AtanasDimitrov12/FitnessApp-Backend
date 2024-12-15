@@ -41,11 +41,11 @@ public class UserDietPreferenceRepositoryImpl implements UserDietPreferenceRepos
 
     @Override
     public UserDietPreference create(UserDietPreference preference) {
-        UserEntity userEntity = findUserEntityById(preference.getUser().getId()); // Fetch or obtain the UserEntity
+        UserEntity userEntity = findUserEntityById(preference.getUserId()); // Fetch or obtain the UserEntity
         if (userEntity == null) {
-            throw new UserNotFoundException( preference.getUser().getId());
+            throw new UserNotFoundException( preference.getId());
         }
-        UserDietPreferenceEntity entity = userDietPreferenceEntityMapper.toEntity(preference, userEntity);
+        UserDietPreferenceEntity entity = userDietPreferenceEntityMapper.toEntity(preference);
         UserDietPreferenceEntity savedEntity = jpaUserDietPreferenceRepository.save(entity);
         userEntity.setDietPreference(savedEntity);
         userRepository.update(mapper.toDomain(userEntity));
@@ -56,7 +56,7 @@ public class UserDietPreferenceRepositoryImpl implements UserDietPreferenceRepos
     public UserDietPreference update(UserDietPreference preference) {
         // Find the existing preference by user ID
         UserDietPreferenceEntity existingEntity = jpaUserDietPreferenceRepository
-                .findByUserId(preference.getUser().getId())
+                .findByUserId(preference.getUserId())
                 .orElseThrow(() ->
                         new UserDietPreferenceNotFoundException(preference.getId())
                 );

@@ -5,7 +5,7 @@ import fitness_app_be.fitness_app.persistence.entity.DietEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
+import java.util.ArrayList;
 
 @Component
 @RequiredArgsConstructor
@@ -21,11 +21,12 @@ public class DietEntityMapper {
 
         return Diet.builder()
                 .id(dietEntity.getId())
-                .user(userEntityMapper.toDomain(dietEntity.getUser()))
-                .meals(dietEntity.getMeals() == null ? Collections.emptyList()
-                        : dietEntity.getMeals().stream()
+                .userId(dietEntity.getUserId())
+                .meals(dietEntity.getMeals() == null
+                        ? new ArrayList<>()
+                        : new ArrayList<>(dietEntity.getMeals().stream()
                         .map(mealEntityMapper::toDomainWithoutDiets)
-                        .toList())
+                        .toList())) // Ensure the result is mutable
                 .build();
     }
 
@@ -36,11 +37,13 @@ public class DietEntityMapper {
 
         DietEntity dietEntity = new DietEntity();
         dietEntity.setId(diet.getId());
-        dietEntity.setUser(userEntityMapper.toEntity(diet.getUser()));
-        dietEntity.setMeals(diet.getMeals() == null ? Collections.emptyList()
-                : diet.getMeals().stream()
+        dietEntity.setUserId(diet.getUserId());
+        dietEntity.setMeals(diet.getMeals() == null
+                ? new ArrayList<>()
+                : new ArrayList<>(diet.getMeals().stream()
                 .map(mealEntityMapper::toEntityWithoutDiets)
-                .toList());
+                .toList()));
         return dietEntity;
     }
+
 }

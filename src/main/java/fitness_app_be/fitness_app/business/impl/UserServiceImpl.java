@@ -140,7 +140,6 @@ public class UserServiceImpl implements UserService {
     public User attachedDietToUser(Long UserId, Diet diet){
         User user = getUserById(UserId);
         user.setDiet(diet);
-        diet.setUser(user);
         userRepository.update(user);
         return user;
     }

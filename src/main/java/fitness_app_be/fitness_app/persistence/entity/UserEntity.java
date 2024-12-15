@@ -45,11 +45,12 @@ public class UserEntity {
     @JoinColumn(name = "workout_plan_id")
     private WorkoutPlanEntity workoutPlan;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private DietEntity diet;
-
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
     private List<ProgressNoteEntity> notes;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "diet_id", referencedColumnName = "id")
+    private DietEntity diet; // Keeps the reference to the user's diet
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

@@ -55,15 +55,15 @@ public class DietServiceImpl implements DietService {
         Diet existingDiet = dietRepository.getDietById(diet.getId())
                 .orElseThrow(() -> new DietNotFoundException("Diet with ID " + diet.getId() + " not found"));
 
-        // Replace the meals with a mutable copy
+        // Convert meals to mutable list
         List<Meal> updatedMeals = new ArrayList<>(diet.getMeals());
         existingDiet.setMeals(updatedMeals);
 
-        // Update other fields as needed
-        existingDiet.setUser(diet.getUser());
+
 
         return dietRepository.update(existingDiet);
     }
+
 
 
 

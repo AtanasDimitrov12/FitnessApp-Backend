@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+
 
 @Service
 @RequiredArgsConstructor
@@ -34,23 +36,31 @@ public class UserDietPreferenceServiceImpl implements UserDietPreferenceService 
     @Override
     @Transactional
     public UserDietPreference createUserDietPreference(UserDietPreference userDietPreference) {
+        // Validate user existence
+        System.out.println("Create preference");
+        User user = userService.getUserById(userDietPreference.getUserId());
+
         // Calculate the diet based on user preferences
         Diet calculatedDiet = dietPlanService.calculateDiet(userDietPreference);
 
         // Create and persist the new diet
         Diet newDiet = new Diet();
-        newDiet.setMeals(calculatedDiet.getMeals());
-        Diet createdDiet = dietService.createDiet(newDiet);
+        newDiet.setUserId(userDietPreference.getUserId());
+        newDiet.setMeals(new ArrayList<>(calculatedDiet.getMeals()));
+        Diet createdDiet = dietService.createDiet(newDiet); // Persist the diet
 
-        // Attach the diet to the user
-        User user = userService.getUserById(userDietPreference.getUser().getId());
-        createdDiet.setUser(user);
-        dietService.updateDiet(createdDiet);
+        // Update the user with the new diet
+        if (user.getDiet() == null || !user.getDiet().equals(createdDiet)) {
+            user.setDiet(createdDiet);
+            userService.updateUser(user); // Explicitly update the user in the database
+        }
 
         // Persist UserDietPreference with the associated user and diet
-        userDietPreference.setUser(user);
+        userDietPreference.setUserId(user.getId()); // Associate the diet
         return userDietPreferenceRepository.create(userDietPreference);
     }
+
+
 
     @Override
     @Transactional
@@ -70,23 +80,24 @@ public class UserDietPreferenceServiceImpl implements UserDietPreferenceService 
     @Transactional
     public UserDietPreference updateUserDietPreference(UserDietPreference userDietPreference) {
         // Recalculate the diet based on updated preferences
+        System.out.println("Update preference");
         Diet recalculatedDiet = dietPlanService.calculateDiet(userDietPreference);
 
         // Fetch and update the existing diet
-        Diet existingDiet = dietService.getDietByUserId(userDietPreference.getUser().getId());
+        Diet existingDiet = dietService.getDietByUserId(userDietPreference.getUserId());
         for(Meal meal : existingDiet.getMeals()) {
             dietService.removeMealFromDiet(existingDiet.getId(), meal.getId());
         }
+        existingDiet.setUserId(userDietPreference.getUserId());
         existingDiet.setMeals(recalculatedDiet.getMeals());
         dietService.updateDiet(existingDiet);
 
         // Attach the updated diet to the user
-        User user = userService.getUserById(userDietPreference.getUser().getId());
-        existingDiet.setUser(user);
+        User user = userService.getUserById(userDietPreference.getUserId());
         dietService.updateDiet(existingDiet);
 
         // Persist the updated UserDietPreference
-        userDietPreference.setUser(user);
+        userDietPreference.setUserId(user.getId());
         return userDietPreferenceRepository.update(userDietPreference);
     }
 }

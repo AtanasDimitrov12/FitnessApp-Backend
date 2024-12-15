@@ -80,8 +80,8 @@ class ExerciseControllerTest {
     @WithMockUser(username = "admin@example.com", authorities = "ROLE_ADMIN")
     @Test
     void getAllExercises_ShouldReturnListOfExercises() throws Exception {
-        Exercise exercise = new Exercise(1L, "Push Up", 3, 15, "Chest", Collections.emptyList());
-        ExerciseDTO exerciseDTO = new ExerciseDTO(1L, "Push Up", 3, 15, "Chest", Collections.emptyList());
+        Exercise exercise = new Exercise(1L, "Push Up", 3, 15, "Chest");
+        ExerciseDTO exerciseDTO = new ExerciseDTO(1L, "Push Up", 3, 15, "Chest");
 
         when(exerciseService.getAllExercises()).thenReturn(List.of(exercise));
         when(exerciseMapper.toDto(exercise)).thenReturn(exerciseDTO);
@@ -99,8 +99,8 @@ class ExerciseControllerTest {
     @WithMockUser(username = "admin@example.com", authorities = "ROLE_ADMIN")
     @Test
     void getExerciseById_ShouldReturnExercise() throws Exception {
-        Exercise exercise = new Exercise(1L, "Push Up", 3, 15, "Chest", Collections.emptyList());
-        ExerciseDTO exerciseDTO = new ExerciseDTO(1L, "Push Up", 3, 15, "Chest", Collections.emptyList());
+        Exercise exercise = new Exercise(1L, "Push Up", 3, 15, "Chest");
+        ExerciseDTO exerciseDTO = new ExerciseDTO(1L, "Push Up", 3, 15, "Chest");
 
         when(exerciseService.getExerciseById(1L)).thenReturn(exercise);
         when(exerciseMapper.toDto(exercise)).thenReturn(exerciseDTO);
@@ -117,10 +117,10 @@ class ExerciseControllerTest {
     @WithMockUser(username = "admin@example.com", authorities = "ROLE_ADMIN")
     @Test
     void createExercise_ShouldReturnCreatedExercise() throws Exception {
-        ExerciseDTO exerciseDTO = new ExerciseDTO(null, "Push Up", 3, 15, "Chest", Collections.emptyList());
-        Exercise exercise = new Exercise(null, "Push Up", 3, 15, "Chest", Collections.emptyList());
-        Exercise createdExercise = new Exercise(1L, "Push Up", 3, 15, "Chest", Collections.emptyList());
-        ExerciseDTO createdExerciseDTO = new ExerciseDTO(1L, "Push Up", 3, 15, "Chest", Collections.emptyList());
+        ExerciseDTO exerciseDTO = new ExerciseDTO(null, "Push Up", 3, 15, "Chest");
+        Exercise exercise = new Exercise(null, "Push Up", 3, 15, "Chest");
+        Exercise createdExercise = new Exercise(1L, "Push Up", 3, 15, "Chest");
+        ExerciseDTO createdExerciseDTO = new ExerciseDTO(1L, "Push Up", 3, 15, "Chest");
 
         when(exerciseMapper.toDomain(exerciseDTO)).thenReturn(exercise);
         when(exerciseService.createExercise(exercise)).thenReturn(createdExercise);
@@ -140,10 +140,10 @@ class ExerciseControllerTest {
     @WithMockUser(username = "admin@example.com", authorities = "ROLE_ADMIN")
     @Test
     void updateExercise_ShouldReturnUpdatedExercise() throws Exception {
-        ExerciseDTO exerciseDTO = new ExerciseDTO(1L, "Updated Push Up", 4, 12, "Upper Body", Collections.emptyList());
-        Exercise exercise = new Exercise(1L, "Updated Push Up", 4, 12, "Upper Body", Collections.emptyList());
-        Exercise updatedExercise = new Exercise(1L, "Updated Push Up", 4, 12, "Upper Body", Collections.emptyList());
-        ExerciseDTO updatedExerciseDTO = new ExerciseDTO(1L, "Updated Push Up", 4, 12, "Upper Body", Collections.emptyList());
+        ExerciseDTO exerciseDTO = new ExerciseDTO(1L, "Updated Push Up", 4, 12, "Upper Body");
+        Exercise exercise = new Exercise(1L, "Updated Push Up", 4, 12, "Upper Body");
+        Exercise updatedExercise = new Exercise(1L, "Updated Push Up", 4, 12, "Upper Body");
+        ExerciseDTO updatedExerciseDTO = new ExerciseDTO(1L, "Updated Push Up", 4, 12, "Upper Body");
 
         when(exerciseMapper.toDomain(exerciseDTO)).thenReturn(exercise);
         when(exerciseService.updateExercise(exercise)).thenReturn(updatedExercise);

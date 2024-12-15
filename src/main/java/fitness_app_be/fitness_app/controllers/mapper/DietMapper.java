@@ -1,17 +1,20 @@
 package fitness_app_be.fitness_app.controllers.mapper;
 
 import fitness_app_be.fitness_app.controllers.dto.DietDTO;
+import fitness_app_be.fitness_app.controllers.dto.MealDTO;
 import fitness_app_be.fitness_app.domain.Diet;
+import fitness_app_be.fitness_app.domain.Meal;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
 public class DietMapper {
 
-    private final UserMapper userMapper;
+    private final MealMapper mealMapper; // Inject the MealMapper for proper mapping
 
     public Diet toDomain(DietDTO dietDTO) {
         if (dietDTO == null) {
@@ -20,8 +23,11 @@ public class DietMapper {
 
         return Diet.builder()
                 .id(dietDTO.getId())
-                .user(userMapper.toDomain(dietDTO.getUser()))
-                .meals(new ArrayList<>()) // Avoid mapping meals here
+                .userId(dietDTO.getUserId())
+                .meals(dietDTO.getMeals() == null ? new ArrayList<>() :
+                        dietDTO.getMeals().stream()
+                                .map(mealMapper::toDomain)
+                                .collect(Collectors.toList()))
                 .build();
     }
 
@@ -32,8 +38,11 @@ public class DietMapper {
 
         return DietDTO.builder()
                 .id(diet.getId())
-                .user(userMapper.domainToDto(diet.getUser()))
-                .meals(new ArrayList<>()) // Avoid mapping meals here
+                .userId(diet.getUserId())
+                .meals(diet.getMeals() == null ? new ArrayList<>() :
+                        diet.getMeals().stream()
+                                .map(mealMapper::domainToDto)
+                                .collect(Collectors.toList()))
                 .build();
     }
 }

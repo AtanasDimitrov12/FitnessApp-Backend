@@ -36,7 +36,7 @@ class WorkoutPlanServiceImplTest {
         List<User> users = new ArrayList<>();
         List<String> goal = new ArrayList<>();
         List<String> style = new ArrayList<>();
-        workoutPlan = new WorkoutPlan(1L, users, workouts, goal, style);
+        workoutPlan = new WorkoutPlan(1L, workouts, goal, style);
 
     }
 

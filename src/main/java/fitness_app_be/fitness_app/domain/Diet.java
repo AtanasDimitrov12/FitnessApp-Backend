@@ -13,6 +13,6 @@ public class Diet {
 
     @Setter(AccessLevel.NONE)
     private Long id;
-    private User user;
+    private Long userId;
     private List<Meal> meals;
 }

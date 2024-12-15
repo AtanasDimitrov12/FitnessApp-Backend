@@ -13,6 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 public class DietDTO {
     private Long id;
-    private UserDTO user;
+    private Long userId;
     private List<MealDTO> meals;
 }

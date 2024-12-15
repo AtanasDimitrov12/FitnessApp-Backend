@@ -4,7 +4,9 @@ import fitness_app_be.fitness_app.domain.Diet;
 import fitness_app_be.fitness_app.domain.Meal;
 import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.persistence.entity.DietEntity;
+import fitness_app_be.fitness_app.persistence.entity.MealEntity;
 import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaDietRepository;
+import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaMealRepository;
 import fitness_app_be.fitness_app.persistence.mapper.DietEntityMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +29,9 @@ class DietRepositoryImplTest {
     private JpaDietRepository jpaDietRepository;
 
     @Mock
+    private JpaMealRepository jpaMealRepository;
+
+    @Mock
     private DietEntityMapper dietEntityMapperImpl;
 
     @InjectMocks
@@ -40,7 +45,7 @@ class DietRepositoryImplTest {
         List<Meal> meals = new ArrayList<>();
         User user = new User();
 
-        diet = new Diet(1L, user, meals);
+        diet = new Diet(1L, 1L, meals);
 
         dietEntity = new DietEntity();
         dietEntity.setId(1L);
@@ -96,18 +101,30 @@ class DietRepositoryImplTest {
 
     @Test
     void update_ShouldReturnUpdatedDiet() {
-        when(dietEntityMapperImpl.toEntity(diet)).thenReturn(dietEntity);
+        // Arrange
+        List<Meal> meals = List.of(new Meal(1L, "Meal 1", 200, 10, 20, 15.0));
+        Diet inputDiet = new Diet(1L, 1L, meals); // Diet to update
+
+        List<MealEntity> mealEntities = List.of(new MealEntity(1L, "Meal 1", 200, 10, 20, 15.0, new ArrayList<>()));
+        DietEntity dietEntity = new DietEntity(1L, 1L, new ArrayList<>(mealEntities)); // Mapped DietEntity
+
+        when(dietEntityMapperImpl.toEntity(inputDiet)).thenReturn(dietEntity);
+        when(jpaMealRepository.findAllById(anyList())).thenReturn(mealEntities); // Mock meal fetching
         when(jpaDietRepository.save(dietEntity)).thenReturn(dietEntity);
-        when(dietEntityMapperImpl.toDomain(dietEntity)).thenReturn(diet);
+        when(dietEntityMapperImpl.toDomain(dietEntity)).thenReturn(inputDiet); // Map back to domain
 
-        Diet updatedDiet = dietRepository.update(diet);
+        // Act
+        Diet updatedDiet = dietRepository.update(inputDiet);
 
+        // Assert
         assertNotNull(updatedDiet);
-        assertEquals(diet, updatedDiet);
+        assertEquals(inputDiet, updatedDiet);
+        verify(jpaMealRepository, times(1)).findAllById(anyList());
         verify(jpaDietRepository, times(1)).save(dietEntity);
-        verify(dietEntityMapperImpl, times(1)).toEntity(diet);
         verify(dietEntityMapperImpl, times(1)).toDomain(dietEntity);
+        verify(dietEntityMapperImpl, times(1)).toEntity(inputDiet);
     }
+
 
     @Test
     void delete_ShouldDeleteDietById() {
@@ -120,25 +137,36 @@ class DietRepositoryImplTest {
 
     @Test
     void getDietById_ShouldReturnDiet_WhenDietExists() {
-        when(jpaDietRepository.findById(1L)).thenReturn(Optional.of(dietEntity));
-        when(dietEntityMapperImpl.toDomain(dietEntity)).thenReturn(diet);
+        // Arrange
+        List<MealEntity> mealEntities = List.of(new MealEntity(1L, "Meal 1", 200, 10, 20, 15.0, new ArrayList<>()));
+        DietEntity dietEntity = new DietEntity(1L, 1L, mealEntities);
+        Diet expectedDiet = new Diet(1L, 1L, List.of(new Meal(1L, "Meal 1", 200, 10, 20, 15.0)));
 
-        Optional<Diet> foundDiet = dietRepository.getDietById(1L);
+        when(jpaDietRepository.findByIdWithMeals(1L)).thenReturn(Optional.of(dietEntity));
+        when(dietEntityMapperImpl.toDomain(dietEntity)).thenReturn(expectedDiet);
 
-        assertTrue(foundDiet.isPresent());
-        assertEquals(diet, foundDiet.get());
-        verify(jpaDietRepository, times(1)).findById(1L);
+        // Act
+        Optional<Diet> result = dietRepository.getDietById(1L);
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertEquals(expectedDiet, result.get());
+        verify(jpaDietRepository, times(1)).findByIdWithMeals(1L);
         verify(dietEntityMapperImpl, times(1)).toDomain(dietEntity);
     }
 
+
     @Test
     void getDietById_ShouldReturnEmpty_WhenDietDoesNotExist() {
-        when(jpaDietRepository.findById(1L)).thenReturn(Optional.empty());
+        // Arrange
+        when(jpaDietRepository.findByIdWithMeals(1L)).thenReturn(Optional.empty());
 
-        Optional<Diet> foundDiet = dietRepository.getDietById(1L);
+        // Act
+        Optional<Diet> result = dietRepository.getDietById(1L);
 
-        assertTrue(foundDiet.isEmpty());
-        verify(jpaDietRepository, times(1)).findById(1L);
+        // Assert
+        assertTrue(result.isEmpty());
+        verify(jpaDietRepository, times(1)).findByIdWithMeals(1L);
         verify(dietEntityMapperImpl, never()).toDomain(any());
     }
 

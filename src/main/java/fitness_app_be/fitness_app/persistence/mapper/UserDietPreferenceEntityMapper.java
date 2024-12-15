@@ -19,7 +19,7 @@ public class UserDietPreferenceEntityMapper {
 
         return new UserDietPreference(
                 userDietPreferenceEntity.getId(),
-                userEntityMapper.toDomain(userDietPreferenceEntity.getUser()),
+                userDietPreferenceEntity.getUserId(),
                 userDietPreferenceEntity.getCalories(),
                 userDietPreferenceEntity.getMealFrequency()
         );
@@ -32,20 +32,7 @@ public class UserDietPreferenceEntityMapper {
 
         return new UserDietPreferenceEntity(
                 userDietPreference.getId(),
-                userEntityMapper.toEntity(userDietPreference.getUser()),
-                userDietPreference.getCalories(),
-                userDietPreference.getMealFrequency()
-        );
-    }
-
-    public UserDietPreferenceEntity toEntity(UserDietPreference userDietPreference, UserEntity userEntity) {
-        if (userDietPreference == null) {
-            return null;
-        }
-
-        return new UserDietPreferenceEntity(
-                userDietPreference.getId(),
-                userEntity,
+                userDietPreference.getUserId(),
                 userDietPreference.getCalories(),
                 userDietPreference.getMealFrequency()
         );

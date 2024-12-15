@@ -35,7 +35,7 @@ class WorkoutRepositoryImplTest {
     @BeforeEach
     void setUp() {
 
-        workout = new Workout(1L, "Test Workout", "Description", "http://example.com/image.jpg", List.of(), List.of());
+        workout = new Workout(1L, "Test Workout", "Description", "http://example.com/image.jpg", List.of());
 
         workoutEntity = new WorkoutEntity(1L, "Test Workout", "Description", "http://example.com/image.jpg",List.of(), List.of());
 

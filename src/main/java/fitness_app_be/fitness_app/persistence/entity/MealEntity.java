@@ -1,5 +1,6 @@
 package fitness_app_be.fitness_app.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -31,7 +32,8 @@ public class MealEntity {
     private double cookingTime;
 
     @ManyToMany(mappedBy = "meals", fetch = FetchType.LAZY)
-    private List<DietEntity> diets = new ArrayList<>(); // Always initialize to mutable
+    @JsonBackReference
+    private List<DietEntity> diets = new ArrayList<>();
 
     public void addDiet(DietEntity diet) {
         if (diets == null) {
@@ -39,16 +41,14 @@ public class MealEntity {
         }
         if (!diets.contains(diet)) {
             diets.add(diet);
-            diet.addMeal(this); // Maintain bidirectional relationship
+            diet.getMeals().add(this); // Maintain bidirectional relationship
         }
     }
 
     public void removeDiet(DietEntity diet) {
         if (diets != null && diets.contains(diet)) {
             diets.remove(diet);
-            diet.removeMeal(this); // Maintain bidirectional relationship
+            diet.getMeals().remove(this); // Maintain bidirectional relationship
         }
     }
-
 }
-

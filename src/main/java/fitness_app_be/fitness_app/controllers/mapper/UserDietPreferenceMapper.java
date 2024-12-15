@@ -18,7 +18,7 @@ public class UserDietPreferenceMapper {
 
         return new UserDietPreference(
                 dto.getId(),
-                userService.getUserById(dto.getUserId()),
+                dto.getUserId(),
                 dto.getCalories(),
                 dto.getMealFrequency()
         );
@@ -31,7 +31,7 @@ public class UserDietPreferenceMapper {
 
         return new UserDietPreferenceDTO(
                 domain.getId(),
-                domain.getUser().getId(),
+                domain.getId(),
                 domain.getCalories(),
                 domain.getMealFrequency()
         );

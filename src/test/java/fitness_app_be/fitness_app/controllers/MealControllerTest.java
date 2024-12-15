@@ -80,8 +80,8 @@ class MealControllerTest {
     @WithMockUser(username = "admin@example.com", authorities = "ROLE_ADMIN")
     @Test
     void getAllMeals_ShouldReturnListOfMeals() throws Exception {
-        Meal meal = new Meal(1L, "Salad", 200, 10, 15, 30.0, Collections.emptyList());
-        MealDTO mealDTO = new MealDTO(1L, "Salad", 200, 10, 15, 30.0, Collections.emptyList());
+        Meal meal = new Meal(1L, "Salad", 200, 10, 15, 30.0);
+        MealDTO mealDTO = new MealDTO(1L, "Salad", 200, 10, 15, 30.0);
 
         when(mealService.getAllMeals()).thenReturn(List.of(meal));
         when(mealMapper.domainToDto(meal)).thenReturn(mealDTO);
@@ -100,8 +100,8 @@ class MealControllerTest {
     @WithMockUser(username = "admin@example.com", authorities = "ROLE_ADMIN")
     @Test
     void getMealById_ShouldReturnMeal() throws Exception {
-        Meal meal = new Meal(1L, "Salad", 200, 10, 15, 30.0, Collections.emptyList());
-        MealDTO mealDTO = new MealDTO(1L, "Salad", 200, 10, 15, 30.0, Collections.emptyList());
+        Meal meal = new Meal(1L, "Salad", 200, 10, 15, 30.0);
+        MealDTO mealDTO = new MealDTO(1L, "Salad", 200, 10, 15, 30.0);
 
         when(mealService.getMealById(1L)).thenReturn(meal);
         when(mealMapper.domainToDto(meal)).thenReturn(mealDTO);
@@ -119,10 +119,10 @@ class MealControllerTest {
     @WithMockUser(username = "admin@example.com", authorities = "ROLE_ADMIN")
     @Test
     void createMeal_ShouldReturnCreatedMeal() throws Exception {
-        MealDTO mealDTO = new MealDTO(null, "Salad", 200, 10, 15, 30.0, Collections.emptyList());
-        Meal meal = new Meal(null, "Salad", 200, 10, 15, 30.0, Collections.emptyList());
-        Meal createdMeal = new Meal(1L, "Salad", 200, 10, 15, 30.0, Collections.emptyList());
-        MealDTO createdMealDTO = new MealDTO(1L, "Salad", 200, 10, 15, 30.0, Collections.emptyList());
+        MealDTO mealDTO = new MealDTO(null, "Salad", 200, 10, 15, 30.0);
+        Meal meal = new Meal(null, "Salad", 200, 10, 15, 30.0);
+        Meal createdMeal = new Meal(1L, "Salad", 200, 10, 15, 30.0);
+        MealDTO createdMealDTO = new MealDTO(1L, "Salad", 200, 10, 15, 30.0);
 
         when(mealMapper.toDomain(mealDTO)).thenReturn(meal);
         when(mealService.createMeal(meal)).thenReturn(createdMeal);
@@ -143,10 +143,10 @@ class MealControllerTest {
     @WithMockUser(username = "admin@example.com", authorities = "ROLE_ADMIN")
     @Test
     void updateMeal_ShouldReturnUpdatedMeal() throws Exception {
-        MealDTO mealDTO = new MealDTO(1L, "Updated Salad", 250, 12, 18, 25.0, Collections.emptyList());
-        Meal meal = new Meal(1L, "Updated Salad", 250, 12, 18, 25.0, Collections.emptyList());
-        Meal updatedMeal = new Meal(1L, "Updated Salad", 250, 12, 18, 25.0, Collections.emptyList());
-        MealDTO updatedMealDTO = new MealDTO(1L, "Updated Salad", 250, 12, 18, 25.0, Collections.emptyList());
+        MealDTO mealDTO = new MealDTO(1L, "Updated Salad", 250, 12, 18, 25.0);
+        Meal meal = new Meal(1L, "Updated Salad", 250, 12, 18, 25.0);
+        Meal updatedMeal = new Meal(1L, "Updated Salad", 250, 12, 18, 25.0);
+        MealDTO updatedMealDTO = new MealDTO(1L, "Updated Salad", 250, 12, 18, 25.0);
 
         when(mealMapper.toDomain(mealDTO)).thenReturn(meal);
         when(mealService.updateMeal(meal)).thenReturn(updatedMeal);

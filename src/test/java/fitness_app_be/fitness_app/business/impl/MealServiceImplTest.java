@@ -32,7 +32,7 @@ class MealServiceImplTest {
     @BeforeEach
     void setUp() {
         List<Diet> diets = new ArrayList<>();
-        meal = new Meal(1L, "Chicken Salad", 300, 25, 10, 15, diets);
+        meal = new Meal(1L, "Chicken Salad", 300, 25, 10, 15);
 
     }
 
@@ -99,7 +99,7 @@ class MealServiceImplTest {
     @Test
     void updateMeal_ShouldReturnUpdatedMeal_WhenMealExists() {
         List<Diet> diets = new ArrayList<>();
-        Meal updatedMeal = new Meal(1L, "Beef Salad", 300, 25, 10, 15, diets);
+        Meal updatedMeal = new Meal(1L, "Beef Salad", 300, 25, 10, 15);
 
         when(mealRepository.getMealById(1L)).thenReturn(Optional.of(meal));
         when(mealRepository.update(meal)).thenReturn(updatedMeal);
@@ -116,7 +116,7 @@ class MealServiceImplTest {
     @Test
     void updateMeal_ShouldThrowException_WhenMealNotFound() {
         List<Diet> diets = new ArrayList<>();
-        Meal updatedMeal = new Meal(1L, "Beef Salad", 300, 25, 10, 15, diets);
+        Meal updatedMeal = new Meal(1L, "Beef Salad", 300, 25, 10, 15);
 
         when(mealRepository.getMealById(1L)).thenReturn(Optional.empty());
 

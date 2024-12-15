@@ -75,7 +75,7 @@ public class UserEntityMapper {
 
         // Map diet preference and workout preference
         if (user.getDietPreference() != null) {
-            userEntity.setDietPreference(userDietPreferenceEntityMapper.toEntity(user.getDietPreference(), userEntity));
+            userEntity.setDietPreference(userDietPreferenceEntityMapper.toEntity(user.getDietPreference()));
         }
         if (user.getWorkoutPreference() != null) {
             userEntity.setWorkoutPreference(userWorkoutPreferenceEntityMapper.toEntity(user.getWorkoutPreference(), userEntity));

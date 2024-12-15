@@ -2,28 +2,30 @@ package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.business.DietPlanService;
 import fitness_app_be.fitness_app.business.DietService;
+import fitness_app_be.fitness_app.business.UserDietPreferenceService;
+import fitness_app_be.fitness_app.business.UserService;
 import fitness_app_be.fitness_app.domain.Diet;
-import fitness_app_be.fitness_app.domain.Meal;
+import fitness_app_be.fitness_app.domain.Role;
 import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.domain.UserDietPreference;
 import fitness_app_be.fitness_app.exception_handling.UserDietPreferenceNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.UserDietPreferenceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 class UserDietPreferenceServiceImplTest {
+
+    @InjectMocks
+    private UserDietPreferenceServiceImpl userDietPreferenceService;
 
     @Mock
     private UserDietPreferenceRepository userDietPreferenceRepository;
@@ -34,99 +36,109 @@ class UserDietPreferenceServiceImplTest {
     @Mock
     private DietService dietService;
 
-    @InjectMocks
-    private UserDietPreferenceServiceImpl userDietPreferenceService;
-
-    private UserDietPreference userDietPreference;
-    private User user;
-    private Diet userDiet;
-    private Diet oldDiet;
+    @Mock
+    private UserService userService;
 
     @BeforeEach
     void setUp() {
-        user = User.builder().id(1L).username("testUser").diet(null).build();
-        userDietPreference = new UserDietPreference(1L, user, 2500, 3);
-        userDiet = Diet.builder().id(1L).user(user).build();
-        oldDiet = new Diet(1L, user, null);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void createUserDietPreference_ShouldCreateUserDietPreferenceAndAssociateDiet() {
-        // Arrange
-        List<Meal> meals = new ArrayList<>(); // Initialize meals list
-        Meal testMeal = new Meal();
-        meals.add(testMeal); // Add a test meal
+    void getUserDietPreferenceByUserId_ShouldReturnPreference_WhenExists() {
+        Long userId = 1L;
+        UserDietPreference mockPreference = new UserDietPreference(1L, userId, 2000, 3);
 
-        // Mock userDiet to have meals initialized
-        userDiet.setMeals(meals);
+        when(userDietPreferenceRepository.findByUserId(userId)).thenReturn(Optional.of(mockPreference));
 
-        when(dietPlanService.calculateDiet(userDietPreference)).thenReturn(userDiet);
-        when(dietService.createDiet(any(Diet.class))).thenReturn(userDiet);
-        when(userDietPreferenceRepository.create(userDietPreference)).thenReturn(userDietPreference);
-
-        // Act
-        UserDietPreference result = userDietPreferenceService.createUserDietPreference(userDietPreference);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(userDietPreference, result);
-
-        // Verify
-        verify(dietPlanService, times(1)).calculateDiet(userDietPreference);
-        verify(dietService, times(1)).createDiet(argThat(diet ->
-                diet.getUser().equals(userDietPreference.getUser()) &&
-                        diet.getMeals().equals(userDiet.getMeals())
-        ));
-        verify(userDietPreferenceRepository, times(1)).create(userDietPreference);
-    }
-
-
-    @Test
-    void updateUserDietPreference_ShouldUpdateDietPreferenceAndRecalculateDiet() {
-        // Arrange
-        when(dietService.getDietByUserId(user.getId())).thenReturn(oldDiet);
-        when(dietPlanService.calculateDiet(userDietPreference)).thenReturn(userDiet);
-        when(userDietPreferenceRepository.update(userDietPreference)).thenReturn(userDietPreference);
-
-        // Act
-        UserDietPreference result = userDietPreferenceService.updateUserDietPreference(userDietPreference);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(userDietPreference, result);
-
-        // Verify
-        verify(dietPlanService, times(1)).calculateDiet(userDietPreference);
-        verify(dietService, times(1)).getDietByUserId(user.getId());
-        verify(dietService, times(1)).clearMealsFromDiet(oldDiet.getId());
-        verify(userDietPreferenceRepository, times(1)).update(userDietPreference);
-    }
-
-
-    @Test
-    void getUserDietPreferenceByUserId_ShouldReturnUserDietPreference_WhenExists() {
-        when(userDietPreferenceRepository.findByUserId(1L)).thenReturn(Optional.of(userDietPreference));
-
-        UserDietPreference result = userDietPreferenceService.getUserDietPreferenceByUserId(1L);
+        UserDietPreference result = userDietPreferenceService.getUserDietPreferenceByUserId(userId);
 
         assertNotNull(result);
-        assertEquals(userDietPreference, result);
-        verify(userDietPreferenceRepository, times(1)).findByUserId(1L);
+        assertEquals(userId, result.getUserId());
+        verify(userDietPreferenceRepository, times(1)).findByUserId(userId);
     }
 
     @Test
-    void getUserDietPreferenceByUserId_ShouldThrowException_WhenNotFound() {
-        when(userDietPreferenceRepository.findByUserId(1L)).thenReturn(Optional.empty());
+    void getUserDietPreferenceByUserId_ShouldThrowException_WhenNotExists() {
+        Long userId = 1L;
 
-        assertThrows(UserDietPreferenceNotFoundException.class, () -> userDietPreferenceService.getUserDietPreferenceByUserId(1L));
-        verify(userDietPreferenceRepository, times(1)).findByUserId(1L);
+        when(userDietPreferenceRepository.findByUserId(userId)).thenReturn(Optional.empty());
+
+        assertThrows(UserDietPreferenceNotFoundException.class,
+                () -> userDietPreferenceService.getUserDietPreferenceByUserId(userId));
     }
 
     @Test
-    void deleteUserDietPreference_ShouldDeleteDietPreference() {
-        doNothing().when(userDietPreferenceRepository).delete(1L);
+    void createUserDietPreference_ShouldCreateAndReturnPreference() {
+        Long userId = 1L;
+        User user = new User(userId, "testUser", "test@example.com", "password", null, null, "pictureURL", null, null, Role.USER, null,  null, null, true);
 
-        assertDoesNotThrow(() -> userDietPreferenceService.deleteUserDietPreference(1L));
-        verify(userDietPreferenceRepository, times(1)).delete(1L);
+        UserDietPreference preference = new UserDietPreference(1L, userId, 2000, 3);
+
+        Diet calculatedDiet = new Diet(1L, 1L, new ArrayList<>());
+
+        Diet createdDiet = new Diet(2L, userId, new ArrayList<>());
+
+        when(userService.getUserById(userId)).thenReturn(user);
+        when(dietPlanService.calculateDiet(preference)).thenReturn(calculatedDiet);
+        when(dietService.createDiet(any(Diet.class))).thenReturn(createdDiet);
+        when(userDietPreferenceRepository.create(any(UserDietPreference.class))).thenReturn(preference);
+
+        UserDietPreference result = userDietPreferenceService.createUserDietPreference(preference);
+
+        assertNotNull(result);
+        assertEquals(userId, result.getUserId());
+        verify(userService, times(1)).getUserById(userId);
+        verify(dietPlanService, times(1)).calculateDiet(preference);
+        verify(dietService, times(1)).createDiet(any(Diet.class));
+        verify(userDietPreferenceRepository, times(1)).create(any(UserDietPreference.class));
+    }
+
+    @Test
+    void deleteUserDietPreference_ShouldDelete_WhenExists() {
+        Long preferenceId = 1L;
+        UserDietPreference mockPreference = new UserDietPreference(1L,preferenceId, 2000, 3);
+
+        when(userDietPreferenceRepository.getDietPreferenceById(preferenceId)).thenReturn(Optional.of(mockPreference));
+
+        userDietPreferenceService.deleteUserDietPreference(preferenceId);
+
+        verify(userDietPreferenceRepository, times(1)).getDietPreferenceById(preferenceId);
+        verify(userDietPreferenceRepository, times(1)).delete(preferenceId);
+    }
+
+    @Test
+    void deleteUserDietPreference_ShouldThrowException_WhenNotExists() {
+        Long preferenceId = 1L;
+
+        when(userDietPreferenceRepository.getDietPreferenceById(preferenceId)).thenReturn(Optional.empty());
+
+        assertThrows(UserDietPreferenceNotFoundException.class,
+                () -> userDietPreferenceService.deleteUserDietPreference(preferenceId));
+    }
+
+    @Test
+    void updateUserDietPreference_ShouldUpdateAndReturnPreference() {
+        Long userId = 1L;
+        UserDietPreference preference = new UserDietPreference(1L,userId, 2500, 4);
+
+        Diet recalculatedDiet = new Diet(1L,1L,new ArrayList<>());
+
+        Diet existingDiet = new Diet(2L, userId, new ArrayList<>());
+
+        User user = new User(userId, "testUser", "test@example.com", "password", null, null, null, null, null, null, null, null, null, true);
+
+        when(dietPlanService.calculateDiet(preference)).thenReturn(recalculatedDiet);
+        when(dietService.getDietByUserId(userId)).thenReturn(existingDiet);
+        when(userService.getUserById(userId)).thenReturn(user);
+        when(userDietPreferenceRepository.update(preference)).thenReturn(preference);
+
+        UserDietPreference result = userDietPreferenceService.updateUserDietPreference(preference);
+
+        assertNotNull(result);
+        assertEquals(userId, result.getUserId());
+        verify(dietPlanService, times(1)).calculateDiet(preference);
+        verify(dietService, times(1)).getDietByUserId(userId);
+        verify(userDietPreferenceRepository, times(1)).update(preference);
     }
 }

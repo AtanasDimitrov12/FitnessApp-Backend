@@ -12,13 +12,9 @@ import fitness_app_be.fitness_app.persistence.repositories.DietRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
-import org.hibernate.collection.spi.PersistentBag;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -49,17 +45,18 @@ public class DietRepositoryImpl implements DietRepository {
         DietEntity dietEntity = dietEntityMapperImpl.toEntity(diet);
 
         if (dietEntity.getMeals() != null) {
-            List<MealEntity> managedMeals = dietEntity.getMeals().stream()
+            List<MealEntity> managedMeals = new ArrayList<>(dietEntity.getMeals().stream()
                     .map(meal -> meal.getId() != null
                             ? jpaMealRepository.findById(meal.getId()).orElse(meal)
                             : meal)
-                    .toList();
+                    .toList()); // Convert to mutable list
             dietEntity.setMeals(managedMeals);
         }
 
         DietEntity savedEntity = jpaDietRepository.save(dietEntity);
         return dietEntityMapperImpl.toDomain(savedEntity);
     }
+
 
     @Transactional
     @Override
@@ -99,41 +96,45 @@ public class DietRepositoryImpl implements DietRepository {
 
     @Override
     public Optional<Diet> getDietById(long dietId) {
-        return jpaDietRepository.findById(dietId)
+        return jpaDietRepository.findByIdWithMeals(dietId)
                 .map(dietEntityMapperImpl::toDomain);
     }
+
 
     @Override
-    public Optional<Diet> getDietByUserId(long userId) {
-        return jpaDietRepository.findDietEntitiesByUserId(userId)
-                .map(dietEntityMapperImpl::toDomain);
-    }
-
     @Transactional
+    public Optional<Diet> getDietByUserId(long userId) {
+        return jpaDietRepository.findDietEntityByUserId(userId)
+                .map(dietEntityMapperImpl::toDomain);
+    }
+
+
     @Override
+    @Transactional
     public void addMealToDiet(Long dietId, Meal meal) {
-        MealEntity mealEntity = mealEntityMapper.toEntity(meal);
         DietEntity dietEntity = jpaDietRepository.findById(dietId)
                 .orElseThrow(() -> new IllegalArgumentException("Diet not found"));
 
-        Hibernate.initialize(dietEntity.getMeals()); // Ensure initialization
+        Hibernate.initialize(dietEntity.getMeals());
 
-        if (dietEntity.getMeals() instanceof PersistentBag) {
-            dietEntity.addMeal(mealEntity); // Modify collection safely
-            jpaDietRepository.save(dietEntity);
-        } else {
-            throw new UnsupportedOperationException("Unexpected collection type");
-        }
+        List<MealEntity> mutableMeals = new ArrayList<>(dietEntity.getMeals()); // Ensure mutable list
+        mutableMeals.add(mealEntityMapper.toEntity(meal));
+        dietEntity.setMeals(mutableMeals); // Replace with updated list
+        jpaDietRepository.save(dietEntity);
     }
 
     @Override
     @Transactional
     public void removeMealFromDiet(long dietId, long mealId) {
-        DietEntity diet = jpaDietRepository.findById(dietId)
+        DietEntity dietEntity = jpaDietRepository.findById(dietId)
                 .orElseThrow(() -> new IllegalArgumentException("Diet not found"));
-        MealEntity meal = jpaMealRepository.findById(mealId)
-                .orElseThrow(() -> new IllegalArgumentException("Meal not found"));
-        diet.getMeals().remove(meal);
-        jpaDietRepository.save(diet);
+
+        Hibernate.initialize(dietEntity.getMeals());
+
+        List<MealEntity> mutableMeals = new ArrayList<>(dietEntity.getMeals()); // Ensure mutable list
+        mutableMeals.removeIf(meal -> meal.getId() == mealId);
+        dietEntity.setMeals(mutableMeals); // Replace with updated list
+        jpaDietRepository.save(dietEntity);
     }
+
 }

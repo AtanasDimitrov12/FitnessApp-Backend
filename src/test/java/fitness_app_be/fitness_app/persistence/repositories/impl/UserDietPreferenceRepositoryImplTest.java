@@ -66,8 +66,8 @@ class UserDietPreferenceRepositoryImplTest {
                 LocalDateTime.now(), LocalDateTime.now(), true, Role.USER
         );
 
-        preference = new UserDietPreference(1L, user, 2000, 3);
-        preferenceEntity = new UserDietPreferenceEntity(1L, userEntity, 2000, 3);
+        preference = new UserDietPreference(1L, 1L, 2000, 3);
+        preferenceEntity = new UserDietPreferenceEntity(1L, 1L, 2000, 3);
     }
 
     @Test
@@ -91,7 +91,7 @@ class UserDietPreferenceRepositoryImplTest {
     @Test
     void create_ShouldReturnCreatedPreference() {
         when(userRepository.findEntityById(user.getId())).thenReturn(userEntity);
-        when(userDietPreferenceEntityMapper.toEntity(preference, userEntity)).thenReturn(preferenceEntity);
+        when(userDietPreferenceEntityMapper.toEntity(preference)).thenReturn(preferenceEntity);
         when(jpaUserDietPreferenceRepository.save(preferenceEntity)).thenReturn(preferenceEntity);
         when(userDietPreferenceEntityMapper.toDomain(preferenceEntity)).thenReturn(preference);
 
