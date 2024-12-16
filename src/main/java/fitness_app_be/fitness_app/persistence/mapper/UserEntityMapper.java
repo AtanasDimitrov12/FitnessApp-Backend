@@ -62,16 +62,22 @@ public class UserEntityMapper {
             return null;
         }
 
-        UserEntity userEntity = new UserEntity();
+        UserEntity userEntity =  new UserEntity();
+
+        // Set fields that should always be updated
         userEntity.setId(user.getId());
         userEntity.setUsername(user.getUsername());
         userEntity.setEmail(user.getEmail());
-        userEntity.setPassword(user.getPassword());
         userEntity.setPictureURL(user.getPictureURL());
         userEntity.setCreatedAt(user.getCreatedAt());
         userEntity.setUpdatedAt(user.getUpdatedAt());
         userEntity.setIsActive(user.getIsActive());
         userEntity.setRole(user.getRole());
+
+        // Update password only if provided
+        if (user.getPassword() != null && !user.getPassword().isBlank()) {
+            userEntity.setPassword(user.getPassword());
+        }
 
         // Map diet preference and workout preference
         if (user.getDietPreference() != null) {
@@ -102,4 +108,5 @@ public class UserEntityMapper {
 
         return userEntity;
     }
+
 }

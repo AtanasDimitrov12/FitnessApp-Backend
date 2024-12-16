@@ -41,16 +41,17 @@ public class UserEntity {
     @Column(name = "picture_url")
     private String pictureURL;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workout_plan_id")
     private WorkoutPlanEntity workoutPlan;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_id", referencedColumnName = "id") // Explicitly map user_id in ProgressNoteEntity
     private List<ProgressNoteEntity> notes;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "diet_id", referencedColumnName = "id")
-    private DietEntity diet; // Keeps the reference to the user's diet
+    private DietEntity diet;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -84,3 +85,4 @@ public class UserEntity {
                 '}';
     }
 }
+

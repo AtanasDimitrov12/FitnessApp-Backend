@@ -1,9 +1,6 @@
 package fitness_app_be.fitness_app.business.impl;
 
-import fitness_app_be.fitness_app.business.UserWorkoutPreferenceService;
-import fitness_app_be.fitness_app.business.WorkoutPlanGenerator;
-import fitness_app_be.fitness_app.business.WorkoutService;
-import fitness_app_be.fitness_app.business.UserService;
+import fitness_app_be.fitness_app.business.*;
 import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.domain.UserWorkoutPreference;
 import fitness_app_be.fitness_app.domain.WorkoutPlan;
@@ -19,7 +16,7 @@ public class UserWorkoutPreferenceServiceImpl implements UserWorkoutPreferenceSe
 
     private final UserWorkoutPreferenceRepository userWorkoutPreferenceRepository;
     private final WorkoutPlanGenerator workoutPlanGenerator;
-    private final WorkoutService workoutService;
+    private final WorkoutPlanService workoutPlanService;
     private final UserService userService;
 
     @Override
@@ -38,7 +35,10 @@ public class UserWorkoutPreferenceServiceImpl implements UserWorkoutPreferenceSe
 
         // Calculate the workout plan based on user preferences
         WorkoutPlan calculatedPlan = workoutPlanGenerator.calculateWorkoutPlan(userWorkoutPreference);
-
+        calculatedPlan.setUserId(user.getId());
+        WorkoutPlan newUserPlan = workoutPlanService.createWorkoutPlan(calculatedPlan);
+        user.setWorkoutPlan(newUserPlan);
+        userService.updateUser(user);
         // Optionally save or associate the plan with the user
         userWorkoutPreference.setUserid(user.getId());
 
@@ -63,17 +63,24 @@ public class UserWorkoutPreferenceServiceImpl implements UserWorkoutPreferenceSe
     @Override
     @Transactional
     public UserWorkoutPreference updateUserWorkoutPreference(UserWorkoutPreference userWorkoutPreference) {
-        // Recalculate the workout plan based on updated preferences
+        // Validate the existence of the UserWorkoutPreference to update
         System.out.println("Update workout preference");
-        WorkoutPlan recalculatedPlan = workoutPlanGenerator.calculateWorkoutPlan(userWorkoutPreference);
+        UserWorkoutPreference existingPreference = userWorkoutPreferenceRepository.getWorkoutPreferenceById(userWorkoutPreference.getId())
+                .orElseThrow(() -> new UserWorkoutPreferenceNotFoundException(userWorkoutPreference.getId()));
 
-        // Fetch and update the existing user if necessary
+        // Fetch the user associated with the preference
         User user = userService.getUserById(userWorkoutPreference.getUserid());
 
-        // Optionally save or update the new workout plan (if directly associated with User)
-        // workoutService.updateWorkoutPlan(recalculatedPlan);
+        // Recalculate the workout plan based on updated preferences
+        WorkoutPlan updatedPlan = workoutPlanGenerator.calculateWorkoutPlan(userWorkoutPreference);
+        updatedPlan.setUserId(user.getId());
+        WorkoutPlan savedUpdatedPlan = workoutPlanService.createWorkoutPlan(updatedPlan);
 
-        // Persist the updated UserWorkoutPreference
+        // Update the user's workout plan
+        user.setWorkoutPlan(savedUpdatedPlan);
+        userService.updateUser(user);
+
+        // Persist the updated UserWorkoutPreference with recalculated details
         userWorkoutPreference.setUserid(user.getId());
         return userWorkoutPreferenceRepository.update(userWorkoutPreference);
     }

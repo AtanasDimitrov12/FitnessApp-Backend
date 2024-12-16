@@ -10,7 +10,6 @@ import java.time.LocalDate;
 public class ProgressNote {
     @Setter(AccessLevel.NONE)
     private Long id;
-    @Setter(AccessLevel.NONE)
     private Long userId;
     private double weight;
     private String note;

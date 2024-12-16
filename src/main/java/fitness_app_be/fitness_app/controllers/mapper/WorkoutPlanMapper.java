@@ -6,18 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 
 @Component
 public class WorkoutPlanMapper {
 
     private final WorkoutMapper workoutMapper;
-    private final UserMapper userMapper;
 
     @Autowired
-    public WorkoutPlanMapper(@Lazy WorkoutMapper workoutMapper, @Lazy UserMapper userMapper) {
+    public WorkoutPlanMapper(@Lazy WorkoutMapper workoutMapper) {
         this.workoutMapper = workoutMapper;
-        this.userMapper = userMapper;
     }
 
     public WorkoutPlan toDomain(WorkoutPlanDTO workoutPlanDTO) {

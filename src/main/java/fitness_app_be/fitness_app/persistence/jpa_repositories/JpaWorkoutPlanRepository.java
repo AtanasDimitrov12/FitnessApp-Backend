@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface JpaWorkoutPlanRepository extends JpaRepository<WorkoutPlanEntity, Long> {
-    boolean existsByUsers_Id(long userId);
-    Optional<WorkoutPlanEntity> findByUsers_Id(Long userId);
+
+    boolean existsByUserId(long userId);
+
+    Optional<WorkoutPlanEntity> findByUserId(Long userId);
 }

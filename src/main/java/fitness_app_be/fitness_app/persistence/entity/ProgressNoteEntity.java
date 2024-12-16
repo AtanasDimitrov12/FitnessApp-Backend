@@ -18,11 +18,8 @@ public class ProgressNoteEntity {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    @ToString.Exclude
-    private UserEntity user;
-
+    @Column(name = "user_id", nullable = false)
+    private Long userId; // Keep this as a simple Long
 
     @Column(name = "weight")
     private double weight;
@@ -33,3 +30,5 @@ public class ProgressNoteEntity {
     @Column(name = "date")
     private LocalDate date;
 }
+
+

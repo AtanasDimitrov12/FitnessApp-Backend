@@ -13,12 +13,10 @@ import org.springframework.stereotype.Component;
 public class WorkoutPlanEntityMapper {
 
     private WorkoutEntityMapper workoutEntityMapper;
-    private UserEntityMapper userEntityMapper;
 
     @Autowired
-    public WorkoutPlanEntityMapper(@Lazy WorkoutEntityMapper workoutEntityMapper, @Lazy UserEntityMapper userEntityMapper) {
+    public WorkoutPlanEntityMapper(@Lazy WorkoutEntityMapper workoutEntityMapper) {
         this.workoutEntityMapper = workoutEntityMapper;
-        this.userEntityMapper = userEntityMapper;
     }
 
     public WorkoutPlan toDomain(WorkoutPlanEntity workoutPlanEntity) {

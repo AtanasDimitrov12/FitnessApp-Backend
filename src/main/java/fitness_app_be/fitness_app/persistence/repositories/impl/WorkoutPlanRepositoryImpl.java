@@ -65,10 +65,10 @@ public class WorkoutPlanRepositoryImpl implements WorkoutPlanRepository {
 
     @Override
     public Optional<WorkoutPlan> getWorkoutPlanByUserId(long userId) {
-        if (!jpaWorkoutPlanRepository.existsByUsers_Id(userId)) {
+        if (!jpaWorkoutPlanRepository.existsByUserId(userId)) {
             throw new WorkoutPlanNotFoundException("Workout plan not found");
         }
-        return jpaWorkoutPlanRepository.findByUsers_Id(userId)
+        return jpaWorkoutPlanRepository.findByUserId(userId)
                 .map(workoutPlanEntityMapper::toDomain);
     }
 }

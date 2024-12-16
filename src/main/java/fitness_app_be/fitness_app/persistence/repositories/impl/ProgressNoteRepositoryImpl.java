@@ -45,7 +45,7 @@ public class ProgressNoteRepositoryImpl implements ProgressNoteRepository {
         }
 
         ProgressNoteEntity progressNoteEntity = progressNoteEntityMapperImpl.toEntity(progressNote);
-        progressNoteEntity.setUser(userEntity);
+        progressNoteEntity.setUserId(userEntity.getId());
         userEntity.getNotes().add(progressNoteEntity);
 
         ProgressNoteEntity savedEntity = jpaProgressNoteRepository.save(progressNoteEntity);
