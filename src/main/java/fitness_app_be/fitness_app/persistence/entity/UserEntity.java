@@ -53,6 +53,9 @@ public class UserEntity {
     @JoinColumn(name = "diet_id", referencedColumnName = "id")
     private DietEntity diet;
 
+    @Transient
+    private List<NotificationEntity> notifications;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 

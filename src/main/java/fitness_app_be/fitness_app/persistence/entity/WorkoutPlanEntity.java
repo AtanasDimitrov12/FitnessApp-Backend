@@ -27,4 +27,8 @@ public class WorkoutPlanEntity {
     )
     private List<WorkoutEntity> workouts;
 
+    @OneToMany(mappedBy = "workoutPlan", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WorkoutStatusEntity> workoutStatuses;
+
+
 }

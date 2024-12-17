@@ -32,6 +32,10 @@ public class WorkoutEntity {
     @Column(name = "picture_url")
     private String pictureURL;
 
+    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WorkoutStatusEntity> workoutStatuses;
+
+
     // Many-to-Many relationship with ExerciseEntity
     @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(
