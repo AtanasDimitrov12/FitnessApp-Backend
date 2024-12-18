@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.IsoFields;
 import java.time.temporal.WeekFields;
 import java.util.List;
 import java.util.Locale;
@@ -92,5 +93,27 @@ public class WorkoutStatusServiceImpl implements WorkoutStatusService {
     @Override
     public void save(WorkoutStatus workoutStatus){
         workoutStatusRepository.create(workoutStatus);
+    }
+
+    @Override
+    public Long getCompletedWorkouts(Long userId, String rangeType) {
+        int currentWeek = LocalDate.now().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+        int startWeek;
+
+        switch (rangeType.toLowerCase()) {
+            case "month":
+                startWeek = currentWeek - (LocalDate.now().getDayOfMonth() / 7); // Approximate start week of the month
+                break;
+            case "quarter":
+                startWeek = currentWeek - (currentWeek - 1) % 13; // Start week of the current quarter
+                break;
+            case "year":
+                startWeek = 1; // Start week of the year
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid range type. Must be 'month', 'quarter', or 'year'.");
+        }
+
+        return workoutStatusRepository.countCompletedWorkoutsByWeekRange(userId, startWeek, currentWeek);
     }
 }

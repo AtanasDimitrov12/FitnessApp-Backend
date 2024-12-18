@@ -1,6 +1,7 @@
 package fitness_app_be.fitness_app.controllers;
 
 import fitness_app_be.fitness_app.business.UserService;
+import fitness_app_be.fitness_app.business.WorkoutStatusService;
 import fitness_app_be.fitness_app.controllers.dto.UserDTO;
 import fitness_app_be.fitness_app.controllers.mapper.UserMapper;
 import fitness_app_be.fitness_app.domain.User;
@@ -24,6 +25,7 @@ public class UserController {
 
     private final UserService userService;
     private final UserMapper userMapper;
+    private final WorkoutStatusService workoutStatusService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
@@ -82,5 +84,18 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @GetMapping("/completed/{userId}")
+    public ResponseEntity<Long> getCompletedWorkouts(
+            @PathVariable Long userId,
+            @RequestParam String rangeType) {
+        try {
+            Long completedWorkouts = workoutStatusService.getCompletedWorkouts(userId, rangeType);
+            return ResponseEntity.ok(completedWorkouts);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 }

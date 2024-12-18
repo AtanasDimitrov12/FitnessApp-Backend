@@ -12,4 +12,5 @@ public interface WorkoutStatusService {
     void resetWeeklyWorkouts();
     List<WorkoutStatus> getWorkoutStatusesForPlan(Long workoutPlanId);
     void save(WorkoutStatus workoutStatus);
+    Long getCompletedWorkouts(Long userId, String rangeType);
 }

@@ -16,4 +16,7 @@ public interface WorkoutStatusRepository {
     List<WorkoutStatus> findByWorkoutPlanId(Long workoutPlanId);
 
     void saveAll(List<WorkoutStatus> statuses);
+
+    Long countCompletedWorkoutsByWeekRange(Long userId, int startWeek, int currentWeek);
+
 }

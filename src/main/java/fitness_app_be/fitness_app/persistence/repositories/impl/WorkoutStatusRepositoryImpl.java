@@ -68,5 +68,10 @@ public class WorkoutStatusRepositoryImpl implements WorkoutStatusRepository {
         jpaWorkoutStatusRepository.saveAll(entities);
     }
 
+    @Override
+    public Long countCompletedWorkoutsByWeekRange(Long userId, int startWeek, int currentWeek){
+        return jpaWorkoutStatusRepository.countCompletedWorkoutsByWeekRange(userId, startWeek, currentWeek);
+    }
+
 
 }
