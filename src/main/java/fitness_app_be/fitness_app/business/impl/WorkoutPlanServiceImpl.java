@@ -1,7 +1,11 @@
 package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.business.WorkoutPlanService;
+import fitness_app_be.fitness_app.business.WorkoutService;
+import fitness_app_be.fitness_app.business.WorkoutStatusService;
+import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.domain.WorkoutPlan;
+import fitness_app_be.fitness_app.domain.WorkoutStatus;
 import fitness_app_be.fitness_app.exception_handling.WorkoutPlanNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.WorkoutPlanRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +18,8 @@ import java.util.List;
 public class WorkoutPlanServiceImpl implements WorkoutPlanService {
 
     private final WorkoutPlanRepository workoutPlanRepository;
+    private final WorkoutService workoutService;
+    private final WorkoutStatusService workoutStatusService;
 
     @Override
     public List<WorkoutPlan> getAllWorkoutPlans(){
@@ -34,8 +40,39 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
 
     @Override
     public WorkoutPlan createWorkoutPlan(WorkoutPlan workoutPlan) {
-        return workoutPlanRepository.create(workoutPlan);
+        // Ensure all workouts in the plan are managed
+        workoutPlan.setWorkouts(
+                workoutPlan.getWorkouts().stream()
+                        .map(workout -> {
+                            if (workout.getId() != null) {
+                                return workoutService.getWorkoutById(workout.getId()); // Fetch managed workout
+                            }
+                            return workout; // New workout, no need to fetch
+                        })
+                        .toList()
+        );
+
+        // Save the workout plan
+        WorkoutPlan savedPlan = workoutPlanRepository.create(workoutPlan);
+
+        // Get the current week number
+        int currentWeekNumber = java.time.LocalDate.now().get(java.time.temporal.IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+
+        // Initialize and save WorkoutStatus for each workout in the plan
+        for (Workout workout : savedPlan.getWorkouts()) {
+            WorkoutStatus status = new WorkoutStatus();
+            status.setWorkoutPlan(savedPlan); // Associate with the plan
+            status.setWorkout(workout); // Associate with the workout
+            status.setIsDone(false); // Default is not done
+            status.setWeekNumber(currentWeekNumber); // Set the current week number
+            workoutStatusService.save(status); // Save each WorkoutStatus individually
+        }
+
+        return savedPlan;
     }
+
+
+
 
     @Override
     public void deleteWorkoutPlan(Long id) {

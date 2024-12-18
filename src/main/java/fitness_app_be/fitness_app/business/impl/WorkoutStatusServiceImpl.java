@@ -31,6 +31,7 @@ public class WorkoutStatusServiceImpl implements WorkoutStatusService {
                 .orElseThrow(() -> new RuntimeException("Workout status not found"));
     }
 
+    @Transactional
     @Override
     public Notification markWorkoutAsDone(Long workoutPlanId, Long workoutId, Long userId) {
         // Find WorkoutStatus
@@ -86,5 +87,10 @@ public class WorkoutStatusServiceImpl implements WorkoutStatusService {
     @Override
     public List<WorkoutStatus> getWorkoutStatusesForPlan(Long workoutPlanId) {
         return workoutStatusRepository.findByWorkoutPlanId(workoutPlanId);
+    }
+
+    @Override
+    public void save(WorkoutStatus workoutStatus){
+        workoutStatusRepository.create(workoutStatus);
     }
 }

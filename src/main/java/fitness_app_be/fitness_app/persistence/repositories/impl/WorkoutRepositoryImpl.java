@@ -27,7 +27,7 @@ public class WorkoutRepositoryImpl implements WorkoutRepository {
 
     @Override
     public List<Workout> getAll() {
-        return jpaWorkoutRepository.findAll().stream()
+        return  jpaWorkoutRepository.findAllWithExercises().stream()
                 .map(workoutMapper::toDomain)
                 .toList();
     }
@@ -63,7 +63,7 @@ public class WorkoutRepositoryImpl implements WorkoutRepository {
 
     @Override
     public Optional<Workout> getWorkoutById(long workoutId) {
-        return jpaWorkoutRepository.findById(workoutId).map(workoutMapper::toDomain);
+        return jpaWorkoutRepository.findByIdWithExercises(workoutId).map(workoutMapper::toDomain);
     }
 
 

@@ -35,16 +35,21 @@ public class UserWorkoutPreferenceServiceImpl implements UserWorkoutPreferenceSe
 
         // Calculate the workout plan based on user preferences
         WorkoutPlan calculatedPlan = workoutPlanGenerator.calculateWorkoutPlan(userWorkoutPreference);
+
+        if (calculatedPlan == null) {
+            throw new IllegalStateException("Failed to calculate a workout plan for user preferences.");
+        }
+
         calculatedPlan.setUserId(user.getId());
         WorkoutPlan newUserPlan = workoutPlanService.createWorkoutPlan(calculatedPlan);
         user.setWorkoutPlan(newUserPlan);
         userService.updateUser(user);
-        // Optionally save or associate the plan with the user
-        userWorkoutPreference.setUserid(user.getId());
 
         // Persist UserWorkoutPreference
+        userWorkoutPreference.setUserid(user.getId());
         return userWorkoutPreferenceRepository.create(userWorkoutPreference);
     }
+
 
     @Override
     @Transactional

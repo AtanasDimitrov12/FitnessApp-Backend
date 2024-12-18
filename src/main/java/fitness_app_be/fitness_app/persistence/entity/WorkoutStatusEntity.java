@@ -22,7 +22,7 @@ public class WorkoutStatusEntity {
 
     // Reference to WorkoutEntity
     @ManyToOne
-    @JoinColumn(name = "workout_id", nullable = false)
+    @JoinColumn(name = "workout_id")
     private WorkoutEntity workout;
 
     // Field to track completion status

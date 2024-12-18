@@ -35,13 +35,20 @@ public class WorkoutPlanGeneratorImpl implements WorkoutPlanGenerator {
         // Fetch all workouts from the service
         List<Workout> allWorkouts = workoutService.getAllWorkouts();
 
-        // Filter workouts based on user preferences
+        // Filter workouts safely based on user preferences
         return allWorkouts.stream()
-                .filter(workout -> workout.getFitnessGoals().contains(workoutPreference.getFitnessGoal()))
-                .filter(workout -> workout.getFitnessLevels().contains(workoutPreference.getFitnessLevel()))
-                .filter(workout -> workout.getTrainingStyles().contains(workoutPreference.getPreferredTrainingStyle()))
+                .filter(workout -> workoutPreference.getFitnessGoal() != null &&
+                        workout.getFitnessGoals() != null &&
+                        workout.getFitnessGoals().contains(workoutPreference.getFitnessGoal()))
+                .filter(workout -> workoutPreference.getFitnessLevel() != null &&
+                        workout.getFitnessLevels() != null &&
+                        workout.getFitnessLevels().contains(workoutPreference.getFitnessLevel()))
+                .filter(workout -> workoutPreference.getPreferredTrainingStyle() != null &&
+                        workout.getTrainingStyles() != null &&
+                        workout.getTrainingStyles().contains(workoutPreference.getPreferredTrainingStyle()))
                 .toList();
     }
+
 
     private List<WorkoutPlan> generateWorkoutPlans(List<Workout> workouts, UserWorkoutPreference workoutPreference) {
         List<WorkoutPlan> workoutPlans = new ArrayList<>();

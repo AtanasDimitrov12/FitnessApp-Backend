@@ -2,7 +2,6 @@ package fitness_app_be.fitness_app.domain;
 
 import lombok.*;
 
-import java.util.List;
 
 @Data
 @AllArgsConstructor

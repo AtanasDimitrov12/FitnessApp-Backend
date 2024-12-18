@@ -1,5 +1,8 @@
 package fitness_app_be.fitness_app.persistence.entity;
 
+import fitness_app_be.fitness_app.domain.FitnessGoal;
+import fitness_app_be.fitness_app.domain.FitnessLevel;
+import fitness_app_be.fitness_app.domain.TrainingStyle;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,13 +24,16 @@ public class UserWorkoutPreferenceEntity {
     private UserEntity user;
 
     @Column(name = "fitness_goal")
-    private String fitnessGoal;
+    @Enumerated(EnumType.STRING)
+    private FitnessGoal fitnessGoal;
 
     @Column(name = "fitness_level")
-    private String fitnessLevel;
+    @Enumerated(EnumType.STRING)
+    private FitnessLevel fitnessLevel;
 
     @Column(name = "preferred_training_style")
-    private String preferredTrainingStyle;
+    @Enumerated(EnumType.STRING)
+    private TrainingStyle preferredTrainingStyle;
 
     @Column(name = "days_available")
     private int daysAvailable;

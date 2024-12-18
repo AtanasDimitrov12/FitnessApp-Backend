@@ -29,6 +29,7 @@ public class WebSocketNotificationController {
     @MessageMapping("/mark-workout-done")
     public void markWorkoutAsDone(WorkoutDonePayload payload) {
         // Use WorkoutStatusService to mark the workout as done
+        System.out.println("Marking workout done WebSocket"+ payload.getWorkoutId() + payload.getWorkoutPlanId() + payload.getUserId());
         workoutStatusService.markWorkoutAsDone(payload.getWorkoutPlanId(), payload.getWorkoutId(), payload.getUserId());
 
         // Fetch updated notifications for the user

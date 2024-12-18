@@ -10,6 +10,7 @@ import fitness_app_be.fitness_app.persistence.repositories.ExerciseRepository;
 import fitness_app_be.fitness_app.persistence.repositories.WorkoutRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -27,6 +28,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     private final ExerciseRepository exerciseRepository;
     private final Cloudinary cloudinary;
 
+    @Transactional
     @Override
     public List<Workout> getAllWorkouts() {
         return workoutRepository.getAll();

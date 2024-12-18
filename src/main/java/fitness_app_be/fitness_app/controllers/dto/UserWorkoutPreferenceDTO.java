@@ -1,5 +1,8 @@
 package fitness_app_be.fitness_app.controllers.dto;
 
+import fitness_app_be.fitness_app.domain.FitnessGoal;
+import fitness_app_be.fitness_app.domain.FitnessLevel;
+import fitness_app_be.fitness_app.domain.TrainingStyle;
 import lombok.*;
 
 @Data
@@ -8,8 +11,8 @@ import lombok.*;
 public class    UserWorkoutPreferenceDTO {
     private Long id;
     private Long userid;
-    private String fitnessGoal;
-    private String fitnessLevel;
-    private String preferredTrainingStyle;
+    private FitnessGoal fitnessGoal;
+    private FitnessLevel fitnessLevel;
+    private TrainingStyle preferredTrainingStyle;
     private int daysAvailable;
 }

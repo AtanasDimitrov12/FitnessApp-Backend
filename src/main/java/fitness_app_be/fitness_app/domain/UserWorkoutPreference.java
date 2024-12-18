@@ -9,8 +9,8 @@ public class UserWorkoutPreference {
     @Setter(AccessLevel.NONE)
     private Long id;
     private Long userid;
-    private String fitnessGoal;
-    private String fitnessLevel;
-    private String preferredTrainingStyle;
+    private FitnessGoal fitnessGoal;
+    private FitnessLevel fitnessLevel;
+    private TrainingStyle preferredTrainingStyle;
     private int daysAvailable;
 }
