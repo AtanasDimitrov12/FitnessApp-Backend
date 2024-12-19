@@ -41,9 +41,9 @@ class UserWorkoutPreferenceRepositoryImplTest {
 
     @BeforeEach
     void setUp() {
-        preference = new UserWorkoutPreference(1L, 101L, "Strength", "Beginner", "Evening", 4);
-        userEntity = new UserEntity(101L, "testUser", "test@example.com", "password", null, null, "pictureURL", null, null, null, LocalDateTime.now(), LocalDateTime.now(), true, Role.USER);
-        preferenceEntity = new UserWorkoutPreferenceEntity(1L, userEntity, "Strength", "Beginner", "Evening", 4);
+        preference = new UserWorkoutPreference(1L, 101L, null, null, null, 4);
+        userEntity = new UserEntity(101L, "testUser", "test@example.com", "password", null, null, "pictureURL", null, null, null, null, LocalDateTime.now(), LocalDateTime.now(), true, Role.USER);
+        preferenceEntity = new UserWorkoutPreferenceEntity(1L, userEntity, null, null, null, 4);
     }
 
     @Test

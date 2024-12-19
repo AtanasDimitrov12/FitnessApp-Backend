@@ -43,7 +43,7 @@ class UserRepositoryImplTest {
 
         user = new User(1L, "testUser", "test@example.com", "password", null, null, "pictureURL", LocalDateTime.now(), LocalDateTime.now(), Role.USER, null, null, notes, true);
         List<ProgressNoteEntity> notesEntity = new ArrayList<>();
-        userEntity = new UserEntity(1L, "testUser", "test@example.com", "password", null, null, "pictureURL", null, null, null, LocalDateTime.now(), LocalDateTime.now(), true, Role.USER);
+        userEntity = new UserEntity(1L, "testUser", "test@example.com", "password", null, null, "pictureURL", null, null, null, null, LocalDateTime.now(), LocalDateTime.now(), true, Role.USER);
 
     }
 

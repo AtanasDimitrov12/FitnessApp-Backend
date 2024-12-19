@@ -1,6 +1,7 @@
 package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.Workout;
+import fitness_app_be.fitness_app.exception_handling.WorkoutSaveException;
 import fitness_app_be.fitness_app.persistence.entity.WorkoutEntity;
 import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaWorkoutRepository;
 import fitness_app_be.fitness_app.persistence.mapper.WorkoutEntityMapper;
@@ -34,11 +35,8 @@ class WorkoutRepositoryImplTest {
 
     @BeforeEach
     void setUp() {
-
         workout = new Workout(1L, "Test Workout", "Description", "http://example.com/image.jpg", List.of(), null, null, null);
-
-        workoutEntity = new WorkoutEntity(1L, "Test Workout", "Description", "http://example.com/image.jpg",List.of(), List.of(), null, null, null);
-
+        workoutEntity = new WorkoutEntity(1L, "Test Workout", "Description", "http://example.com/image.jpg", List.of(), List.of(), null, null, null, null);
     }
 
     @Test
@@ -59,7 +57,7 @@ class WorkoutRepositoryImplTest {
 
     @Test
     void getAll_ShouldReturnListOfWorkouts() {
-        when(jpaWorkoutRepository.findAll()).thenReturn(List.of(workoutEntity));
+        when(jpaWorkoutRepository.findAllWithExercises()).thenReturn(List.of(workoutEntity));
         when(workoutMapper.toDomain(workoutEntity)).thenReturn(workout);
 
         List<Workout> workouts = workoutRepository.getAll();
@@ -67,7 +65,7 @@ class WorkoutRepositoryImplTest {
         assertNotNull(workouts);
         assertEquals(1, workouts.size());
         assertEquals(workout, workouts.get(0));
-        verify(jpaWorkoutRepository, times(1)).findAll();
+        verify(jpaWorkoutRepository, times(1)).findAllWithExercises();
         verify(workoutMapper, times(1)).toDomain(workoutEntity);
     }
 
@@ -81,6 +79,15 @@ class WorkoutRepositoryImplTest {
 
         assertNotNull(createdWorkout);
         assertEquals(workout, createdWorkout);
+        verify(jpaWorkoutRepository, times(1)).save(workoutEntity);
+    }
+
+    @Test
+    void create_ShouldThrowWorkoutSaveException_WhenJpaSaveFails() {
+        when(workoutMapper.toEntity(workout)).thenReturn(workoutEntity);
+        when(jpaWorkoutRepository.save(workoutEntity)).thenThrow(RuntimeException.class);
+
+        assertThrows(WorkoutSaveException.class, () -> workoutRepository.create(workout));
         verify(jpaWorkoutRepository, times(1)).save(workoutEntity);
     }
 
@@ -99,7 +106,7 @@ class WorkoutRepositoryImplTest {
     }
 
     @Test
-    void update_ShouldThrowException_WhenWorkoutDoesNotExist() {
+    void update_ShouldThrowIllegalArgumentException_WhenWorkoutDoesNotExist() {
         when(jpaWorkoutRepository.existsById(1L)).thenReturn(false);
 
         assertThrows(IllegalArgumentException.class, () -> workoutRepository.update(workout));
@@ -117,14 +124,24 @@ class WorkoutRepositoryImplTest {
 
     @Test
     void getWorkoutById_ShouldReturnWorkout_WhenExists() {
-        when(jpaWorkoutRepository.findById(1L)).thenReturn(Optional.of(workoutEntity));
+        when(jpaWorkoutRepository.findByIdWithExercises(1L)).thenReturn(Optional.of(workoutEntity));
         when(workoutMapper.toDomain(workoutEntity)).thenReturn(workout);
 
         Optional<Workout> foundWorkout = workoutRepository.getWorkoutById(1L);
 
         assertTrue(foundWorkout.isPresent());
         assertEquals(workout, foundWorkout.get());
-        verify(jpaWorkoutRepository, times(1)).findById(1L);
+        verify(jpaWorkoutRepository, times(1)).findByIdWithExercises(1L);
+    }
+
+    @Test
+    void getWorkoutById_ShouldReturnEmptyOptional_WhenWorkoutDoesNotExist() {
+        when(jpaWorkoutRepository.findByIdWithExercises(1L)).thenReturn(Optional.empty());
+
+        Optional<Workout> foundWorkout = workoutRepository.getWorkoutById(1L);
+
+        assertTrue(foundWorkout.isEmpty());
+        verify(jpaWorkoutRepository, times(1)).findByIdWithExercises(1L);
     }
 
     @Test

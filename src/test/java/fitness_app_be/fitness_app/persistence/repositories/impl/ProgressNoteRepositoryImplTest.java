@@ -53,7 +53,7 @@ class ProgressNoteRepositoryImplTest {
         userEntity.setNotes(new ArrayList<>());
 
         progressNote = new ProgressNote(1L, 101L, 85, "Weekly progress", LocalDate.now());
-        progressNoteEntity = new ProgressNoteEntity(1L, userEntity, 85, "Weekly progress", LocalDate.now());
+        progressNoteEntity = new ProgressNoteEntity(1L, 1L, 85, "Weekly progress", LocalDate.now());
     }
 
     @Test

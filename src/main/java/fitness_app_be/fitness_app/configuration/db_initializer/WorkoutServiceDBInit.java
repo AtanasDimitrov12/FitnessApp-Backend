@@ -25,15 +25,17 @@ public class WorkoutServiceDBInit {
     private final ExerciseService exerciseService; // Domain service for exercises
     private final Random random = new Random(); // Random instance for tag selection
 
-    public void populateWorkouts() throws IOException {
+    public void populateWorkouts() throws IOException, InterruptedException {
+        // Check if workouts already exist in the database
         long workoutCount = workoutService.getAllWorkouts().stream().count();
         if (workoutCount >= 40) {
             return;
         }
 
-        List<Exercise> exercises = exerciseService.getAllExercises();
+        // Wait until exercises are populated
+        List<Exercise> exercises = waitForExercisesToBeAvailable(10); // Wait up to 10 seconds
         if (exercises.isEmpty()) {
-            throw new IllegalStateException("No exercises found in the database. Populate exercises first!");
+            throw new IllegalStateException("No exercises found in the database after waiting. Populate exercises first!");
         }
 
         List<Workout> workouts = new ArrayList<>();
@@ -64,6 +66,22 @@ public class WorkoutServiceDBInit {
             }
         }
     }
+
+    private List<Exercise> waitForExercisesToBeAvailable(int timeoutSeconds) throws InterruptedException {
+        int waitedSeconds = 0;
+        List<Exercise> exercises;
+        do {
+            exercises = exerciseService.getAllExercises();
+            if (!exercises.isEmpty()) {
+                return exercises;
+            }
+            Thread.sleep(1000); // Wait 1 second before checking again
+            waitedSeconds++;
+        } while (waitedSeconds < timeoutSeconds);
+
+        return exercises; // Return empty list if timeout is reached
+    }
+
 
     private List<Exercise> getRandomExercises(List<Exercise> exercises, int count) {
         List<Exercise> randomExercises = new ArrayList<>(exercises);

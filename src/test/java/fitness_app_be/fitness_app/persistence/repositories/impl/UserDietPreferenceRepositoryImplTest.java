@@ -62,7 +62,7 @@ class UserDietPreferenceRepositoryImplTest {
 
         userEntity = new UserEntity(
                 1L, "testUser", "test@example.com", "password", null, null,
-                "pictureURL", null, null, null,
+                "pictureURL", null, null, null, null,
                 LocalDateTime.now(), LocalDateTime.now(), true, Role.USER
         );
 

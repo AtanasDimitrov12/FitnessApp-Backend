@@ -1,6 +1,7 @@
 package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.business.WorkoutPlanGenerator;
+import fitness_app_be.fitness_app.business.WorkoutPlanService;
 import fitness_app_be.fitness_app.business.WorkoutService;
 import fitness_app_be.fitness_app.business.UserService;
 import fitness_app_be.fitness_app.domain.Role;
@@ -37,6 +38,10 @@ class UserWorkoutPreferenceServiceImplTest {
     @Mock
     private UserService userService;
 
+    @Mock
+    private WorkoutPlanService workoutPlanService;
+
+
     @InjectMocks
     private UserWorkoutPreferenceServiceImpl userWorkoutPreferenceService;
 
@@ -46,7 +51,7 @@ class UserWorkoutPreferenceServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        userWorkoutPreference = new UserWorkoutPreference(1L, 1L, "Strength", "Beginner", "Evening", 4);
+        userWorkoutPreference = new UserWorkoutPreference(1L, 1L, null, null, null, 4);
         user = new User(1L, "John Doe", "john@example.com", "password", null, userWorkoutPreference, "pictureURL", LocalDateTime.now(), LocalDateTime.now(),  Role.ADMIN,workoutPlan, null, null, true);
         workoutPlan = new WorkoutPlan();
     }
@@ -69,19 +74,7 @@ class UserWorkoutPreferenceServiceImplTest {
         verify(userWorkoutPreferenceRepository, times(1)).findByUserId(1L);
     }
 
-    @Test
-    void createUserWorkoutPreference_ReturnsCreatedUserWorkoutPreference() {
-        when(userService.getUserById(1L)).thenReturn(user);
-        when(workoutPlanGenerator.calculateWorkoutPlan(userWorkoutPreference)).thenReturn(workoutPlan);
-        when(userWorkoutPreferenceRepository.create(userWorkoutPreference)).thenReturn(userWorkoutPreference);
 
-        UserWorkoutPreference result = userWorkoutPreferenceService.createUserWorkoutPreference(userWorkoutPreference);
-
-        assertEquals(userWorkoutPreference, result);
-        verify(userService, times(1)).getUserById(1L);
-        verify(workoutPlanGenerator, times(1)).calculateWorkoutPlan(userWorkoutPreference);
-        verify(userWorkoutPreferenceRepository, times(1)).create(userWorkoutPreference);
-    }
 
     @Test
     void deleteUserWorkoutPreference_ExecutesWithoutException() {
@@ -103,16 +96,69 @@ class UserWorkoutPreferenceServiceImplTest {
     }
 
     @Test
-    void updateUserWorkoutPreference_ReturnsUpdatedUserWorkoutPreference() {
+    void createUserWorkoutPreference_ReturnsCreatedUserWorkoutPreference() {
         when(userService.getUserById(1L)).thenReturn(user);
         when(workoutPlanGenerator.calculateWorkoutPlan(userWorkoutPreference)).thenReturn(workoutPlan);
+        when(workoutPlanService.createWorkoutPlan(workoutPlan)).thenReturn(workoutPlan);
+        when(userWorkoutPreferenceRepository.create(userWorkoutPreference)).thenReturn(userWorkoutPreference);
+
+        UserWorkoutPreference result = userWorkoutPreferenceService.createUserWorkoutPreference(userWorkoutPreference);
+
+        assertEquals(userWorkoutPreference, result);
+        verify(userService, times(1)).getUserById(1L);
+        verify(workoutPlanGenerator, times(1)).calculateWorkoutPlan(userWorkoutPreference);
+        verify(workoutPlanService, times(1)).createWorkoutPlan(workoutPlan);
+        verify(userService, times(1)).updateUser(user);
+        verify(userWorkoutPreferenceRepository, times(1)).create(userWorkoutPreference);
+    }
+
+    @Test
+    void createUserWorkoutPreference_WorkoutPlanGeneratorReturnsNull_ThrowsException() {
+        when(userService.getUserById(1L)).thenReturn(user);
+        when(workoutPlanGenerator.calculateWorkoutPlan(userWorkoutPreference)).thenReturn(null);
+
+        assertThrows(IllegalStateException.class,
+                () -> userWorkoutPreferenceService.createUserWorkoutPreference(userWorkoutPreference));
+
+        verify(userService, times(1)).getUserById(1L);
+        verify(workoutPlanGenerator, times(1)).calculateWorkoutPlan(userWorkoutPreference);
+        verify(workoutPlanService, never()).createWorkoutPlan(any());
+        verify(userService, never()).updateUser(any());
+        verify(userWorkoutPreferenceRepository, never()).create(any());
+    }
+
+    @Test
+    void updateUserWorkoutPreference_ReturnsUpdatedUserWorkoutPreference() {
+        when(userWorkoutPreferenceRepository.getWorkoutPreferenceById(1L)).thenReturn(Optional.of(userWorkoutPreference));
+        when(userService.getUserById(1L)).thenReturn(user);
+        when(workoutPlanGenerator.calculateWorkoutPlan(userWorkoutPreference)).thenReturn(workoutPlan);
+        when(workoutPlanService.createWorkoutPlan(workoutPlan)).thenReturn(workoutPlan);
         when(userWorkoutPreferenceRepository.update(userWorkoutPreference)).thenReturn(userWorkoutPreference);
 
         UserWorkoutPreference result = userWorkoutPreferenceService.updateUserWorkoutPreference(userWorkoutPreference);
 
         assertEquals(userWorkoutPreference, result);
+        verify(userWorkoutPreferenceRepository, times(1)).getWorkoutPreferenceById(1L);
         verify(userService, times(1)).getUserById(1L);
         verify(workoutPlanGenerator, times(1)).calculateWorkoutPlan(userWorkoutPreference);
+        verify(workoutPlanService, times(1)).createWorkoutPlan(workoutPlan);
+        verify(userService, times(1)).updateUser(user);
         verify(userWorkoutPreferenceRepository, times(1)).update(userWorkoutPreference);
     }
+
+    @Test
+    void updateUserWorkoutPreference_UserWorkoutPreferenceNotFound_ThrowsException() {
+        when(userWorkoutPreferenceRepository.getWorkoutPreferenceById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(UserWorkoutPreferenceNotFoundException.class,
+                () -> userWorkoutPreferenceService.updateUserWorkoutPreference(userWorkoutPreference));
+
+        verify(userWorkoutPreferenceRepository, times(1)).getWorkoutPreferenceById(1L);
+        verify(userService, never()).getUserById(anyLong());
+        verify(workoutPlanGenerator, never()).calculateWorkoutPlan(any());
+        verify(workoutPlanService, never()).createWorkoutPlan(any());
+        verify(userService, never()).updateUser(any());
+        verify(userWorkoutPreferenceRepository, never()).update(any());
+    }
+
 }

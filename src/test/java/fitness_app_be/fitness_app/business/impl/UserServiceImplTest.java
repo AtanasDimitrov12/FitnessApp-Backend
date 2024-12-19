@@ -51,7 +51,7 @@ class UserServiceImplTest {
         WorkoutPlan workoutPlan = new WorkoutPlan(1L,1L, workouts);
         List<ProgressNote> notes = new ArrayList<>();
         UserDietPreference userDietPreference = new UserDietPreference(1L, 1L, 2500, 3);
-        UserWorkoutPreference userWorkoutPreference = new UserWorkoutPreference(1L, 1L, "Strength", "Beginner", "Evening", 4);
+        UserWorkoutPreference userWorkoutPreference = new UserWorkoutPreference(1L, 1L, null, null, null, 4);
         user = new User(1L, "testUser", "test@example.com", "password", userDietPreference, userWorkoutPreference, "pictureURL", LocalDateTime.now(), LocalDateTime.now(),  Role.ADMIN,workoutPlan, diet, notes, true);
 
     }
