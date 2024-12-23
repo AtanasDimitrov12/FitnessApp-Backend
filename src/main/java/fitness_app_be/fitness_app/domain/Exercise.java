@@ -12,5 +12,5 @@ public class Exercise {
     private String name;
     private int sets;
     private int reps;
-    private String muscleGroup;
+    private MuscleGroup muscleGroup;
 }

@@ -3,20 +3,12 @@ package fitness_app_be.fitness_app.persistence.mapper;
 import fitness_app_be.fitness_app.domain.Exercise;
 import fitness_app_be.fitness_app.persistence.entity.ExerciseEntity;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
 @NoArgsConstructor
 public class ExerciseEntityMapper {
 
-    private WorkoutEntityMapper workoutEntityMapper;
-
-    @Autowired
-    public ExerciseEntityMapper(@Lazy WorkoutEntityMapper workoutEntityMapper) {
-        this.workoutEntityMapper = workoutEntityMapper;
-    }
 
     public Exercise toDomain(ExerciseEntity exerciseEntity) {
         if (exerciseEntity == null) {
@@ -37,7 +29,7 @@ public class ExerciseEntityMapper {
             return null;
         }
 
-        ExerciseEntity exerciseEntity = ExerciseEntity.builder()
+        return ExerciseEntity.builder()
                 .id(exercise.getId())
                 .name(exercise.getName())
                 .sets(exercise.getSets())
@@ -45,6 +37,6 @@ public class ExerciseEntityMapper {
                 .muscleGroup(exercise.getMuscleGroup())
                 .build();
 
-        return exerciseEntity;
+
     }
 }

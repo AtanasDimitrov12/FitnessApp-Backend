@@ -38,9 +38,15 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     @Override
     public Exercise create(Exercise exercise) {
         ExerciseEntity exerciseEntity = exerciseEntityMapper.toEntity(exercise);
+
+        // Save the ExerciseEntity
         ExerciseEntity savedEntity = jpaExerciseRepository.save(exerciseEntity);
+
+        // Convert and return the saved ExerciseEntity as a domain object
         return exerciseEntityMapper.toDomain(savedEntity);
     }
+
+
 
     @Override
     public Exercise update(Exercise exercise) {

@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "fitness_app_be.fitness_app")
 public class FitnessAppApplication {
 
 	public static void main(String[] args) {

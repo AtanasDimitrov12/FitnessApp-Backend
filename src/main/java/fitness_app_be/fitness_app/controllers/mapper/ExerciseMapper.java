@@ -2,21 +2,11 @@ package fitness_app_be.fitness_app.controllers.mapper;
 
 import fitness_app_be.fitness_app.controllers.dto.ExerciseDTO;
 import fitness_app_be.fitness_app.domain.Exercise;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 
 @Component
 public class ExerciseMapper {
-
-    private final WorkoutMapper workoutMapper;
-
-    @Autowired
-    public ExerciseMapper(@Lazy WorkoutMapper workoutMapper) {
-        this.workoutMapper = workoutMapper;
-    }
 
     public Exercise toDomain(ExerciseDTO exerciseDTO) {
         if (exerciseDTO == null) {

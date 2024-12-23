@@ -32,10 +32,10 @@ public class WorkoutServiceDBInit {
             return;
         }
 
-        // Wait until exercises are populated
-        List<Exercise> exercises = waitForExercisesToBeAvailable(10); // Wait up to 10 seconds
-        if (exercises.isEmpty()) {
-            throw new IllegalStateException("No exercises found in the database after waiting. Populate exercises first!");
+        // Wait until at least 10 exercises are available in the database
+        List<Exercise> exercises = waitForExercisesToBeAvailable(10);
+        if (exercises.size() < 10) {
+            throw new IllegalStateException("Insufficient exercises found in the database. Populate exercises first!");
         }
 
         List<Workout> workouts = new ArrayList<>();
@@ -67,21 +67,32 @@ public class WorkoutServiceDBInit {
         }
     }
 
-    private List<Exercise> waitForExercisesToBeAvailable(int timeoutSeconds) throws InterruptedException {
-        int waitedSeconds = 0;
+    /**
+     * Waits until there are at least the specified minimum number of exercises in the database.
+     *
+     * @param minExerciseCount Minimum number of exercises required.
+     * @return List of exercises once the condition is met.
+     * @throws InterruptedException if the thread is interrupted while waiting.
+     */
+    private List<Exercise> waitForExercisesToBeAvailable(int minExerciseCount) throws InterruptedException {
+        int elapsedSeconds = 0;
         List<Exercise> exercises;
+
         do {
             exercises = exerciseService.getAllExercises();
-            if (!exercises.isEmpty()) {
+            if (exercises.size() >= minExerciseCount) {
                 return exercises;
             }
+
+            // Print a message every 10 seconds
+            if (elapsedSeconds % 10 == 0) {
+                System.out.println("Waiting for exercises to be available in the database...");
+            }
+
             Thread.sleep(1000); // Wait 1 second before checking again
-            waitedSeconds++;
-        } while (waitedSeconds < timeoutSeconds);
-
-        return exercises; // Return empty list if timeout is reached
+            elapsedSeconds++;
+        } while (true); // Continue indefinitely until the condition is met
     }
-
 
     private List<Exercise> getRandomExercises(List<Exercise> exercises, int count) {
         List<Exercise> randomExercises = new ArrayList<>(exercises);

@@ -1,5 +1,7 @@
 package fitness_app_be.fitness_app.persistence.entity;
 
+import fitness_app_be.fitness_app.domain.FitnessGoal;
+import fitness_app_be.fitness_app.domain.MuscleGroup;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,8 +29,10 @@ public class ExerciseEntity {
     @Column(name = "reps", nullable = false)
     private int reps;
 
-    @Column(name = "muscleGroup", nullable = false)
-    private String muscleGroup;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "muscle_group", nullable = false)
+    private MuscleGroup muscleGroup;
+
 
     @ManyToMany(mappedBy = "exercises")
     private List<WorkoutEntity> workouts;
