@@ -2,12 +2,14 @@ package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.business.ExerciseService;
 import fitness_app_be.fitness_app.domain.Exercise;
+import fitness_app_be.fitness_app.domain.MuscleGroup;
 import fitness_app_be.fitness_app.exception_handling.ExerciseNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.ExerciseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -39,5 +41,10 @@ public class ExerciseServiceImpl implements ExerciseService {
     @Override
     public Exercise updateExercise(Exercise exercise) {
         return exerciseRepository.update(exercise);
+    }
+
+    @Override
+    public Map<MuscleGroup, Long> getCompletedExercisesPerMuscleGroup(){
+        return exerciseRepository.getCompletedExercisesPerMuscleGroup();
     }
 }

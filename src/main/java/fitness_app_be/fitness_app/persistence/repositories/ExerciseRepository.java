@@ -1,8 +1,10 @@
 package fitness_app_be.fitness_app.persistence.repositories;
 
 import fitness_app_be.fitness_app.domain.Exercise;
+import fitness_app_be.fitness_app.domain.MuscleGroup;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface ExerciseRepository {
@@ -22,4 +24,5 @@ public interface ExerciseRepository {
 
     Optional<Exercise> findById(long id);
 
+    Map<MuscleGroup, Long> getCompletedExercisesPerMuscleGroup();
 }

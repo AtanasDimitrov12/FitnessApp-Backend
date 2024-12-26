@@ -10,6 +10,7 @@ import fitness_app_be.fitness_app.exception_handling.FileConversionException;
 import fitness_app_be.fitness_app.exception_handling.JsonParsingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +29,7 @@ public class WorkoutController {
     private final WorkoutService workoutService;
     private final WorkoutMapper workoutMapper;
     private final ObjectMapper objectMapper;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping
@@ -86,6 +88,10 @@ public class WorkoutController {
                 file.delete();
             }
 
+            String message = "Workout \"" + updatedWorkout.getName() + "\" has been updated by the admin.";
+            messagingTemplate.convertAndSend("/topic/workouts/" + updatedWorkout.getId(), message);
+
+
             return workoutMapper.domainToDto(updatedWorkout);
         } catch (IOException e) {
             throw new CreationException("Error while saving workout image", e);
@@ -99,6 +105,9 @@ public class WorkoutController {
     public WorkoutDTO updateWorkoutWithoutPicture(@RequestBody WorkoutDTO workoutDTO) {
         Workout workout = workoutMapper.toDomain(workoutDTO);
         Workout updatedWorkout = workoutService.updateWorkoutWithoutPicture(workout);
+        String message = "Workout \"" + updatedWorkout.getName() + "\" has been updated by the admin.";
+        messagingTemplate.convertAndSend("/topic/workouts/" + updatedWorkout.getId(), message);
+
         return workoutMapper.domainToDto(updatedWorkout);
     }
 

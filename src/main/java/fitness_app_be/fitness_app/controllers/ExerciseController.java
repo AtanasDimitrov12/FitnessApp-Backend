@@ -4,12 +4,15 @@ import fitness_app_be.fitness_app.business.ExerciseService;
 import fitness_app_be.fitness_app.controllers.dto.ExerciseDTO;
 import fitness_app_be.fitness_app.controllers.mapper.ExerciseMapper;
 import fitness_app_be.fitness_app.domain.Exercise;
+import fitness_app_be.fitness_app.domain.MuscleGroup;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/exercises")
@@ -55,5 +58,17 @@ public class ExerciseController {
     public ResponseEntity<Void> deleteExercise(@PathVariable Long id) {
         exerciseService.deleteExercise(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/completed-per-muscle-group")
+    public ResponseEntity<Map<String, Long>> getCompletedExercisesPerMuscleGroup() {
+        Map<MuscleGroup, Long> muscleGroupCounts = exerciseService.getCompletedExercisesPerMuscleGroup();
+
+        // Convert enum to display names for better readability in the API response
+        Map<String, Long> response = new HashMap<>();
+        muscleGroupCounts.forEach((key, value) -> response.put(key.getDisplayName(), value));
+
+        return ResponseEntity.ok(response);
     }
 }

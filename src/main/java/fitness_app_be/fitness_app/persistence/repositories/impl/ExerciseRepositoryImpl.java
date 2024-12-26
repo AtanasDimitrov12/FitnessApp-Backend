@@ -1,14 +1,18 @@
 package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.Exercise;
+import fitness_app_be.fitness_app.domain.MuscleGroup;
 import fitness_app_be.fitness_app.persistence.entity.ExerciseEntity;
 import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaExerciseRepository;
 import fitness_app_be.fitness_app.persistence.mapper.ExerciseEntityMapper;
 import fitness_app_be.fitness_app.persistence.repositories.ExerciseRepository;
+import fitness_app_be.fitness_app.persistence.repositories.WorkoutStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -16,6 +20,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
 
     private final JpaExerciseRepository jpaExerciseRepository;
     private final ExerciseEntityMapper exerciseEntityMapper;
+
 
     @Autowired
     public ExerciseRepositoryImpl(JpaExerciseRepository jpaExerciseRepository, ExerciseEntityMapper exerciseEntityMapper) {
@@ -79,5 +84,19 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     @Override
     public Optional<Exercise> findById(long id){
         return jpaExerciseRepository.findById(id).map(exerciseEntityMapper::toDomain);
+    }
+
+    @Override
+    public Map<MuscleGroup, Long> getCompletedExercisesPerMuscleGroup() {
+        List<Object[]> results = jpaExerciseRepository.getCompletedExercisesPerMuscleGroup();
+
+        // Transforming the result into a Map for easier access
+        Map<MuscleGroup, Long> muscleGroupCounts = new HashMap<>();
+        for (Object[] result : results) {
+            MuscleGroup muscleGroup = (MuscleGroup) result[0];
+            Long count = (Long) result[1];
+            muscleGroupCounts.put(muscleGroup, count);
+        }
+        return muscleGroupCounts;
     }
 }
