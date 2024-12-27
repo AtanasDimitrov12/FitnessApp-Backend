@@ -20,4 +20,5 @@ public interface UserService {
     User updateUser(User user);
     User uploadUserProfilePicture(Long userId, MultipartFile imageFile) throws CustomFileUploadException, UserProfileUpdateException;
     User attachedDietToUser(Long UserId, Diet diet);
+    List<Long> getUsersWithWorkout(Long workoutId);
 }

@@ -41,4 +41,6 @@ public interface UserRepository {
     long countByIsActive(boolean isActive); // Count active/inactive users
 
     UserEntity findEntityById(long userId);
+
+    List<Long> getUsersWithWorkout(Long workoutId);
 }

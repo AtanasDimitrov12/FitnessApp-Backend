@@ -122,4 +122,9 @@ public class UserRepositoryImpl implements UserRepository {
                 .orElseThrow(() -> new IllegalArgumentException("User with ID " + userId + " not found."));
     }
 
+    @Override
+    public List<Long> getUsersWithWorkout(Long workoutId) {
+        return jpaUserRepository.findUserIdsByWorkoutId(workoutId);
+    }
+
 }

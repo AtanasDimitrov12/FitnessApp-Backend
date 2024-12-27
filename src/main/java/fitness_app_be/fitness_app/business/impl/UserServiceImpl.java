@@ -144,6 +144,11 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    @Override
+    public List<Long> getUsersWithWorkout(Long workoutId) {
+        return userRepository.getUsersWithWorkout(workoutId);
+    }
+
 }
 
 
