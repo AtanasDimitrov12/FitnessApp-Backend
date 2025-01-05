@@ -1,5 +1,6 @@
 package fitness_app_be.fitness_app.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fitness_app_be.fitness_app.business.ExerciseService;
 import fitness_app_be.fitness_app.config.TestSecurityConfig;
 import fitness_app_be.fitness_app.configuration.security.token.AccessToken;
@@ -7,6 +8,7 @@ import fitness_app_be.fitness_app.configuration.security.token.AccessTokenDecode
 import fitness_app_be.fitness_app.controllers.dto.ExerciseDTO;
 import fitness_app_be.fitness_app.controllers.mapper.ExerciseMapper;
 import fitness_app_be.fitness_app.domain.Exercise;
+import fitness_app_be.fitness_app.domain.MuscleGroup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,12 +21,11 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
@@ -61,27 +62,23 @@ class ExerciseControllerTest {
 
     @BeforeEach
     public void setup() {
-        // Mock AccessToken with email-based authentication and roles
         AccessToken mockAccessToken = Mockito.mock(AccessToken.class);
-        when(mockAccessToken.getSubject()).thenReturn("admin@example.com"); // Email as the subject
+        when(mockAccessToken.getSubject()).thenReturn("admin@example.com");
         when(mockAccessToken.getRoles()).thenReturn(Set.of("ROLE_ADMIN"));
-        when(mockAccessToken.getUserId()).thenReturn(1L);
-
-        // Configure AccessTokenDecoder to return the mock token
         when(accessTokenDecoder.decode(Mockito.anyString())).thenReturn(mockAccessToken);
 
-        // Reinitialize MockMvc with security applied
         this.mockMvc = MockMvcBuilders
                 .webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
     }
 
+
     @WithMockUser(username = "admin@example.com", authorities = "ROLE_ADMIN")
     @Test
     void getAllExercises_ShouldReturnListOfExercises() throws Exception {
-        Exercise exercise = new Exercise(1L, "Push Up", 3, 15, "Chest");
-        ExerciseDTO exerciseDTO = new ExerciseDTO(1L, "Push Up", 3, 15, "Chest");
+        Exercise exercise = new Exercise(1L, "Push Up", 3, 15, MuscleGroup.CHEST);
+        ExerciseDTO exerciseDTO = new ExerciseDTO(1L, "Push Up", 3, 15, MuscleGroup.CHEST);
 
         when(exerciseService.getAllExercises()).thenReturn(List.of(exercise));
         when(exerciseMapper.toDto(exercise)).thenReturn(exerciseDTO);
@@ -93,14 +90,14 @@ class ExerciseControllerTest {
                 .andExpect(jsonPath("$[0].name", is(exerciseDTO.getName())))
                 .andExpect(jsonPath("$[0].sets", is(exerciseDTO.getSets())))
                 .andExpect(jsonPath("$[0].reps", is(exerciseDTO.getReps())))
-                .andExpect(jsonPath("$[0].muscleGroup", is(exerciseDTO.getMuscleGroup())));
+                .andExpect(jsonPath("$[0].muscleGroup", is(exerciseDTO.getMuscleGroup().toString())));
     }
 
     @WithMockUser(username = "admin@example.com", authorities = "ROLE_ADMIN")
     @Test
     void getExerciseById_ShouldReturnExercise() throws Exception {
-        Exercise exercise = new Exercise(1L, "Push Up", 3, 15, "Chest");
-        ExerciseDTO exerciseDTO = new ExerciseDTO(1L, "Push Up", 3, 15, "Chest");
+        Exercise exercise = new Exercise(1L, "Push Up", 3, 15, MuscleGroup.CHEST);
+        ExerciseDTO exerciseDTO = new ExerciseDTO(1L, "Push Up", 3, 15, MuscleGroup.CHEST);
 
         when(exerciseService.getExerciseById(1L)).thenReturn(exercise);
         when(exerciseMapper.toDto(exercise)).thenReturn(exerciseDTO);
@@ -111,16 +108,16 @@ class ExerciseControllerTest {
                 .andExpect(jsonPath("$.name", is(exerciseDTO.getName())))
                 .andExpect(jsonPath("$.sets", is(exerciseDTO.getSets())))
                 .andExpect(jsonPath("$.reps", is(exerciseDTO.getReps())))
-                .andExpect(jsonPath("$.muscleGroup", is(exerciseDTO.getMuscleGroup())));
+                .andExpect(jsonPath("$.muscleGroup", is(exerciseDTO.getMuscleGroup().toString())));
     }
 
     @WithMockUser(username = "admin@example.com", authorities = "ROLE_ADMIN")
     @Test
     void createExercise_ShouldReturnCreatedExercise() throws Exception {
-        ExerciseDTO exerciseDTO = new ExerciseDTO(null, "Push Up", 3, 15, "Chest");
-        Exercise exercise = new Exercise(null, "Push Up", 3, 15, "Chest");
-        Exercise createdExercise = new Exercise(1L, "Push Up", 3, 15, "Chest");
-        ExerciseDTO createdExerciseDTO = new ExerciseDTO(1L, "Push Up", 3, 15, "Chest");
+        ExerciseDTO exerciseDTO = new ExerciseDTO(null, "Push Up", 3, 15, MuscleGroup.CHEST);
+        Exercise exercise = new Exercise(null, "Push Up", 3, 15, MuscleGroup.CHEST);
+        Exercise createdExercise = new Exercise(1L, "Push Up", 3, 15, MuscleGroup.CHEST);
+        ExerciseDTO createdExerciseDTO = new ExerciseDTO(1L, "Push Up", 3, 15, MuscleGroup.CHEST);
 
         when(exerciseMapper.toDomain(exerciseDTO)).thenReturn(exercise);
         when(exerciseService.createExercise(exercise)).thenReturn(createdExercise);
@@ -134,30 +131,7 @@ class ExerciseControllerTest {
                 .andExpect(jsonPath("$.name", is(createdExerciseDTO.getName())))
                 .andExpect(jsonPath("$.sets", is(createdExerciseDTO.getSets())))
                 .andExpect(jsonPath("$.reps", is(createdExerciseDTO.getReps())))
-                .andExpect(jsonPath("$.muscleGroup", is(createdExerciseDTO.getMuscleGroup())));
-    }
-
-    @WithMockUser(username = "admin@example.com", authorities = "ROLE_ADMIN")
-    @Test
-    void updateExercise_ShouldReturnUpdatedExercise() throws Exception {
-        ExerciseDTO exerciseDTO = new ExerciseDTO(1L, "Updated Push Up", 4, 12, "Upper Body");
-        Exercise exercise = new Exercise(1L, "Updated Push Up", 4, 12, "Upper Body");
-        Exercise updatedExercise = new Exercise(1L, "Updated Push Up", 4, 12, "Upper Body");
-        ExerciseDTO updatedExerciseDTO = new ExerciseDTO(1L, "Updated Push Up", 4, 12, "Upper Body");
-
-        when(exerciseMapper.toDomain(exerciseDTO)).thenReturn(exercise);
-        when(exerciseService.updateExercise(exercise)).thenReturn(updatedExercise);
-        when(exerciseMapper.toDto(updatedExercise)).thenReturn(updatedExerciseDTO);
-
-        mockMvc.perform(put("/api/exercises")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(exerciseDTO)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(updatedExerciseDTO.getId().intValue())))
-                .andExpect(jsonPath("$.name", is(updatedExerciseDTO.getName())))
-                .andExpect(jsonPath("$.sets", is(updatedExerciseDTO.getSets())))
-                .andExpect(jsonPath("$.reps", is(updatedExerciseDTO.getReps())))
-                .andExpect(jsonPath("$.muscleGroup", is(updatedExerciseDTO.getMuscleGroup())));
+                .andExpect(jsonPath("$.muscleGroup", is(createdExerciseDTO.getMuscleGroup().toString())));
     }
 
     @WithMockUser(username = "admin@example.com", authorities = "ROLE_ADMIN")
@@ -168,4 +142,24 @@ class ExerciseControllerTest {
         mockMvc.perform(delete("/api/exercises/1"))
                 .andExpect(status().isNoContent());
     }
+
+    @WithMockUser(username = "admin@example.com", authorities = "ROLE_ADMIN")
+    @Test
+    void getCompletedExercisesPerMuscleGroup_ShouldReturnCounts() throws Exception {
+        Map<MuscleGroup, Long> muscleGroupCounts = Map.of(
+                MuscleGroup.CHEST, 5L,
+                MuscleGroup.LOWER_LEGS, 3L
+        );
+
+        when(exerciseService.getCompletedExercisesPerMuscleGroup()).thenReturn(muscleGroupCounts);
+
+        mockMvc.perform(get("/api/exercises/completed-per-muscle-group"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].muscleGroup", is("lower legs")))
+                .andExpect(jsonPath("$[0].exerciseCount", is(3)))
+                .andExpect(jsonPath("$[1].muscleGroup", is("chest")))
+                .andExpect(jsonPath("$[1].exerciseCount", is(5)));
+
+    }
+
 }

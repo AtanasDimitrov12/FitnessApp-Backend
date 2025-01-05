@@ -1,6 +1,7 @@
 package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.domain.Exercise;
+import fitness_app_be.fitness_app.domain.MuscleGroup;
 import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.exception_handling.ExerciseNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.ExerciseRepository;
@@ -32,7 +33,7 @@ class ExerciseServiceImplTest {
     @BeforeEach
     void setUp() {
         List<Workout> workouts = new ArrayList<>();
-        exercise = new Exercise(1L, "Push-up", 3, 15, "Back");
+        exercise = new Exercise(1L, "Push-up", 3, 15, MuscleGroup.BACK);
     }
 
     @Test

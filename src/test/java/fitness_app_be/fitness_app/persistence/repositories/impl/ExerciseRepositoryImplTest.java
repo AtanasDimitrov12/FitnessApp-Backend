@@ -1,6 +1,7 @@
 package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.Exercise;
+import fitness_app_be.fitness_app.domain.MuscleGroup;
 import fitness_app_be.fitness_app.persistence.entity.ExerciseEntity;
 import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaExerciseRepository;
 import fitness_app_be.fitness_app.persistence.mapper.ExerciseEntityMapper;
@@ -34,8 +35,8 @@ class ExerciseRepositoryImplTest {
 
     @BeforeEach
     void setUp() {
-        exercise = new Exercise(1L, "Push Up", 3, 12, "Back");
-        exerciseEntity = new ExerciseEntity(1L, "Push Up", 3, 12, "Back", List.of());
+        exercise = new Exercise(1L, "Push Up", 3, 12, MuscleGroup.BACK);
+        exerciseEntity = new ExerciseEntity(1L, "Push Up", 3, 12, MuscleGroup.BACK, List.of());
     }
 
     @Test
