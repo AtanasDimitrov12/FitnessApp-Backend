@@ -62,13 +62,20 @@ public class ExerciseController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/completed-per-muscle-group")
-    public ResponseEntity<Map<String, Long>> getCompletedExercisesPerMuscleGroup() {
+    public ResponseEntity<List<Map<String, Object>>> getCompletedExercisesPerMuscleGroup() {
         Map<MuscleGroup, Long> muscleGroupCounts = exerciseService.getCompletedExercisesPerMuscleGroup();
 
-        // Convert enum to display names for better readability in the API response
-        Map<String, Long> response = new HashMap<>();
-        muscleGroupCounts.forEach((key, value) -> response.put(key.getDisplayName(), value));
+        // Transform data into a list of maps for easier consumption by the frontend
+        List<Map<String, Object>> response = muscleGroupCounts.entrySet().stream()
+                .map(entry -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("muscleGroup", entry.getKey().getDisplayName());
+                    map.put("exerciseCount", entry.getValue());
+                    return map;
+                })
+                .toList();
 
         return ResponseEntity.ok(response);
     }
+
 }
