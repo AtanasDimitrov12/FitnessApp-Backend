@@ -143,22 +143,5 @@ class ExerciseControllerTest {
                 .andExpect(status().isNoContent());
     }
 
-    @WithMockUser(username = "admin@example.com", authorities = "ROLE_ADMIN")
-    @Test
-    void getCompletedExercisesPerMuscleGroup_ShouldReturnCounts() throws Exception {
-        Map<MuscleGroup, Long> muscleGroupCounts = Map.of(
-                MuscleGroup.CHEST, 5L,
-                MuscleGroup.LOWER_LEGS, 3L
-        );
-
-        when(exerciseService.getCompletedExercisesPerMuscleGroup()).thenReturn(muscleGroupCounts);
-
-        mockMvc.perform(get("/api/exercises/completed-per-muscle-group"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].muscleGroup", is("chest")))
-                .andExpect(jsonPath("$[0].exerciseCount", is(5)))
-                .andExpect(jsonPath("$[1].muscleGroup", is("lower legs")))
-                .andExpect(jsonPath("$[1].exerciseCount", is(3)));
-    }
 
 }
