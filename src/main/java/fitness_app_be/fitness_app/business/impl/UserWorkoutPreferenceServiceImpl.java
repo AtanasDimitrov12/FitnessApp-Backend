@@ -51,25 +51,39 @@ public class UserWorkoutPreferenceServiceImpl implements UserWorkoutPreferenceSe
     @Override
     @Transactional
     public void deleteUserWorkoutPreference(Long id) {
+        // Check if the preference exists
+        userWorkoutPreferenceRepository.getWorkoutPreferenceById(id)
+                .orElseThrow(() -> new UserWorkoutPreferenceNotFoundException("Preference with ID " + id + " not found"));
 
+        // Perform the delete
         userWorkoutPreferenceRepository.delete(id);
     }
+
 
     @Override
     @Transactional
     public UserWorkoutPreference updateUserWorkoutPreference(UserWorkoutPreference userWorkoutPreference) {
+        // Check if the UserWorkoutPreference exists
+        userWorkoutPreferenceRepository.getWorkoutPreferenceById(userWorkoutPreference.getId())
+                .orElseThrow(() -> new UserWorkoutPreferenceNotFoundException("Preference with ID " + userWorkoutPreference.getId() + " not found"));
 
-
+        // Fetch the user
         User user = userService.getUserById(userWorkoutPreference.getUserid());
 
+        // Calculate the new workout plan
         WorkoutPlan updatedPlan = workoutPlanGenerator.calculateWorkoutPlan(userWorkoutPreference);
         updatedPlan.setUserId(user.getId());
+
+        // Save the updated workout plan
         WorkoutPlan savedUpdatedPlan = workoutPlanService.createWorkoutPlan(updatedPlan);
 
+        // Update the user's workout plan
         user.setWorkoutPlan(savedUpdatedPlan);
         userService.updateUser(user);
 
+        // Update the UserWorkoutPreference
         userWorkoutPreference.setUserid(user.getId());
         return userWorkoutPreferenceRepository.update(userWorkoutPreference);
     }
+
 }

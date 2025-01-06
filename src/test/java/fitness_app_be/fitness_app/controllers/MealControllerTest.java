@@ -47,6 +47,9 @@ class MealControllerTest {
     private MealMapper mealMapper;
 
     @MockBean
+    private AuthenticationEntryPoint authenticationEntryPoint;
+
+    @MockBean
     private AccessTokenDecoder accessTokenDecoder;
 
 
