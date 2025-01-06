@@ -51,7 +51,7 @@ public class UserDietPreferenceServiceImpl implements UserDietPreferenceService 
             userService.updateUser(user);
         }
 
-        userDietPreference.setUserId(user.getId()); /
+        userDietPreference.setUserId(user.getId());
         return userDietPreferenceRepository.create(userDietPreference);
     }
 
