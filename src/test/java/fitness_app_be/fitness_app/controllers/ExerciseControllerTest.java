@@ -155,11 +155,10 @@ class ExerciseControllerTest {
 
         mockMvc.perform(get("/api/exercises/completed-per-muscle-group"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].muscleGroup", is("lower legs")))
-                .andExpect(jsonPath("$[0].exerciseCount", is(3)))
-                .andExpect(jsonPath("$[1].muscleGroup", is("chest")))
-                .andExpect(jsonPath("$[1].exerciseCount", is(5)));
-
+                .andExpect(jsonPath("$[0].muscleGroup", is("chest")))
+                .andExpect(jsonPath("$[0].exerciseCount", is(5)))
+                .andExpect(jsonPath("$[1].muscleGroup", is("lower legs")))
+                .andExpect(jsonPath("$[1].exerciseCount", is(3)));
     }
 
 }
