@@ -1,6 +1,5 @@
 package fitness_app_be.fitness_app.persistence.entity;
 
-import fitness_app_be.fitness_app.domain.FitnessGoal;
 import fitness_app_be.fitness_app.domain.MuscleGroup;
 import jakarta.persistence.*;
 import lombok.*;

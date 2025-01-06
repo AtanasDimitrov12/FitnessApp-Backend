@@ -33,9 +33,6 @@ class WorkoutPlanServiceImplTest {
     @BeforeEach
     void setUp() {
         List<Workout> workouts = new ArrayList<>();
-        List<User> users = new ArrayList<>();
-        List<String> goal = new ArrayList<>();
-        List<String> style = new ArrayList<>();
         workoutPlan = new WorkoutPlan(1L,1L, workouts);
 
     }

@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -50,8 +49,6 @@ class MealControllerTest {
     @MockBean
     private AccessTokenDecoder accessTokenDecoder;
 
-    @MockBean
-    private AuthenticationEntryPoint authenticationEntryPoint;
 
     @Autowired
     private ObjectMapper objectMapper;

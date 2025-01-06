@@ -36,27 +36,22 @@ public class UserDietPreferenceServiceImpl implements UserDietPreferenceService 
     @Override
     @Transactional
     public UserDietPreference createUserDietPreference(UserDietPreference userDietPreference) {
-        // Validate user existence
-        System.out.println("Create preference");
+
         User user = userService.getUserById(userDietPreference.getUserId());
 
-        // Calculate the diet based on user preferences
         Diet calculatedDiet = dietPlanService.calculateDiet(userDietPreference);
 
-        // Create and persist the new diet
         Diet newDiet = new Diet();
         newDiet.setUserId(userDietPreference.getUserId());
         newDiet.setMeals(new ArrayList<>(calculatedDiet.getMeals()));
-        Diet createdDiet = dietService.createDiet(newDiet); // Persist the diet
+        Diet createdDiet = dietService.createDiet(newDiet);
 
-        // Update the user with the new diet
         if (user.getDiet() == null || !user.getDiet().equals(createdDiet)) {
             user.setDiet(createdDiet);
-            userService.updateUser(user); // Explicitly update the user in the database
+            userService.updateUser(user);
         }
 
-        // Persist UserDietPreference with the associated user and diet
-        userDietPreference.setUserId(user.getId()); // Associate the diet
+        userDietPreference.setUserId(user.getId()); /
         return userDietPreferenceRepository.create(userDietPreference);
     }
 
@@ -65,25 +60,15 @@ public class UserDietPreferenceServiceImpl implements UserDietPreferenceService 
     @Override
     @Transactional
     public void deleteUserDietPreference(Long id) {
-        // Validate existence before deleting
-        UserDietPreference userDietPreference = userDietPreferenceRepository.getDietPreferenceById(id)
-                .orElseThrow(() -> new UserDietPreferenceNotFoundException(id));
-
-        // Delete the UserDietPreference
         userDietPreferenceRepository.delete(id);
-
-        // Optionally: handle cascading diet cleanup if required
-        // dietService.deleteDiet(userDietPreference.getDiet().getId());
     }
 
     @Override
     @Transactional
     public UserDietPreference updateUserDietPreference(UserDietPreference userDietPreference) {
-        // Recalculate the diet based on updated preferences
-        System.out.println("Update preference");
+
         Diet recalculatedDiet = dietPlanService.calculateDiet(userDietPreference);
 
-        // Fetch and update the existing diet
         Diet existingDiet = dietService.getDietByUserId(userDietPreference.getUserId());
         for(Meal meal : existingDiet.getMeals()) {
             dietService.removeMealFromDiet(existingDiet.getId(), meal.getId());
@@ -92,11 +77,9 @@ public class UserDietPreferenceServiceImpl implements UserDietPreferenceService 
         existingDiet.setMeals(recalculatedDiet.getMeals());
         dietService.updateDiet(existingDiet);
 
-        // Attach the updated diet to the user
         User user = userService.getUserById(userDietPreference.getUserId());
         dietService.updateDiet(existingDiet);
 
-        // Persist the updated UserDietPreference
         userDietPreference.setUserId(user.getId());
         return userDietPreferenceRepository.update(userDietPreference);
     }

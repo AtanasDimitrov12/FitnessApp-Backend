@@ -61,7 +61,6 @@ public class WorkoutServiceDBInit {
             try {
                 workoutService.createWorkout(workout, defaultImageFile);
             } catch (IOException e) {
-                System.err.println("Failed to create workout: " + workout.getName());
                 e.printStackTrace();
             }
         }
@@ -85,9 +84,7 @@ public class WorkoutServiceDBInit {
             }
 
             // Print a message every 10 seconds
-            if (elapsedSeconds % 10 == 0) {
-                System.out.println("Waiting for exercises to be available in the database...");
-            }
+
 
             Thread.sleep(1000); // Wait 1 second before checking again
             elapsedSeconds++;

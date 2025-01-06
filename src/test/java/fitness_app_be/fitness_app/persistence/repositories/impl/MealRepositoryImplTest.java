@@ -36,7 +36,6 @@ class MealRepositoryImplTest {
 
     @BeforeEach
     void setUp() {
-        List<Diet> diets = new ArrayList<>();
         meal = new Meal(1L, "Chicken Salad", 300, 25, 10, 15);
 
 

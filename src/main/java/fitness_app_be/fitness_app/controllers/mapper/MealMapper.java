@@ -5,7 +5,6 @@ import fitness_app_be.fitness_app.domain.Meal;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 
 @Component
 @AllArgsConstructor

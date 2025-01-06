@@ -1,4 +1,4 @@
-package fitness_app_be.fitness_app.controllers.dto.webSockets;
+package fitness_app_be.fitness_app.controllers.dto.websockets;
 
 import lombok.Data;
 

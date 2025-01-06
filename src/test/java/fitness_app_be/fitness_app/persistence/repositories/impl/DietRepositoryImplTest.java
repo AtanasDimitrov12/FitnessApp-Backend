@@ -43,7 +43,6 @@ class DietRepositoryImplTest {
     @BeforeEach
     void setUp() {
         List<Meal> meals = new ArrayList<>();
-        User user = new User();
 
         diet = new Diet(1L, 1L, meals);
 
@@ -106,12 +105,12 @@ class DietRepositoryImplTest {
         Diet inputDiet = new Diet(1L, 1L, meals); // Diet to update
 
         List<MealEntity> mealEntities = List.of(new MealEntity(1L, "Meal 1", 200, 10, 20, 15.0, new ArrayList<>()));
-        DietEntity dietEntity = new DietEntity(1L, 1L, new ArrayList<>(mealEntities)); // Mapped DietEntity
+        DietEntity newdietEntity = new DietEntity(1L, 1L, new ArrayList<>(mealEntities)); // Mapped DietEntity
 
-        when(dietEntityMapperImpl.toEntity(inputDiet)).thenReturn(dietEntity);
+        when(dietEntityMapperImpl.toEntity(inputDiet)).thenReturn(newdietEntity);
         when(jpaMealRepository.findAllById(anyList())).thenReturn(mealEntities); // Mock meal fetching
-        when(jpaDietRepository.save(dietEntity)).thenReturn(dietEntity);
-        when(dietEntityMapperImpl.toDomain(dietEntity)).thenReturn(inputDiet); // Map back to domain
+        when(jpaDietRepository.save(newdietEntity)).thenReturn(newdietEntity);
+        when(dietEntityMapperImpl.toDomain(newdietEntity)).thenReturn(inputDiet); // Map back to domain
 
         // Act
         Diet updatedDiet = dietRepository.update(inputDiet);
@@ -120,8 +119,8 @@ class DietRepositoryImplTest {
         assertNotNull(updatedDiet);
         assertEquals(inputDiet, updatedDiet);
         verify(jpaMealRepository, times(1)).findAllById(anyList());
-        verify(jpaDietRepository, times(1)).save(dietEntity);
-        verify(dietEntityMapperImpl, times(1)).toDomain(dietEntity);
+        verify(jpaDietRepository, times(1)).save(newdietEntity);
+        verify(dietEntityMapperImpl, times(1)).toDomain(newdietEntity);
         verify(dietEntityMapperImpl, times(1)).toEntity(inputDiet);
     }
 

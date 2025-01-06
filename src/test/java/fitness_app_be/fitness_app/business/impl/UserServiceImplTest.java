@@ -27,12 +27,6 @@ class UserServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private UserDietPreferenceService userDietPreferenceService;
-
-    @Mock
-    private UserWorkoutPreferenceService userWorkoutPreferenceService;
-
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -45,9 +39,6 @@ class UserServiceImplTest {
     void setUp() {
         Diet diet = new Diet();
         List<Workout> workouts = new ArrayList<>();
-        List<User> users = new ArrayList<>();
-        List<String> goal = new ArrayList<>();
-        List<String> style = new ArrayList<>();
         WorkoutPlan workoutPlan = new WorkoutPlan(1L,1L, workouts);
         List<ProgressNote> notes = new ArrayList<>();
         UserDietPreference userDietPreference = new UserDietPreference(1L, 1L, 2500, 3);

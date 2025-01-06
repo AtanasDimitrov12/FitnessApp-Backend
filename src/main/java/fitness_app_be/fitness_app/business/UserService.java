@@ -19,6 +19,6 @@ public interface UserService {
     List<User> searchUsersByPartialUsername(String partialUsername);
     User updateUser(User user);
     User uploadUserProfilePicture(Long userId, MultipartFile imageFile) throws CustomFileUploadException, UserProfileUpdateException;
-    User attachedDietToUser(Long UserId, Diet diet);
+    User attachedDietToUser(Long userId, Diet diet);
     List<Long> getUsersWithWorkout(Long workoutId);
 }

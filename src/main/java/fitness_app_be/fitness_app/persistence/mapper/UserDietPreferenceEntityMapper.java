@@ -2,7 +2,6 @@ package fitness_app_be.fitness_app.persistence.mapper;
 
 import fitness_app_be.fitness_app.domain.UserDietPreference;
 import fitness_app_be.fitness_app.persistence.entity.UserDietPreferenceEntity;
-import fitness_app_be.fitness_app.persistence.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

@@ -137,8 +137,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User attachedDietToUser(Long UserId, Diet diet){
-        User user = getUserById(UserId);
+    public User attachedDietToUser(Long userId, Diet diet){
+        User user = getUserById(userId);
         user.setDiet(diet);
         userRepository.update(user);
         return user;

@@ -1,9 +1,7 @@
 package fitness_app_be.fitness_app.controllers.mapper;
 
 import fitness_app_be.fitness_app.controllers.dto.DietDTO;
-import fitness_app_be.fitness_app.controllers.dto.MealDTO;
 import fitness_app_be.fitness_app.domain.Diet;
-import fitness_app_be.fitness_app.domain.Meal;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +25,7 @@ public class DietMapper {
                 .meals(dietDTO.getMeals() == null ? new ArrayList<>() :
                         dietDTO.getMeals().stream()
                                 .map(mealMapper::toDomain)
-                                .collect(Collectors.toList()))
+                                .toList())
                 .build();
     }
 
@@ -42,7 +40,7 @@ public class DietMapper {
                 .meals(diet.getMeals() == null ? new ArrayList<>() :
                         diet.getMeals().stream()
                                 .map(mealMapper::domainToDto)
-                                .collect(Collectors.toList()))
+                                .toList())
                 .build();
     }
 }

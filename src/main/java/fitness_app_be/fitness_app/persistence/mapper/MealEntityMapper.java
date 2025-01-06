@@ -24,21 +24,7 @@ public class MealEntityMapper {
         );
     }
 
-    public Meal toDomainWithoutDiets(MealEntity mealEntity) {
-        if (mealEntity == null) {
-            return null;
-        }
 
-        // Avoid returning diets and keep the domain object simple
-        return new Meal(
-                mealEntity.getId(),
-                mealEntity.getName(),
-                mealEntity.getCalories(),
-                mealEntity.getProtein(),
-                mealEntity.getCarbs(),
-                mealEntity.getCookingTime()
-        );
-    }
 
     public MealEntity toEntity(Meal meal) {
         if (meal == null) {

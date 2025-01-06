@@ -33,7 +33,7 @@ public class WorkoutMapper {
                 workoutDTO.getExercises() != null
                         ? workoutDTO.getExercises().stream()
                         .map(exerciseMapper::toDomain)
-                        .collect(Collectors.toList())
+                        .toList()
                         : Collections.emptyList(),
                 workoutDTO.getFitnessGoals() != null
                         ? List.copyOf(workoutDTO.getFitnessGoals())
@@ -60,7 +60,7 @@ public class WorkoutMapper {
                 workout.getExercises() != null
                         ? workout.getExercises().stream()
                         .map(exerciseMapper::toDto)
-                        .collect(Collectors.toList())
+                        .toList()
                         : Collections.emptyList(),
                 workout.getFitnessGoals() != null
                         ? List.copyOf(workout.getFitnessGoals())

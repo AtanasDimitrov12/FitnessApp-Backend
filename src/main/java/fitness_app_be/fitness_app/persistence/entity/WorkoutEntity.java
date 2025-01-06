@@ -3,7 +3,6 @@ package fitness_app_be.fitness_app.persistence.entity;
 import fitness_app_be.fitness_app.domain.FitnessGoal;
 import fitness_app_be.fitness_app.domain.FitnessLevel;
 import fitness_app_be.fitness_app.domain.TrainingStyle;
-import fitness_app_be.fitness_app.persistence.entity.WorkoutStatusEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

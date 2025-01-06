@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.IsoFields;
 import java.time.temporal.WeekFields;
 import java.util.List;
@@ -35,20 +34,17 @@ public class WorkoutStatusServiceImpl implements WorkoutStatusService {
     @Transactional
     @Override
     public Notification markWorkoutAsDone(Long workoutPlanId, Long workoutId, Long userId) {
-        // Find WorkoutStatus
+
         WorkoutStatus status = workoutStatusRepository
                 .findByWorkoutPlanIdAndWorkoutId(workoutPlanId, workoutId)
                 .orElseThrow(() -> new RuntimeException("Workout not found in the plan"));
 
-        // Update isDone status
         status.setIsDone(true);
         workoutStatusRepository.update(status);
 
-        // Calculate remaining workouts
         int remainingWorkouts = getRemainingWorkoutsForPlan(workoutPlanId);
 
 
-        // Save the notification to the database
         return notificationService.createNotification(userId, remainingWorkouts == 0
                 ? "Nice job! You finished all your workouts for the week!"
                 : "Nice job! Finish your workout. You have " + remainingWorkouts + " more to go.");
@@ -70,7 +66,6 @@ public class WorkoutStatusServiceImpl implements WorkoutStatusService {
         });
 
         workoutStatusRepository.saveAll(statuses);
-        System.out.println("All workout statuses reset for the new week: " + currentWeekNumber);
     }
 
     @Override

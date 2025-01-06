@@ -70,8 +70,6 @@ public class WorkoutController {
             @RequestPart(value = "image", required = false) MultipartFile image) {
 
         try {
-            // Parse the JSON string into a WorkoutDTO object
-            ObjectMapper objectMapper = new ObjectMapper();
             WorkoutDTO workoutDTO = objectMapper.readValue(workoutDTOJson, WorkoutDTO.class);
 
             // Convert image to File if it's provided

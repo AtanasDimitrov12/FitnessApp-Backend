@@ -16,7 +16,6 @@ public class ExerciseDataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println("Start populate exercise data");
         exerciseServiceDBInit.populateExercises();
     }
 }

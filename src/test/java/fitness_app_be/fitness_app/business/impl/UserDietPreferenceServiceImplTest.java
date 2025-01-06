@@ -2,7 +2,6 @@ package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.business.DietPlanService;
 import fitness_app_be.fitness_app.business.DietService;
-import fitness_app_be.fitness_app.business.UserDietPreferenceService;
 import fitness_app_be.fitness_app.business.UserService;
 import fitness_app_be.fitness_app.domain.Diet;
 import fitness_app_be.fitness_app.domain.Role;

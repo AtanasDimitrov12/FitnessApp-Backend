@@ -1,8 +1,6 @@
 package fitness_app_be.fitness_app.controllers.mapper;
 
-import fitness_app_be.fitness_app.controllers.dto.NotificationDTO;
 import fitness_app_be.fitness_app.controllers.dto.WorkoutStatusDTO;
-import fitness_app_be.fitness_app.domain.Notification;
 import fitness_app_be.fitness_app.domain.WorkoutStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;

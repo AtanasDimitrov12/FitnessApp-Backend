@@ -25,7 +25,7 @@ public class DietEntityMapper {
                 .meals(dietEntity.getMeals() == null
                         ? new ArrayList<>()
                         : new ArrayList<>(dietEntity.getMeals().stream()
-                        .map(mealEntityMapper::toDomainWithoutDiets)
+                        .map(mealEntityMapper::toDomain)
                         .toList())) // Ensure the result is mutable
                 .build();
     }
