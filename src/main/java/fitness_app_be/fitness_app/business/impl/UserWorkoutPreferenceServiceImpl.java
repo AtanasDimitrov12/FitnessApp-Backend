@@ -64,7 +64,7 @@ public class UserWorkoutPreferenceServiceImpl implements UserWorkoutPreferenceSe
     @Override
     @Transactional
     public UserWorkoutPreference updateUserWorkoutPreference(UserWorkoutPreference userWorkoutPreference) {
-        // Check if the UserWorkoutPreference exists
+        // Check if the UserWorkoutPreference exists and retrieve it
         UserWorkoutPreference existingPreference = userWorkoutPreferenceRepository.getWorkoutPreferenceById(userWorkoutPreference.getId())
                 .orElseThrow(() -> new UserWorkoutPreferenceNotFoundException("Preference with ID " + userWorkoutPreference.getId() + " not found"));
 
@@ -83,11 +83,10 @@ public class UserWorkoutPreferenceServiceImpl implements UserWorkoutPreferenceSe
         userService.updateUser(user);
 
         // Update the UserWorkoutPreference
-        userWorkoutPreference.setUserid(user.getId());
+        existingPreference.setUserid(user.getId());
 
         // Optionally log or perform additional operations with `existingPreference` if needed
-        return userWorkoutPreferenceRepository.update(userWorkoutPreference);
+        return userWorkoutPreferenceRepository.update(existingPreference);
     }
-
 
 }

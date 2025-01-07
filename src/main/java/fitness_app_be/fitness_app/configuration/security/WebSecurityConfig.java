@@ -34,21 +34,22 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                                            AuthenticationEntryPoint authenticationEntryPoint,
                                            AuthenticationRequestFilter authenticationRequestFilter) throws Exception {
         httpSecurity
-                .csrf(csrf -> csrf.disable()) // Safe to disable for stateless APIs using JWT
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Use the CorsConfigurationSource bean
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(csrf -> csrf.disable()) // CSRF is disabled because this is a stateless API using JWT for authentication.
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Apply CORS configuration.
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless session management for APIs.
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/user/**").hasRole("USER")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/ws/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/auth/**").permitAll() // Authentication endpoints are publicly accessible.
+                        .requestMatchers("/user/**").hasRole("USER") // User endpoints require USER role.
+                        .requestMatchers("/admin/**").hasRole("ADMIN") // Admin endpoints require ADMIN role.
+                        .requestMatchers("/ws/**").permitAll() // WebSocket endpoints are publicly accessible.
+                        .anyRequest().authenticated() // All other requests require authentication.
                 )
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint))
-                .addFilterBefore(authenticationRequestFilter, UsernamePasswordAuthenticationFilter.class);
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint)) // Handle authentication exceptions.
+                .addFilterBefore(authenticationRequestFilter, UsernamePasswordAuthenticationFilter.class); // Add custom authentication filter.
 
         return httpSecurity.build();
     }
+
 
     @Bean
     public RestTemplate restTemplate() {

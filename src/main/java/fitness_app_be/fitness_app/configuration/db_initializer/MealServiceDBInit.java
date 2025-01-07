@@ -5,23 +5,28 @@ import fitness_app_be.fitness_app.configuration.db_initializer.dto.ApiMeal;
 import fitness_app_be.fitness_app.configuration.db_initializer.dto.ApiResponse;
 import fitness_app_be.fitness_app.domain.Meal;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class MealServiceDBInit {
 
     private final MealService mealService;
     private final RestTemplate restTemplate;
+    private final SecureRandom secureRandom = new SecureRandom(); // SecureRandom instance for tag selection
+
 
     public void populateMeals() {
         long mealCount = mealService.getAllMeals().stream().count();
         if (mealCount >= 50) {
+            log.info("Meals already populated. Skipping initialization.");
             return;
         }
 
@@ -32,22 +37,31 @@ public class MealServiceDBInit {
 
             if (response != null && response.getMeals() != null) {
                 for (ApiMeal apiMeal : response.getMeals()) {
-                    Meal meal = new Meal();
-                    meal.setName(apiMeal.getStrMeal());
-                    meal.setCookingTime(15 + (Math.random() * 5)); // Random 15-20 mins
+                    try {
+                        Meal meal = new Meal();
+                        meal.setName(apiMeal.getStrMeal());
+                        meal.setCookingTime(15 + secureRandom.nextInt(6));
 
-                    // Randomly set calories, protein, and carbs
-                    meal.setCalories(ThreadLocalRandom.current().nextInt(200, 800)); // 200-800 calories
-                    meal.setProtein(ThreadLocalRandom.current().nextInt(10, 50));    // 10-50 grams of protein
-                    meal.setCarbs(ThreadLocalRandom.current().nextInt(20, 100));    // 20-100 grams of carbs
 
-                    meals.add(meal);
+                        // Randomly set calories, protein, and carbs
+                        meal.setCalories(secureRandom.nextInt(601) + 200); // 200-800 calories
+                        meal.setProtein(secureRandom.nextInt(41) + 10);    // 10-50 grams of protein
+                        meal.setCarbs(secureRandom.nextInt(81) + 20);      // 20-100 grams of carbs
+
+                        meals.add(meal);
+                    } catch (Exception e) {
+                        log.error("Error processing meal: {}. Error: {}", apiMeal.getStrMeal(), e.getMessage());
+                    }
                 }
             }
         }
 
-        for (Meal newMeal : meals) {
-            mealService.createMeal(newMeal);
-        }
+        meals.forEach(meal -> {
+            try {
+                mealService.createMeal(meal);
+            } catch (Exception e) {
+                log.error("Error saving meal: {}. Error: {}", meal.getName(), e.getMessage());
+            }
+        });
     }
 }

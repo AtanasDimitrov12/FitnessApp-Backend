@@ -6,6 +6,7 @@ import fitness_app_be.fitness_app.domain.Notification;
 import fitness_app_be.fitness_app.domain.WorkoutStatus;
 import fitness_app_be.fitness_app.persistence.repositories.WorkoutStatusRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -24,22 +25,19 @@ public class WorkoutStatusServiceImpl implements WorkoutStatusService {
     private final WorkoutStatusRepository workoutStatusRepository;
     private final NotificationService notificationService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final ApplicationContext applicationContext;
 
     @Override
     public WorkoutStatus findByWorkoutPlanIdAndWorkoutId(Long workoutPlanId, Long workoutId) {
         return workoutStatusRepository.findByWorkoutPlanIdAndWorkoutId(workoutPlanId, workoutId)
-                .orElseThrow(() -> new RuntimeException("Workout status not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Workout status not found for plan ID " + workoutPlanId + " and workout ID " + workoutId));
     }
 
     @Transactional
     @Override
     public Notification markWorkoutAsDone(Long workoutPlanId, Long workoutId, Long userId) {
         // Retrieve workout status
-        WorkoutStatus status = workoutStatusRepository
-                .findByWorkoutPlanIdAndWorkoutId(workoutPlanId, workoutId)
-                .orElseThrow(() -> new RuntimeException("Workout not found in the plan"));
-
-        // Mark as done and update the repository
+        WorkoutStatus status = findByWorkoutPlanIdAndWorkoutId(workoutPlanId, workoutId);
         status.setIsDone(true);
         workoutStatusRepository.update(status);
 
@@ -58,35 +56,32 @@ public class WorkoutStatusServiceImpl implements WorkoutStatusService {
                 .count();
     }
 
+    @Override
+    public List<WorkoutStatus> getWorkoutStatusesForPlan(Long workoutPlanId) {
+        return workoutStatusRepository.findByWorkoutPlanId(workoutPlanId);
+    }
+
     @Transactional
     @Override
     public void resetWeeklyWorkouts(int currentWeekNumber) {
-        // Fetch all workout statuses and reset them
+        // Fetch and reset workout statuses
         List<WorkoutStatus> statuses = workoutStatusRepository.findAll();
         statuses.forEach(status -> {
             status.setIsDone(false);
             status.setWeekNumber(currentWeekNumber);
         });
-
-        // Save the updated statuses
         workoutStatusRepository.saveAll(statuses);
     }
 
     @Scheduled(cron = "0 0 0 * * MON") // Runs every Monday at 00:00
-    @Transactional
     @Override
     public void resetWeeklyWorkouts() {
-        // Determine the current week number
         int currentWeekNumber = LocalDate.now()
                 .get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
 
-        // Delegate to the parameterized reset method
-        resetWeeklyWorkouts(currentWeekNumber);
-    }
-
-    @Override
-    public List<WorkoutStatus> getWorkoutStatusesForPlan(Long workoutPlanId) {
-        return workoutStatusRepository.findByWorkoutPlanId(workoutPlanId);
+        // Delegate to transactional method via self
+        WorkoutStatusService proxy = applicationContext.getBean(WorkoutStatusService.class);
+        proxy.resetWeeklyWorkouts(currentWeekNumber);
     }
 
     @Override
