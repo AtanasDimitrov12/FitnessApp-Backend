@@ -4,7 +4,6 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.Uploader;
 import fitness_app_be.fitness_app.domain.Exercise;
 import fitness_app_be.fitness_app.domain.Workout;
-import fitness_app_be.fitness_app.domain.WorkoutPlan;
 import fitness_app_be.fitness_app.exception_handling.WorkoutNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.WorkoutRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +42,6 @@ class WorkoutServiceImplTest {
     @BeforeEach
     void setUp() throws IOException {
         List<Exercise> exercises = new ArrayList<>();
-        List<WorkoutPlan> plans = new ArrayList<>();
         workout = new Workout(1L, "Test Workout", "Description", "http://example.com/image.jpg", exercises, null, null, null);
 
         // Use lenient() to prevent unnecessary stubbing exception

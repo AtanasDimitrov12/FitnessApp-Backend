@@ -2,7 +2,6 @@ package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.Diet;
 import fitness_app_be.fitness_app.domain.Meal;
-import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.persistence.entity.DietEntity;
 import fitness_app_be.fitness_app.persistence.entity.MealEntity;
 import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaDietRepository;
@@ -138,7 +137,7 @@ class DietRepositoryImplTest {
     void getDietById_ShouldReturnDiet_WhenDietExists() {
         // Arrange
         List<MealEntity> mealEntities = List.of(new MealEntity(1L, "Meal 1", 200, 10, 20, 15.0, new ArrayList<>()));
-        DietEntity dietEntity = new DietEntity(1L, 1L, mealEntities);
+        dietEntity.setMeals(mealEntities);
         Diet expectedDiet = new Diet(1L, 1L, List.of(new Meal(1L, "Meal 1", 200, 10, 20, 15.0)));
 
         when(jpaDietRepository.findByIdWithMeals(1L)).thenReturn(Optional.of(dietEntity));

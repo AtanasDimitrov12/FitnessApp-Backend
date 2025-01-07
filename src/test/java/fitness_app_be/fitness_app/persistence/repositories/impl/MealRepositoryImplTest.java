@@ -1,6 +1,5 @@
 package fitness_app_be.fitness_app.persistence.repositories.impl;
 
-import fitness_app_be.fitness_app.domain.Diet;
 import fitness_app_be.fitness_app.domain.Meal;
 import fitness_app_be.fitness_app.persistence.entity.MealEntity;
 import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaMealRepository;
@@ -12,7 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

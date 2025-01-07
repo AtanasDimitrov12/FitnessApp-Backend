@@ -34,51 +34,55 @@ public class WorkoutStatusServiceImpl implements WorkoutStatusService {
     @Transactional
     @Override
     public Notification markWorkoutAsDone(Long workoutPlanId, Long workoutId, Long userId) {
-
+        // Retrieve workout status
         WorkoutStatus status = workoutStatusRepository
                 .findByWorkoutPlanIdAndWorkoutId(workoutPlanId, workoutId)
                 .orElseThrow(() -> new RuntimeException("Workout not found in the plan"));
 
+        // Mark as done and update the repository
         status.setIsDone(true);
         workoutStatusRepository.update(status);
 
+        // Calculate remaining workouts and send a notification
         int remainingWorkouts = getRemainingWorkoutsForPlan(workoutPlanId);
-
-
-        return notificationService.createNotification(userId, remainingWorkouts == 0
+        String message = remainingWorkouts == 0
                 ? "Nice job! You finished all your workouts for the week!"
-                : "Nice job! Finish your workout. You have " + remainingWorkouts + " more to go.");
+                : "Nice job! Finish your workout. You have " + remainingWorkouts + " more to go.";
+
+        return notificationService.createNotification(userId, message);
     }
 
     private int getRemainingWorkoutsForPlan(Long workoutPlanId) {
-        List<WorkoutStatus> statuses = workoutStatusRepository.findByWorkoutPlanId(workoutPlanId);
-        return (int) statuses.stream().filter(status -> !status.getIsDone()).count();
+        return (int) workoutStatusRepository.findByWorkoutPlanId(workoutPlanId).stream()
+                .filter(status -> !status.getIsDone())
+                .count();
     }
 
-    @Override
     @Transactional
+    @Override
     public void resetWeeklyWorkouts(int currentWeekNumber) {
+        // Fetch all workout statuses and reset them
         List<WorkoutStatus> statuses = workoutStatusRepository.findAll();
-
         statuses.forEach(status -> {
             status.setIsDone(false);
             status.setWeekNumber(currentWeekNumber);
         });
 
+        // Save the updated statuses
         workoutStatusRepository.saveAll(statuses);
     }
 
-    @Override
     @Scheduled(cron = "0 0 0 * * MON") // Runs every Monday at 00:00
     @Transactional
+    @Override
     public void resetWeeklyWorkouts() {
+        // Determine the current week number
         int currentWeekNumber = LocalDate.now()
                 .get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
 
+        // Delegate to the parameterized reset method
         resetWeeklyWorkouts(currentWeekNumber);
     }
-
-
 
     @Override
     public List<WorkoutStatus> getWorkoutStatusesForPlan(Long workoutPlanId) {
@@ -86,29 +90,28 @@ public class WorkoutStatusServiceImpl implements WorkoutStatusService {
     }
 
     @Override
-    public void save(WorkoutStatus workoutStatus){
+    public void save(WorkoutStatus workoutStatus) {
         workoutStatusRepository.create(workoutStatus);
     }
 
     @Override
     public Long getCompletedWorkouts(Long userId, String rangeType) {
         int currentWeek = LocalDate.now().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
-        int startWeek;
+        int startWeek = calculateStartWeek(currentWeek, rangeType);
 
+        return workoutStatusRepository.countCompletedWorkoutsByWeekRange(userId, startWeek, currentWeek);
+    }
+
+    private int calculateStartWeek(int currentWeek, String rangeType) {
         switch (rangeType.toLowerCase()) {
             case "month":
-                startWeek = currentWeek - (LocalDate.now().getDayOfMonth() / 7); // Approximate start week of the month
-                break;
+                return currentWeek - (LocalDate.now().getDayOfMonth() / 7); // Approximate start week of the month
             case "quarter":
-                startWeek = currentWeek - (currentWeek - 1) % 13; // Start week of the current quarter
-                break;
+                return currentWeek - (currentWeek - 1) % 13; // Start week of the current quarter
             case "year":
-                startWeek = 1; // Start week of the year
-                break;
+                return 1; // Start week of the year
             default:
                 throw new IllegalArgumentException("Invalid range type. Must be 'month', 'quarter', or 'year'.");
         }
-
-        return workoutStatusRepository.countCompletedWorkoutsByWeekRange(userId, startWeek, currentWeek);
     }
 }

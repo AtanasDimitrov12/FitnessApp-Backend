@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.UUID;
 
@@ -69,33 +70,41 @@ public class WorkoutController {
             @RequestPart("workout") String workoutDTOJson,
             @RequestPart(value = "image", required = false) MultipartFile image) {
 
+        File file = null; // Initialize the file outside try block for cleanup in finally
         try {
+            // Deserialize the workoutDTOJson to WorkoutDTO
             WorkoutDTO workoutDTO = objectMapper.readValue(workoutDTOJson, WorkoutDTO.class);
 
-            // Convert image to File if it's provided
-            File file = null;
+            // Convert the MultipartFile to a File, if image is provided
             if (image != null) {
                 file = convertMultipartFileToFile(image);
             }
 
+            // Map DTO to domain and update the workout
             Workout workout = workoutMapper.toDomain(workoutDTO);
             Workout updatedWorkout = workoutService.updateWorkout(workout, file);
 
-            // Clean up temporary file
-            if (file != null && file.exists()) {
-                file.delete();
-            }
-
+            // Send a notification message to the topic
             String message = "Workout \"" + updatedWorkout.getName() + "\" has been updated by the admin.";
             messagingTemplate.convertAndSend("/topic/workouts/" + updatedWorkout.getId(), message);
 
-
+            // Map the updated domain object back to DTO
             return workoutMapper.domainToDto(updatedWorkout);
+
         } catch (IOException e) {
             throw new CreationException("Error while saving workout image", e);
+        } finally {
+            // Clean up temporary file
+            if (file != null && file.exists()) {
+                try {
+                    Files.delete(file.toPath());
+                } catch (IOException deleteException) {
+                    System.err.println("Failed to delete temporary file: " + file.getAbsolutePath());
+                    deleteException.printStackTrace();
+                }
+            }
         }
     }
-
 
 
     @PreAuthorize("hasRole('ADMIN')")

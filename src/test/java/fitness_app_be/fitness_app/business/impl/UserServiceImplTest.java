@@ -1,7 +1,5 @@
 package fitness_app_be.fitness_app.business.impl;
 
-import fitness_app_be.fitness_app.business.UserDietPreferenceService;
-import fitness_app_be.fitness_app.business.UserWorkoutPreferenceService;
 import fitness_app_be.fitness_app.domain.*;
 import fitness_app_be.fitness_app.exception_handling.UserNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.UserRepository;

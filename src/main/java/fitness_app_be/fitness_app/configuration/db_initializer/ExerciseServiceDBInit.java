@@ -7,7 +7,8 @@ import fitness_app_be.fitness_app.business.ExerciseService;
 import fitness_app_be.fitness_app.configuration.db_initializer.dto.ApiExercise;
 import fitness_app_be.fitness_app.domain.Exercise;
 import fitness_app_be.fitness_app.domain.MuscleGroup;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -16,18 +17,21 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ExerciseServiceDBInit {
 
-    private final ExerciseService exerciseService; // Your Exercise domain service
+    private final ExerciseService exerciseService;
+
+    @Value("${apiUrl}")
+    private String apiUrl;
+
+    @Value("${apiKey}")
+    private String apiKey;
 
     public void populateExercises() {
-
-        String apiUrl = "https://exercisedb.p.rapidapi.com/exercises?limit=10&offset=0"; // Base API URL
-        String apiKey = "6fd1c5fd02msh3d227efa76d3cd0p16f50ejsnd74c546bb74c"; // Replace with your API key
-
         // Create an HttpClient instance
         HttpClient client = HttpClient.newHttpClient();
 
@@ -43,43 +47,15 @@ public class ExerciseServiceDBInit {
             // Send the HTTP request and get the response
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-
             if (response.statusCode() == 200) {
                 List<ApiExercise> apiExercises = parseApiExercises(response.body());
 
-                if (apiExercises.isEmpty()) {
-                    return;
+                if (!apiExercises.isEmpty()) {
+                    List<Exercise> exercises = mapApiExercisesToDomain(apiExercises);
+                    saveExercises(exercises);
                 }
-
-                List<Exercise> exercises = new ArrayList<>();
-                for (ApiExercise apiExercise : apiExercises) {
-                    try {
-                        Exercise exercise = new Exercise();
-                        exercise.setName(apiExercise.getName());
-                        exercise.setSets(3); // Default value
-                        exercise.setReps(12); // Default value
-
-                        // Map target muscle group string to the MuscleGroup enum
-                        MuscleGroup muscleGroup = mapToMuscleGroup(apiExercise.getTarget());
-                        if (muscleGroup != null) {
-                            exercise.setMuscleGroup(muscleGroup);
-                        }
-
-                        exercises.add(exercise);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-
-
-                // Save exercises to the database
-                List<Exercise> savedExercises = new ArrayList<>();
-                exercises.forEach(exercise -> {
-                    Exercise savedExercise = exerciseService.createExercise(exercise); // Save the exercise
-                    savedExercises.add(savedExercise); // Add the saved exercise to the list
-                });
-
-
+            } else {
+                System.err.println("Failed to fetch exercises. HTTP Status: " + response.statusCode());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,9 +68,35 @@ public class ExerciseServiceDBInit {
         try {
             return objectMapper.readValue(responseBody, new TypeReference<List<ApiExercise>>() {});
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error parsing API exercises: " + e.getMessage());
             return new ArrayList<>();
         }
+    }
+
+    private List<Exercise> mapApiExercisesToDomain(List<ApiExercise> apiExercises) {
+        List<Exercise> exercises = new ArrayList<>();
+        for (ApiExercise apiExercise : apiExercises) {
+            try {
+                Exercise exercise = mapApiExerciseToDomain(apiExercise);
+                exercises.add(exercise);
+            } catch (Exception ex) {
+                System.err.println("Error mapping exercise: " + apiExercise.getName() + ". " + ex.getMessage());
+            }
+        }
+        return exercises;
+    }
+
+    private Exercise mapApiExerciseToDomain(ApiExercise apiExercise) {
+        Exercise exercise = new Exercise();
+        exercise.setName(apiExercise.getName());
+        exercise.setSets(3); // Default value
+        exercise.setReps(12); // Default value
+
+        // Map target muscle group string to the MuscleGroup enum
+        MuscleGroup muscleGroup = mapToMuscleGroup(apiExercise.getTarget());
+        exercise.setMuscleGroup(Optional.ofNullable(muscleGroup).orElse(MuscleGroup.UNKNOWN));
+
+        return exercise;
     }
 
     private MuscleGroup mapToMuscleGroup(String target) {
@@ -106,4 +108,13 @@ public class ExerciseServiceDBInit {
         return MuscleGroup.UNKNOWN; // Assign a default value if applicable
     }
 
+    private void saveExercises(List<Exercise> exercises) {
+        exercises.forEach(exercise -> {
+            try {
+                exerciseService.createExercise(exercise);
+            } catch (Exception e) {
+                System.err.println("Error saving exercise: " + exercise.getName() + ". " + e.getMessage());
+            }
+        });
+    }
 }

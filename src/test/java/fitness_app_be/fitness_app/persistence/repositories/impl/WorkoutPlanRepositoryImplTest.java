@@ -1,9 +1,7 @@
 package fitness_app_be.fitness_app.persistence.repositories.impl;
 
-import fitness_app_be.fitness_app.business.WorkoutPlanService;
 import fitness_app_be.fitness_app.domain.WorkoutPlan;
 import fitness_app_be.fitness_app.exception_handling.WorkoutPlanNotFoundException;
-import fitness_app_be.fitness_app.persistence.entity.WorkoutEntity;
 import fitness_app_be.fitness_app.persistence.entity.WorkoutPlanEntity;
 import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaWorkoutPlanRepository;
 import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaWorkoutRepository;

@@ -1,6 +1,5 @@
 package fitness_app_be.fitness_app.business.impl;
 
-import fitness_app_be.fitness_app.domain.User;
 import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.domain.WorkoutPlan;
 import fitness_app_be.fitness_app.exception_handling.WorkoutPlanNotFoundException;

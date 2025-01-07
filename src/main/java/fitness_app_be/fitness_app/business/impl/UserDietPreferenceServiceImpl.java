@@ -61,11 +61,13 @@ public class UserDietPreferenceServiceImpl implements UserDietPreferenceService 
     @Transactional
     public void deleteUserDietPreference(Long id) {
         // Check if the preference exists
-        userDietPreferenceRepository.getDietPreferenceById(id)
+        UserDietPreference existingPreference = userDietPreferenceRepository.getDietPreferenceById(id)
                 .orElseThrow(() -> new UserDietPreferenceNotFoundException("Preference with ID " + id + " not found"));
-        // Perform the delete
-        userDietPreferenceRepository.delete(id);
+
+        // Use the retrieved preference if needed (e.g., logging)
+        userDietPreferenceRepository.delete(existingPreference.getId());
     }
+
 
     @Override
     @Transactional

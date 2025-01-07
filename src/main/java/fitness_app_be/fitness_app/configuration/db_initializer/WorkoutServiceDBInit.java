@@ -74,7 +74,7 @@ public class WorkoutServiceDBInit {
      * @throws InterruptedException if the thread is interrupted while waiting.
      */
     private List<Exercise> waitForExercisesToBeAvailable(int minExerciseCount) throws InterruptedException {
-        int elapsedSeconds = 0;
+
         List<Exercise> exercises;
 
         do {
@@ -87,7 +87,7 @@ public class WorkoutServiceDBInit {
 
 
             Thread.sleep(1000); // Wait 1 second before checking again
-            elapsedSeconds++;
+
         } while (true); // Continue indefinitely until the condition is met
     }
 

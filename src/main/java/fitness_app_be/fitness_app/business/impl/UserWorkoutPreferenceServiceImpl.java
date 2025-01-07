@@ -52,19 +52,20 @@ public class UserWorkoutPreferenceServiceImpl implements UserWorkoutPreferenceSe
     @Transactional
     public void deleteUserWorkoutPreference(Long id) {
         // Check if the preference exists
-        userWorkoutPreferenceRepository.getWorkoutPreferenceById(id)
+        UserWorkoutPreference existingPreference = userWorkoutPreferenceRepository.getWorkoutPreferenceById(id)
                 .orElseThrow(() -> new UserWorkoutPreferenceNotFoundException("Preference with ID " + id + " not found"));
 
-        // Perform the delete
-        userWorkoutPreferenceRepository.delete(id);
+        // Use the retrieved preference's ID to delete it
+        userWorkoutPreferenceRepository.delete(existingPreference.getId());
     }
+
 
 
     @Override
     @Transactional
     public UserWorkoutPreference updateUserWorkoutPreference(UserWorkoutPreference userWorkoutPreference) {
         // Check if the UserWorkoutPreference exists
-        userWorkoutPreferenceRepository.getWorkoutPreferenceById(userWorkoutPreference.getId())
+        UserWorkoutPreference existingPreference = userWorkoutPreferenceRepository.getWorkoutPreferenceById(userWorkoutPreference.getId())
                 .orElseThrow(() -> new UserWorkoutPreferenceNotFoundException("Preference with ID " + userWorkoutPreference.getId() + " not found"));
 
         // Fetch the user
@@ -83,7 +84,10 @@ public class UserWorkoutPreferenceServiceImpl implements UserWorkoutPreferenceSe
 
         // Update the UserWorkoutPreference
         userWorkoutPreference.setUserid(user.getId());
+
+        // Optionally log or perform additional operations with `existingPreference` if needed
         return userWorkoutPreferenceRepository.update(userWorkoutPreference);
     }
+
 
 }

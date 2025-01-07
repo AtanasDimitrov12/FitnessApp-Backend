@@ -3,7 +3,6 @@ package fitness_app_be.fitness_app.persistence.repositories.impl;
 import fitness_app_be.fitness_app.domain.ProgressNote;
 import fitness_app_be.fitness_app.domain.Role;
 import fitness_app_be.fitness_app.domain.User;
-import fitness_app_be.fitness_app.persistence.entity.ProgressNoteEntity;
 import fitness_app_be.fitness_app.persistence.entity.UserEntity;
 import fitness_app_be.fitness_app.persistence.jpa_repositories.JpaUserRepository;
 import fitness_app_be.fitness_app.persistence.mapper.UserEntityMapper;
