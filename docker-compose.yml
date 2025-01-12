@@ -55,6 +55,17 @@ services:
       - fitness-app
     restart: unless-stopped
 
+  fitness-app-frontend:
+    image: react-vite-frontend:latest # Use the previously built image
+    container_name: fitness-app-frontend
+    ports:
+      - "5173:80" # Map frontend to port 5173
+    depends_on:
+      - fitness-app # Ensure backend starts first
+    networks:
+      - fitness-network
+    restart: unless-stopped
+
 networks:
   fitness-network:
     driver: bridge

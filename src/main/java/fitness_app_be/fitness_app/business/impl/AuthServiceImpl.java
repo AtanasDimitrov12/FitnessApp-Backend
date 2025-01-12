@@ -77,6 +77,8 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidCredentialsException();
         }
 
+        System.out.println(storedAdmin.getEmail());
+
         AccessToken accessToken = new AccessTokenImpl(
                 storedAdmin.getEmail(),
                 storedAdmin.getId(),

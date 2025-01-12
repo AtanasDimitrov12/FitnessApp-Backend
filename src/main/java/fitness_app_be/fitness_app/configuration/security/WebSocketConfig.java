@@ -14,7 +14,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // Allow CORS for the frontend origin explicitly
         registry.addEndpoint("/ws")
-                .setAllowedOrigins("http://localhost:5173") // Replace with frontend URL
+                .setAllowedOrigins("http://localhost:5173", "http://localhost:5174") // Replace with frontend URL
                 .withSockJS();
     }
 
