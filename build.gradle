@@ -77,7 +77,7 @@ sonar {
 		property "sonar.projectKey", "FitnessApp"
 		property "sonar.projectName", "FitnessApp"
 		property "sonar.host.url", "http://localhost:9000"
-		property "sonar.login", "sqp_3e8b73dabeb9b942de2cf5f19cde9e864abb2754"
+		property "sonar.login", "sqp_5a0e4243969c369fe184d083d236df54be7c26e1"
 		property "sonar.qualitygate.wait", true
 		property "sonar.java.coveragePlugin", "jacoco"
 		property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"

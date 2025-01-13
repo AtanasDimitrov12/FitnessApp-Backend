@@ -40,8 +40,7 @@ public class MealServiceDBInit {
                     try {
                         Meal meal = new Meal();
                         meal.setName(apiMeal.getStrMeal());
-                        meal.setCookingTime(15 + secureRandom.nextInt(6));
-
+                        meal.setCookingTime(15.00 + secureRandom.nextInt(6));
 
                         // Randomly set calories, protein, and carbs
                         meal.setCalories(secureRandom.nextInt(601) + 200); // 200-800 calories
