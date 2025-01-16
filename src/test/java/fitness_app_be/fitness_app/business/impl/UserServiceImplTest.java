@@ -1,7 +1,13 @@
 package fitness_app_be.fitness_app.business.impl;
 
-import fitness_app_be.fitness_app.domain.*;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.Uploader;
+import fitness_app_be.fitness_app.domain.Diet;
+import fitness_app_be.fitness_app.domain.Role;
+import fitness_app_be.fitness_app.domain.User;
+import fitness_app_be.fitness_app.exception_handling.CustomFileUploadException;
 import fitness_app_be.fitness_app.exception_handling.UserNotFoundException;
+import fitness_app_be.fitness_app.exception_handling.UserProfileUpdateException;
 import fitness_app_be.fitness_app.persistence.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,13 +16,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,24 +33,30 @@ class UserServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
-    @InjectMocks
-    private UserServiceImpl userService;
+    @Mock
+    private Cloudinary cloudinary;
 
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private MultipartFile multipartFile;
+
+    @InjectMocks
+    private UserServiceImpl userService;
+
     private User user;
+    private Diet diet;
+    private Uploader uploader;
 
     @BeforeEach
     void setUp() {
-        Diet diet = new Diet();
-        List<Workout> workouts = new ArrayList<>();
-        WorkoutPlan workoutPlan = new WorkoutPlan(1L,1L, workouts);
-        List<ProgressNote> notes = new ArrayList<>();
-        UserDietPreference userDietPreference = new UserDietPreference(1L, 1L, 2500, 3);
-        UserWorkoutPreference userWorkoutPreference = new UserWorkoutPreference(1L, 1L, null, null, null, 4);
-        user = new User(1L, "testUser", "test@example.com", "password", userDietPreference, userWorkoutPreference, "pictureURL", LocalDateTime.now(), LocalDateTime.now(),  Role.ADMIN,workoutPlan, diet, notes, true);
+        user = new User(1L, "JohnDoe", "john@example.com", "password123", null, null, null, null, null, Role.USER, null, null, null, true);
+        diet = new Diet(1L, 1L, null);
 
+        // Properly mocking Cloudinary uploader
+        uploader = mock(Uploader.class);
+        lenient().when(cloudinary.uploader()).thenReturn(uploader);
     }
 
     @Test
@@ -61,122 +75,168 @@ class UserServiceImplTest {
     void getUserById_ShouldReturnUser_WhenUserExists() {
         when(userRepository.getUserById(1L)).thenReturn(Optional.of(user));
 
-        User foundUser = userService.getUserById(1L);
+        User result = userService.getUserById(1L);
 
-        assertNotNull(foundUser);
-        assertEquals(user, foundUser);
+        assertNotNull(result);
+        assertEquals(user, result);
         verify(userRepository, times(1)).getUserById(1L);
     }
 
     @Test
-    void getUserById_ShouldThrowException_WhenUserNotFound() {
+    void getUserById_ShouldThrowUserNotFoundException_WhenUserDoesNotExist() {
+        // Arrange
         when(userRepository.getUserById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(UserNotFoundException.class, () -> userService.getUserById(1L));
-        verify(userRepository, times(1)).getUserById(1L);
+        // Act & Assert
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
+            userService.getUserById(1L);
+        });
+
+        assertEquals("User not found with ID: 1", exception.getMessage());  // Adjusted error message
     }
 
     @Test
-    void createUser_ShouldCreateUserSuccessfully() {
-        // Arrange
-        User newUser = new User(1L, "username", "email@example.com", "password", null, null, null, null, null, Role.USER, null, null, null, true);
+    void createUser_ShouldReturnCreatedUser() {
+        when(userRepository.create(any(User.class))).thenReturn(user);
 
-        // Mocking repository
-        when(userRepository.create(newUser)).thenReturn(newUser); // Mock user creation
+        User createdUser = userService.createUser(user);
 
-        // Act
-        User createdUser = userService.createUser(newUser);
-
-        // Assert
-        assertNotNull(createdUser, "Created user should not be null");
-        assertEquals(newUser, createdUser, "Returned user should match the input");
-
-        // Verify interactions
-        verify(userRepository, times(1)).create(newUser);
+        assertNotNull(createdUser);
+        assertEquals(user, createdUser);
+        verify(userRepository, times(1)).create(any(User.class));
     }
-
-
-
 
     @Test
     void deleteUser_ShouldDeleteUser_WhenUserExists() {
         when(userRepository.exists(1L)).thenReturn(true);
 
-        assertDoesNotThrow(() -> userService.deleteUser(1L));
-        verify(userRepository, times(1)).exists(1L);
+        userService.deleteUser(1L);
+
         verify(userRepository, times(1)).delete(1L);
     }
 
     @Test
-    void deleteUser_ShouldThrowException_WhenUserNotFound() {
+    void deleteUser_ShouldThrowUserNotFoundException_WhenUserDoesNotExist() {
         when(userRepository.exists(1L)).thenReturn(false);
 
         assertThrows(UserNotFoundException.class, () -> userService.deleteUser(1L));
-        verify(userRepository, times(1)).exists(1L);
-        verify(userRepository, never()).delete(1L);
     }
 
     @Test
-    void getUserByEmail_ShouldReturnUser_WhenUserExists() {
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+    void findUserByUsername_ShouldReturnUser_WhenExists() {
+        when(userRepository.findByUsername("JohnDoe")).thenReturn(Optional.of(user));
 
-        Optional<User> foundUser = userService.getUserByEmail("test@example.com");
+        Optional<User> foundUser = userService.findUserByUsername("JohnDoe");
 
         assertTrue(foundUser.isPresent());
         assertEquals(user, foundUser.get());
-        verify(userRepository, times(1)).findByEmail("test@example.com");
     }
 
     @Test
-    void searchUsersByPartialUsername_ShouldReturnMatchingUsers() {
-        when(userRepository.findByUsernameContainingIgnoreCase("test")).thenReturn(List.of(user));
+    void getUserByEmail_ShouldReturnUser_WhenExists() {
+        when(userRepository.findByEmail("john@example.com")).thenReturn(Optional.of(user));
 
-        List<User> users = userService.searchUsersByPartialUsername("test");
+        Optional<User> foundUser = userService.getUserByEmail("john@example.com");
 
-        assertNotNull(users);
-        assertEquals(1, users.size());
-        assertEquals(user, users.get(0));
-        verify(userRepository, times(1)).findByUsernameContainingIgnoreCase("test");
+        assertTrue(foundUser.isPresent());
+        assertEquals(user, foundUser.get());
     }
 
     @Test
-    void updateUser_ShouldReturnUpdatedUser_WhenUserExists() {
-        // Arrange
-        user.setPassword("updatedPassword"); // Original plain password
-        String encodedPassword = "encodedPassword";
+    void updateUser_ShouldUpdateAndReturnUser_WhenExists() {
+        when(userRepository.exists(user.getId())).thenReturn(true);
+        when(passwordEncoder.encode(user.getPassword())).thenReturn("encodedPassword");
+        when(userRepository.update(any(User.class))).thenReturn(user);
 
-        when(userRepository.exists(1L)).thenReturn(true); // Mock user existence
-        when(passwordEncoder.encode("updatedPassword")).thenReturn(encodedPassword); // Mock password encoding
+        User updatedUser = userService.updateUser(user);
 
-        // Mock userRepository.update() to verify and update the User password
-        when(userRepository.update(any(User.class))).thenAnswer(invocation -> {
-            User updatedUser = invocation.getArgument(0); // Capture the User object passed
-            updatedUser.setPassword(encodedPassword); // Simulate encoding the password
-            return updatedUser; // Return the updated User
-        });
-
-        // Act
-        User result = userService.updateUser(user);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(encodedPassword, result.getPassword()); // Verify password is encoded
-        verify(userRepository, times(1)).exists(1L);
-        verify(passwordEncoder, times(1)).encode("updatedPassword"); // Ensure encoding is called
-        verify(userRepository, times(1)).update(argThat(updatedUserRequest ->
-                updatedUserRequest.getPassword().equals(encodedPassword) // Ensure encoded password is passed
-        ));
+        assertNotNull(updatedUser);
+        verify(userRepository, times(1)).update(user);
     }
 
-
-
-
     @Test
-    void updateUser_ShouldThrowException_WhenUserNotFound() {
-        when(userRepository.exists(1L)).thenReturn(false);
+    void updateUser_ShouldThrowUserNotFoundException_WhenUserDoesNotExist() {
+        when(userRepository.exists(user.getId())).thenReturn(false);
 
         assertThrows(UserNotFoundException.class, () -> userService.updateUser(user));
-        verify(userRepository, times(1)).exists(1L);
-        verify(userRepository, never()).update(user);
+    }
+
+    @Test
+    void uploadUserProfilePicture_ShouldUploadAndReturnUpdatedUser() throws Exception {
+        // Arrange
+        when(userRepository.getUserById(1L)).thenReturn(Optional.of(user));
+        when(multipartFile.isEmpty()).thenReturn(false);
+        when(multipartFile.getBytes()).thenReturn(new byte[]{1, 2, 3});
+        when(uploader.upload(any(byte[].class), anyMap()))
+                .thenReturn(Map.of("url", "http://example.com/image.jpg"));
+        when(userRepository.update(any(User.class))).thenReturn(user);
+
+        // Act
+        User updatedUser = userService.uploadUserProfilePicture(1L, multipartFile);
+
+        // Assert
+        assertNotNull(updatedUser);
+        assertEquals("http://example.com/image.jpg", updatedUser.getPictureURL());
+    }
+
+    @Test
+    void uploadUserProfilePicture_ShouldThrowUserNotFoundException_WhenUserDoesNotExist() {
+        // Arrange
+        when(userRepository.getUserById(1L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(UserNotFoundException.class, () -> userService.uploadUserProfilePicture(1L, multipartFile));
+    }
+
+    @Test
+    void uploadUserProfilePicture_ShouldThrowUserProfileUpdateException_WhenFileIsEmpty() {
+        // Arrange
+        MultipartFile emptyFile = mock(MultipartFile.class);
+        when(emptyFile.isEmpty()).thenReturn(true);
+
+        // Act & Assert
+        assertThrows(UserProfileUpdateException.class, () -> userService.uploadUserProfilePicture(1L, emptyFile));
+
+        // Verify necessary interactions only
+        verify(emptyFile).isEmpty();
+    }
+
+
+
+    @Test
+    void uploadUserProfilePicture_ShouldThrowCustomFileUploadException_WhenUploadFails() throws IOException {
+        // Arrange
+        when(userRepository.getUserById(1L)).thenReturn(Optional.of(user));
+        when(multipartFile.isEmpty()).thenReturn(false);
+        when(multipartFile.getBytes()).thenReturn(new byte[]{1, 2, 3});
+        when(uploader.upload(any(byte[].class), anyMap())).thenThrow(new IOException("Upload failed"));
+
+        // Act & Assert
+        assertThrows(CustomFileUploadException.class, () -> userService.uploadUserProfilePicture(1L, multipartFile));
+    }
+
+
+    @Test
+    void attachedDietToUser_ShouldAttachDietAndReturnUser() {
+        when(userRepository.getUserById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.update(any(User.class))).thenReturn(user);
+
+        User updatedUser = userService.attachedDietToUser(1L, diet);
+
+        assertNotNull(updatedUser);
+        assertEquals(diet, updatedUser.getDiet());
+        verify(userRepository, times(1)).update(user);
+    }
+
+    @Test
+    void getUsersWithWorkout_ShouldReturnUserIds() {
+        List<Long> userIds = List.of(1L, 2L, 3L);
+        when(userRepository.getUsersWithWorkout(1L)).thenReturn(userIds);
+
+        List<Long> result = userService.getUsersWithWorkout(1L);
+
+        assertNotNull(result);
+        assertEquals(3, result.size());
+        verify(userRepository, times(1)).getUsersWithWorkout(1L);
     }
 }

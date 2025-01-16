@@ -4,4 +4,8 @@ public class UserProfileUpdateException extends Exception {
     public UserProfileUpdateException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public UserProfileUpdateException(String message) {
+        super(message);
+    }
 }

@@ -85,20 +85,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User uploadUserProfilePicture(Long userId, MultipartFile imageFile) throws CustomFileUploadException, UserProfileUpdateException {
+    public User uploadUserProfilePicture(Long userId, MultipartFile imageFile)
+            throws CustomFileUploadException, UserProfileUpdateException {
+        // Validate image file before uploading
+        if (imageFile == null || imageFile.isEmpty()) {
+            throw new UserProfileUpdateException("File must not be null or empty.");
+        }
+
+        // Get user or throw exception if not found
+        User user = userRepository.getUserById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+
         try {
-            // Upload the image to the cloud directly using MultipartFile
+            // Upload the image to Cloudinary
             String imageUrl = uploadImageToCloud(imageFile);
 
-            // Update the user's profile with the image URL
-            User user = getUserById(userId);
+            // Update user's profile picture
             user.setPictureURL(imageUrl);
 
-            // Save the updated user
+            // Save updated user and return
             return userRepository.update(user);
 
-        } catch (UserNotFoundException e) {
-            throw new UserNotFoundException("User not found: " + e.getMessage(), e);
         } catch (IOException e) {
             throw new CustomFileUploadException("Image upload failed: " + e.getMessage(), e);
         } catch (Exception e) {
@@ -107,33 +114,32 @@ public class UserServiceImpl implements UserService {
     }
 
     private String uploadImageToCloud(MultipartFile multipartFile) throws IOException {
+        // Validate file
         if (multipartFile == null || multipartFile.isEmpty()) {
-            throw new IllegalArgumentException("File must not be null or empty.");
+            throw new IOException("File must not be null or empty.");
         }
 
-
-
-        // Get the current timestamp in seconds
+        // Generate timestamp for Cloudinary upload
         long timestamp = System.currentTimeMillis() / 1000L;
-
 
         // Upload parameters
         Map<String, Object> uploadParams = ObjectUtils.asMap(
                 "timestamp", timestamp
         );
 
-        // Upload the image to Cloudinary
+        // Upload image to Cloudinary
         Map<String, Object> uploadResult = cloudinary.uploader().upload(
                 multipartFile.getBytes(),
                 uploadParams
         );
 
-        Object url = uploadResult.get("url");
-        if (url instanceof String string) {
-            return string;
-        } else {
+        // Ensure we get a valid URL from Cloudinary
+        String imageUrl = (String) uploadResult.get("url");
+        if (imageUrl == null || imageUrl.isBlank()) {
             throw new IOException("Failed to retrieve image URL from upload result.");
         }
+
+        return imageUrl;
     }
 
     @Override

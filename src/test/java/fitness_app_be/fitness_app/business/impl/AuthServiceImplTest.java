@@ -1,6 +1,7 @@
 package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.business.AdminService;
+import fitness_app_be.fitness_app.business.AuthService;
 import fitness_app_be.fitness_app.business.UserService;
 import fitness_app_be.fitness_app.configuration.security.token.AccessTokenEncoder;
 import fitness_app_be.fitness_app.domain.Admin;
@@ -12,13 +13,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,143 +41,105 @@ class AuthServiceImplTest {
     @InjectMocks
     private AuthServiceImpl authService;
 
-    private User testUser;
-    private Admin testAdmin;
+    private User user;
+    private Admin admin;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        user = new User(1L, "testUser", "user@example.com", "password", null, null, "pictureURL", LocalDateTime.now(), LocalDateTime.now(),  Role.ADMIN,null, null, null, true);
 
-        testUser = new User();
-        testUser.setUsername("testUser");
-        testUser.setPassword("hashedPassword");
-        testUser.setRole(Role.USER);
-
-        testAdmin = new Admin();
-        testAdmin.setEmail("admin@example.com");
-        testAdmin.setPassword("hashedPassword");
-        testAdmin.setRole(Role.ADMIN);
+        admin = new Admin(1L, "admin@example.com", "password", Role.ADMIN);
     }
 
     @Test
-    void register_ShouldEncodePasswordAndSaveUser() {
-        // Arrange
-        when(passwordEncoder.encode(anyString())).thenReturn("hashedPassword");
+    void register_ShouldEncodePasswordAndSetRole() {
+        when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
 
-        // Act
-        testUser.setPassword("password");
-        authService.register(testUser);
+        authService.register(user);
 
-        // Assert
-        assertEquals("hashedPassword", testUser.getPassword());
-        assertEquals(Role.USER, testUser.getRole());
-        verify(userService, times(1)).createUser(testUser);
+        assertEquals("encodedPassword", user.getPassword());
+        assertEquals(Role.USER, user.getRole());
+        verify(userService, times(1)).createUser(user);
     }
 
     @Test
-    void adminRegister_ShouldEncodePasswordAndSaveAdmin() {
-        // Arrange
-        when(passwordEncoder.encode(anyString())).thenReturn("hashedPassword");
+    void adminRegister_ShouldEncodePasswordAndSetRole() {
+        when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
 
-        // Act
-        testAdmin.setPassword("password");
-        authService.adminRegister(testAdmin);
+        authService.adminRegister(admin);
 
-        // Assert
-        assertEquals("hashedPassword", testAdmin.getPassword());
-        assertEquals(Role.ADMIN, testAdmin.getRole());
-        verify(adminService, times(1)).createAdmin(testAdmin);
+        assertEquals("encodedPassword", admin.getPassword());
+        assertEquals(Role.ADMIN, admin.getRole());
+        verify(adminService, times(1)).createAdmin(admin);
     }
 
     @Test
-    void authenticateUser_ShouldReturnToken_WhenCredentialsAreCorrect() {
-        // Arrange
-        when(userService.findUserByUsername("testUser")).thenReturn(Optional.of(testUser));
-        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
+    void authenticateUser_ShouldReturnToken_WhenCredentialsAreValid() {
+        when(userService.findUserByUsername("user@example.com")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("password", user.getPassword())).thenReturn(true);
         when(accessTokenEncoder.encode(any())).thenReturn("mockedToken");
 
-        // Act
-        String token = authService.authenticateUser("testUser", "password");
+        String token = authService.authenticateUser("user@example.com", "password");
 
-        // Assert
+        assertNotNull(token);
         assertEquals("mockedToken", token);
-        verify(userService, times(1)).findUserByUsername("testUser");
+        verify(userService, times(1)).findUserByUsername("user@example.com");
     }
 
     @Test
     void authenticateUser_ShouldThrowException_WhenUserNotFound() {
-        // Arrange
-        when(userService.findUserByUsername(anyString())).thenReturn(Optional.empty());
+        when(userService.findUserByUsername("user@example.com")).thenReturn(Optional.empty());
 
-        // Act & Assert
-        assertThrows(InvalidCredentialsException.class, () -> authService.authenticateUser("unknownUser", "password"));
+        assertThrows(InvalidCredentialsException.class, () -> authService.authenticateUser("user@example.com", "password"));
     }
 
     @Test
     void authenticateUser_ShouldThrowException_WhenPasswordIsIncorrect() {
-        // Arrange
-        when(userService.findUserByUsername("testUser")).thenReturn(Optional.of(testUser));
-        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
+        when(userService.findUserByUsername("user@example.com")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("wrongPassword", user.getPassword())).thenReturn(false);
 
-        // Act & Assert
-        assertThrows(InvalidCredentialsException.class, () -> authService.authenticateUser("testUser", "wrongPassword"));
+        assertThrows(InvalidCredentialsException.class, () -> authService.authenticateUser("user@example.com", "wrongPassword"));
     }
 
     @Test
-    void authenticateAdmin_ShouldReturnToken_WhenCredentialsAreCorrect() {
-        // Arrange
-        when(adminService.findAdminByEmail("admin@example.com")).thenReturn(Optional.of(testAdmin));
-        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
-        when(accessTokenEncoder.encode(any())).thenReturn("mockedToken");
+    void authenticateAdmin_ShouldReturnToken_WhenCredentialsAreValid() {
+        when(adminService.findAdminByEmail("admin@example.com")).thenReturn(Optional.of(admin));
+        when(passwordEncoder.matches("password", admin.getPassword())).thenReturn(true);
+        when(accessTokenEncoder.encode(any())).thenReturn("mockedAdminToken");
 
-        // Act
         String token = authService.authenticateAdmin("admin@example.com", "password");
 
-        // Assert
-        assertEquals("mockedToken", token);
+        assertNotNull(token);
+        assertEquals("mockedAdminToken", token);
         verify(adminService, times(1)).findAdminByEmail("admin@example.com");
     }
 
     @Test
     void authenticateAdmin_ShouldThrowException_WhenAdminNotFound() {
-        // Arrange
-        when(adminService.findAdminByEmail(anyString())).thenReturn(Optional.empty());
+        when(adminService.findAdminByEmail("admin@example.com")).thenReturn(Optional.empty());
 
-        // Act & Assert
-        assertThrows(InvalidCredentialsException.class, () -> authService.authenticateAdmin("unknown@example.com", "password"));
+        assertThrows(InvalidCredentialsException.class, () -> authService.authenticateAdmin("admin@example.com", "password"));
     }
 
     @Test
     void authenticateAdmin_ShouldThrowException_WhenPasswordIsIncorrect() {
-        // Arrange
-        when(adminService.findAdminByEmail("admin@example.com")).thenReturn(Optional.of(testAdmin));
-        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
+        when(adminService.findAdminByEmail("admin@example.com")).thenReturn(Optional.of(admin));
+        when(passwordEncoder.matches("wrongPassword", admin.getPassword())).thenReturn(false);
 
-        // Act & Assert
         assertThrows(InvalidCredentialsException.class, () -> authService.authenticateAdmin("admin@example.com", "wrongPassword"));
     }
 
     @Test
-    void verifyPassword_ShouldReturnTrue_WhenPasswordMatches() {
-        // Arrange
-        when(passwordEncoder.matches("password", "hashedPassword")).thenReturn(true);
+    void verifyPassword_ShouldReturnTrue_WhenPasswordsMatch() {
+        when(passwordEncoder.matches("inputPassword", "storedPassword")).thenReturn(true);
 
-        // Act
-        boolean result = authService.verifyPassword("hashedPassword", "password");
-
-        // Assert
-        assertTrue(result);
+        assertTrue(authService.verifyPassword("storedPassword", "inputPassword"));
     }
 
     @Test
-    void verifyPassword_ShouldReturnFalse_WhenPasswordDoesNotMatch() {
-        // Arrange
-        when(passwordEncoder.matches("wrongPassword", "hashedPassword")).thenReturn(false);
+    void verifyPassword_ShouldReturnFalse_WhenPasswordsDoNotMatch() {
+        when(passwordEncoder.matches("inputPassword", "storedPassword")).thenReturn(false);
 
-        // Act
-        boolean result = authService.verifyPassword("hashedPassword", "wrongPassword");
-
-        // Assert
-        assertFalse(result);
+        assertFalse(authService.verifyPassword("storedPassword", "inputPassword"));
     }
 }

@@ -12,6 +12,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
+
     private final NotificationRepository notificationRepository;
 
     public Notification createNotification(Long userId, String message) {

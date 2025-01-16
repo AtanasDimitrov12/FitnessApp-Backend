@@ -72,8 +72,11 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @SuppressWarnings("unchecked")
     private String uploadImageToCloudinary(File file) throws IOException {
-        if (file == null || !file.exists()) {
-            throw new IllegalArgumentException("File must not be null and must exist.");
+        if (file == null) {
+            return null;  // Allow workouts to be created without an image
+        }
+        if (!file.exists()) {
+            throw new IllegalArgumentException("File must exist.");
         }
 
         Map<String, Object> uploadResult = cloudinary.uploader().upload(file, ObjectUtils.emptyMap());
