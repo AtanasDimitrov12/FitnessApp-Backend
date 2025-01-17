@@ -15,6 +15,8 @@ public interface JpaWorkoutStatusRepository extends JpaRepository<WorkoutStatusE
 
     List<WorkoutStatusEntity> findByWorkoutPlanId(Long workoutPlanId);
 
+
+
     @Query("SELECT COUNT(ws) FROM WorkoutStatusEntity ws WHERE ws.workoutPlan.userId = :userId AND ws.isDone = true AND ws.weekNumber BETWEEN :startWeek AND :endWeek")
     Long countCompletedWorkoutsByWeekRange(@Param("userId") Long userId, @Param("startWeek") Integer startWeek, @Param("endWeek") Integer endWeek);
 }

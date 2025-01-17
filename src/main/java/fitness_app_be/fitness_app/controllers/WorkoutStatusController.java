@@ -3,10 +3,10 @@ package fitness_app_be.fitness_app.controllers;
 import fitness_app_be.fitness_app.business.WorkoutStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/workout-status")
@@ -31,5 +31,16 @@ public class WorkoutStatusController {
 
         workoutStatusService.markWorkoutAsDone(workoutPlanId, workoutId, userId);
         return ResponseEntity.ok("Workout marked as done and notification sent.");
+    }
+
+    @GetMapping
+    public ResponseEntity<Map<String, Boolean>> getWorkoutStatus(
+            @RequestParam Long workoutPlanId,
+            @RequestParam Long workoutId
+    ) {
+        boolean isDone = workoutStatusService.isWorkoutDone(workoutPlanId, workoutId);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isDone", isDone);
+        return ResponseEntity.ok(response);
     }
 }

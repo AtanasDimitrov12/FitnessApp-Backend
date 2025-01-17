@@ -60,6 +60,9 @@ public class WorkoutStatusRepositoryImpl implements WorkoutStatusRepository {
                 .toList();
     }
 
+
+
+
     @Override
     public void saveAll(List<WorkoutStatus> statuses) {
         List<WorkoutStatusEntity> entities = statuses.stream()

@@ -61,6 +61,13 @@ public class WorkoutStatusServiceImpl implements WorkoutStatusService {
         return workoutStatusRepository.findByWorkoutPlanId(workoutPlanId);
     }
 
+    @Override
+    public boolean isWorkoutDone(Long workoutPlanId, Long workoutId) {
+        return workoutStatusRepository.findByWorkoutPlanIdAndWorkoutId(workoutPlanId, workoutId)
+                .map(WorkoutStatus::getIsDone)
+                .orElse(false);
+    }
+
     @Transactional
     @Override
     public void resetWeeklyWorkouts(int currentWeekNumber) {
