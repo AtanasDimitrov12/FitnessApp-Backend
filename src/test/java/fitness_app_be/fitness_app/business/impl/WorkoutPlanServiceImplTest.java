@@ -1,6 +1,5 @@
 package fitness_app_be.fitness_app.business.impl;
 
-import fitness_app_be.fitness_app.business.WorkoutPlanService;
 import fitness_app_be.fitness_app.business.WorkoutService;
 import fitness_app_be.fitness_app.business.WorkoutStatusService;
 import fitness_app_be.fitness_app.domain.Workout;

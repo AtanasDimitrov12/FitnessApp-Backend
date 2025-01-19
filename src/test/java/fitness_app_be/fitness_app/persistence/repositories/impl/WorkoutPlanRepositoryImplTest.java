@@ -1,7 +1,6 @@
 package fitness_app_be.fitness_app.persistence.repositories.impl;
 
 import fitness_app_be.fitness_app.domain.WorkoutPlan;
-import fitness_app_be.fitness_app.domain.WorkoutStatus;
 import fitness_app_be.fitness_app.exception_handling.WorkoutPlanNotFoundException;
 import fitness_app_be.fitness_app.persistence.entity.WorkoutPlanEntity;
 import fitness_app_be.fitness_app.persistence.entity.WorkoutStatusEntity;
@@ -51,14 +50,12 @@ class WorkoutPlanRepositoryImplTest {
 
     private WorkoutPlan workoutPlan;
     private WorkoutPlanEntity workoutPlanEntity;
-    private WorkoutPlanEntity updatedWorkoutPlanEntity;
     private List<WorkoutStatusEntity> existingWorkoutStatuses;
 
     @BeforeEach
     void setUp() {
         workoutPlan = new WorkoutPlan(1L, 1L, List.of());
         workoutPlanEntity = new WorkoutPlanEntity();
-        updatedWorkoutPlanEntity = new WorkoutPlanEntity();
 
         // ✅ Initialize mock workout statuses to prevent null issues
         existingWorkoutStatuses = new ArrayList<>();
