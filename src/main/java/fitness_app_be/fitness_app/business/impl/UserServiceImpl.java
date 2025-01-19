@@ -76,8 +76,7 @@ public class UserServiceImpl implements UserService {
     public User updateUser(User user) {
         if (userRepository.exists(user.getId())) {
 
-            String encodedPassword = passwordEncoder.encode(user.getPassword());
-            user.setPassword(encodedPassword);
+
             return userRepository.update(user);
         } else {
             throw new UserNotFoundException(user.getId());

@@ -14,4 +14,7 @@ public interface WorkoutStatusService {
     boolean isWorkoutDone(Long workoutPlanId, Long workoutId);
     void save(WorkoutStatus workoutStatus);
     Long getCompletedWorkouts(Long userId, String rangeType);
+    void deleteByWorkoutPlanId(Long workoutPlanId);
+    void saveAll(List<WorkoutStatus> workoutStatuses);
+
 }

@@ -12,7 +12,7 @@ public interface JpaDietRepository extends JpaRepository<DietEntity, Long> {
     @Query("SELECT d FROM DietEntity d JOIN FETCH d.meals WHERE d.userId = :userId")
     Optional<DietEntity> findDietEntityByUserId(@Param("userId") Long userId);
 
-    @Query("SELECT d FROM DietEntity d JOIN FETCH d.meals WHERE d.id = :id")
+    @Query("SELECT DISTINCT d FROM DietEntity d LEFT JOIN FETCH d.meals WHERE d.id = :id")
     Optional<DietEntity> findByIdWithMeals(@Param("id") Long id);
 
 }

@@ -34,6 +34,12 @@ public class ExerciseServiceDBInit {
     private String apiKey;
 
     public void populateExercises() {
+
+        long exerciseCount = exerciseService.getAllExercises().stream().count();
+        if (exerciseCount >= 20) {
+            log.info("Exercises already populated. Skipping initialization.");
+            return;
+        }
         HttpClient client = HttpClient.newHttpClient();
 
         HttpRequest request = HttpRequest.newBuilder()

@@ -65,18 +65,23 @@ public class UserWorkoutPreferenceServiceImpl implements UserWorkoutPreferenceSe
     @Transactional
     public UserWorkoutPreference updateUserWorkoutPreference(UserWorkoutPreference userWorkoutPreference) {
         // Check if the UserWorkoutPreference exists and retrieve it
-        UserWorkoutPreference existingPreference = userWorkoutPreferenceRepository.getWorkoutPreferenceById(userWorkoutPreference.getId())
+        UserWorkoutPreference existingPreference = userWorkoutPreferenceRepository.findByUserId(userWorkoutPreference.getUserid())
                 .orElseThrow(() -> new UserWorkoutPreferenceNotFoundException("Preference with ID " + userWorkoutPreference.getId() + " not found"));
 
+        existingPreference.setPreferredTrainingStyle(userWorkoutPreference.getPreferredTrainingStyle());
+        existingPreference.setFitnessGoal(userWorkoutPreference.getFitnessGoal());
+        existingPreference.setFitnessLevel(userWorkoutPreference.getFitnessLevel());
+        existingPreference.setDaysAvailable(userWorkoutPreference.getDaysAvailable());
         // Fetch the user
-        User user = userService.getUserById(userWorkoutPreference.getUserid());
+        User user = userService.getUserById(existingPreference.getUserid());
 
         // Calculate the new workout plan
-        WorkoutPlan updatedPlan = workoutPlanGenerator.calculateWorkoutPlan(userWorkoutPreference);
-        updatedPlan.setUserId(user.getId());
+        WorkoutPlan existingPlan = workoutPlanService.getWorkoutPlanByUserId(existingPreference.getUserid());
+        WorkoutPlan updatedPlan = workoutPlanGenerator.calculateWorkoutPlan(existingPreference);
+        existingPlan.setWorkouts(updatedPlan.getWorkouts());
 
         // Save the updated workout plan
-        WorkoutPlan savedUpdatedPlan = workoutPlanService.createWorkoutPlan(updatedPlan);
+        WorkoutPlan savedUpdatedPlan = workoutPlanService.updateWorkoutPlan(existingPlan);
 
         // Update the user's workout plan
         user.setWorkoutPlan(savedUpdatedPlan);

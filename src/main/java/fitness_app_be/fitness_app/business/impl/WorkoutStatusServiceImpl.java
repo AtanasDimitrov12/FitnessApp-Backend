@@ -116,4 +116,18 @@ public class WorkoutStatusServiceImpl implements WorkoutStatusService {
                 throw new IllegalArgumentException("Invalid range type. Must be 'month', 'quarter', or 'year'.");
         }
     }
+
+    @Override
+    @Transactional
+    public void deleteByWorkoutPlanId(Long workoutPlanId){
+        workoutStatusRepository.deleteByWorkoutPlanId(workoutPlanId);
+    }
+
+    @Override
+    @Transactional
+    public void saveAll(List<WorkoutStatus> workoutStatuses){
+        workoutStatusRepository.saveAll(workoutStatuses);
+    }
+
+
 }

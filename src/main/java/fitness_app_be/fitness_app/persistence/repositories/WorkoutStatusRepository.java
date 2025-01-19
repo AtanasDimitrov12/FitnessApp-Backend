@@ -19,4 +19,7 @@ public interface WorkoutStatusRepository {
 
     Long countCompletedWorkoutsByWeekRange(Long userId, int startWeek, int currentWeek);
 
+    void deleteByWorkoutPlanId(Long workoutPlanId);
+
+
 }

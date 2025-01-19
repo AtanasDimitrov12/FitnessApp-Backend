@@ -9,6 +9,7 @@ import fitness_app_be.fitness_app.persistence.mapper.UserWorkoutPreferenceEntity
 import fitness_app_be.fitness_app.persistence.repositories.UserWorkoutPreferenceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -40,36 +41,58 @@ public class UserWorkoutPreferenceRepositoryImpl implements UserWorkoutPreferenc
     }
 
     @Override
-    public UserWorkoutPreference create(UserWorkoutPreference preference) {
-        UserEntity userEntity = findUserEntityById(preference.getUserid()); // Retrieve UserEntity
-        UserWorkoutPreferenceEntity entity = userWorkoutPreferenceEntityMapper.toEntity(preference, userEntity);
-        UserWorkoutPreferenceEntity savedEntity = jpaUserWorkoutPreferenceRepository.save(entity);
+    @Transactional
+    public UserWorkoutPreference create(UserWorkoutPreference userWorkoutPreference) {
+        // Check if a preference already exists for the user
+        Optional<UserWorkoutPreferenceEntity> existingEntityOptional = jpaUserWorkoutPreferenceRepository
+                .findByUserId(userWorkoutPreference.getUserid());
+
+        if (existingEntityOptional.isPresent()) {
+            throw new IllegalArgumentException(
+                    "UserWorkoutPreference already exists for user ID: " + userWorkoutPreference.getUserid() +
+                            ". Use update instead."
+            );
+        }
+
+        // Convert domain to entity and save new preference
+        UserEntity userEntity = findUserEntityById(userWorkoutPreference.getUserid());
+
+        UserWorkoutPreferenceEntity newEntity = userWorkoutPreferenceEntityMapper.toEntity(userWorkoutPreference, userEntity);
+        UserWorkoutPreferenceEntity savedEntity = jpaUserWorkoutPreferenceRepository.save(newEntity);
+
         userEntity.setWorkoutPreference(savedEntity);
         userRepository.save(userEntity);
+
         return userWorkoutPreferenceEntityMapper.toDomain(savedEntity);
     }
 
+
     @Override
-    public UserWorkoutPreference update(UserWorkoutPreference preference) {
-        // Find the existing workout preference by user ID
+    @Transactional
+    public UserWorkoutPreference update(UserWorkoutPreference userWorkoutPreference) {
+        // Find existing entity by user ID
         UserWorkoutPreferenceEntity existingEntity = jpaUserWorkoutPreferenceRepository
-                .findByUserId(preference.getUserid())
-                .orElseThrow(() ->
-                        new IllegalArgumentException("UserWorkoutPreference for user ID " + preference.getUserid() + " does not exist.")
-                );
+                .findByUserId(userWorkoutPreference.getUserid())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "No workout preference found for user ID: " + userWorkoutPreference.getUserid()
+                ));
+
 
         // Update fields in the existing entity
-        existingEntity.setFitnessGoal(preference.getFitnessGoal());
-        existingEntity.setFitnessLevel(preference.getFitnessLevel());
-        existingEntity.setPreferredTrainingStyle(preference.getPreferredTrainingStyle());
-        existingEntity.setDaysAvailable(preference.getDaysAvailable());
+        existingEntity.setFitnessGoal(userWorkoutPreference.getFitnessGoal());
+        existingEntity.setFitnessLevel(userWorkoutPreference.getFitnessLevel());
+        existingEntity.setPreferredTrainingStyle(userWorkoutPreference.getPreferredTrainingStyle());
+        existingEntity.setDaysAvailable(userWorkoutPreference.getDaysAvailable());
 
-        // Save the updated entity
+        // Ensure that Hibernate treats it as an update, not a new insert
         UserWorkoutPreferenceEntity updatedEntity = jpaUserWorkoutPreferenceRepository.save(existingEntity);
 
-        // Convert the updated entity back to the domain object and return
+        // Convert and return updated domain object
         return userWorkoutPreferenceEntityMapper.toDomain(updatedEntity);
     }
+
+
+
 
 
     @Override

@@ -1,7 +1,6 @@
 package fitness_app_be.fitness_app.business.impl;
 
 import fitness_app_be.fitness_app.business.AdminService;
-import fitness_app_be.fitness_app.business.AuthService;
 import fitness_app_be.fitness_app.business.UserService;
 import fitness_app_be.fitness_app.configuration.security.token.AccessTokenEncoder;
 import fitness_app_be.fitness_app.domain.Admin;

@@ -104,9 +104,16 @@ public class DietRepositoryImpl implements DietRepository {
     @Override
     @Transactional
     public Optional<Diet> getDietByUserId(long userId) {
-        return jpaDietRepository.findDietEntityByUserId(userId)
+        Optional<DietEntity> userDietEntity = jpaDietRepository.findDietEntityByUserId(userId);
+
+        if (userDietEntity.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return jpaDietRepository.findByIdWithMeals(userDietEntity.get().getId())
                 .map(dietEntityMapperImpl::toDomain);
     }
+
 
 
     @Override

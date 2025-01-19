@@ -144,15 +144,20 @@ class UserServiceImplTest {
 
     @Test
     void updateUser_ShouldUpdateAndReturnUser_WhenExists() {
+        // Arrange
         when(userRepository.exists(user.getId())).thenReturn(true);
-        when(passwordEncoder.encode(user.getPassword())).thenReturn("encodedPassword");
-        when(userRepository.update(any(User.class))).thenReturn(user);
+        when(userRepository.update(any(User.class))).thenReturn(user); // Mock update return
 
+        // Act
         User updatedUser = userService.updateUser(user);
 
+        // Assert
         assertNotNull(updatedUser);
-        verify(userRepository, times(1)).update(user);
+        assertEquals(user, updatedUser); // Ensure the returned user is the same as expected
+        verify(userRepository, times(1)).exists(user.getId()); // Ensure existence check happens
+        verify(userRepository, times(1)).update(user); // Ensure update is called once
     }
+
 
     @Test
     void updateUser_ShouldThrowUserNotFoundException_WhenUserDoesNotExist() {

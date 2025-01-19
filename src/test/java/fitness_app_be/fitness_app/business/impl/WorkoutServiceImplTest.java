@@ -47,14 +47,11 @@ class WorkoutServiceImplTest {
     private File imageFile;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
 
-
-        // ✅ Creating test objects
         exercise = new Exercise(1L, "Push-up", 3, 3, MuscleGroup.BACK);
         workout = new Workout(1L, "Full Body Workout", "A great workout for overall fitness.", "PictureURL", List.of(exercise), null, null, null);
 
-        // ✅ Image file mocking
         imageFile = mock(File.class);
     }
 
@@ -93,7 +90,7 @@ class WorkoutServiceImplTest {
 
     @Test
     void createWorkout_ShouldReturnCreatedWorkout() throws Exception {
-        when(imageFile.exists()).thenReturn(true);  // ✅ Ensure mocked file exists
+        when(imageFile.exists()).thenReturn(true);
         when(cloudinary.uploader()).thenReturn(uploader);
         when(uploader.upload(any(File.class), any(Map.class)))
                 .thenReturn(Map.of("url", "http://cloudinary.com/image.jpg"));
@@ -152,7 +149,7 @@ class WorkoutServiceImplTest {
 
     @Test
     void updateWorkout_ShouldReturnUpdatedWorkout() throws Exception {
-        when(imageFile.exists()).thenReturn(true);  // ✅ Ensure file exists
+        when(imageFile.exists()).thenReturn(true);
         when(workoutRepository.getWorkoutById(1L)).thenReturn(Optional.of(workout));
         when(cloudinary.uploader()).thenReturn(uploader);
         when(uploader.upload(any(File.class), any(Map.class)))

@@ -12,7 +12,6 @@ import java.util.ArrayList;
 public class DietEntityMapper {
 
     private final MealEntityMapper mealEntityMapper;
-    private final UserEntityMapper userEntityMapper;
 
     public Diet toDomain(DietEntity dietEntity) {
         if (dietEntity == null) {

@@ -76,5 +76,10 @@ public class WorkoutStatusRepositoryImpl implements WorkoutStatusRepository {
         return jpaWorkoutStatusRepository.countCompletedWorkoutsByWeekRange(userId, startWeek, currentWeek);
     }
 
+    @Override
+    public void deleteByWorkoutPlanId(Long workoutPlanId){
+        jpaWorkoutStatusRepository.deleteByWorkoutPlanId(workoutPlanId);
+    }
+
 
 }

@@ -48,12 +48,14 @@ class UserWorkoutPreferenceServiceImplTest {
     private UserWorkoutPreference userWorkoutPreference;
     private User user;
     private WorkoutPlan workoutPlan;
+    private WorkoutPlan updatedWorkoutPlan;
 
     @BeforeEach
     void setUp() {
         userWorkoutPreference = new UserWorkoutPreference(1L, 1L, null, null, null, 4);
         user = new User(1L, "John Doe", "john@example.com", "password", null, userWorkoutPreference, "pictureURL", LocalDateTime.now(), LocalDateTime.now(),  Role.ADMIN,workoutPlan, null, null, true);
         workoutPlan = new WorkoutPlan();
+        updatedWorkoutPlan = new WorkoutPlan();
     }
 
     @Test
@@ -129,36 +131,45 @@ class UserWorkoutPreferenceServiceImplTest {
 
     @Test
     void updateUserWorkoutPreference_ReturnsUpdatedUserWorkoutPreference() {
-        when(userWorkoutPreferenceRepository.getWorkoutPreferenceById(1L)).thenReturn(Optional.of(userWorkoutPreference));
+        // Arrange
+        when(userWorkoutPreferenceRepository.findByUserId(1L)).thenReturn(Optional.of(userWorkoutPreference)); // Fix: findByUserId
         when(userService.getUserById(1L)).thenReturn(user);
-        when(workoutPlanGenerator.calculateWorkoutPlan(userWorkoutPreference)).thenReturn(workoutPlan);
-        when(workoutPlanService.createWorkoutPlan(workoutPlan)).thenReturn(workoutPlan);
+        when(workoutPlanService.getWorkoutPlanByUserId(1L)).thenReturn(workoutPlan); // Fix: Ensure existing plan is retrieved
+        when(workoutPlanGenerator.calculateWorkoutPlan(userWorkoutPreference)).thenReturn(updatedWorkoutPlan);
+        when(workoutPlanService.updateWorkoutPlan(updatedWorkoutPlan)).thenReturn(updatedWorkoutPlan); // Fix: update instead of create
         when(userWorkoutPreferenceRepository.update(userWorkoutPreference)).thenReturn(userWorkoutPreference);
 
+        // Act
         UserWorkoutPreference result = userWorkoutPreferenceService.updateUserWorkoutPreference(userWorkoutPreference);
 
+        // Assert
         assertEquals(userWorkoutPreference, result);
-        verify(userWorkoutPreferenceRepository, times(1)).getWorkoutPreferenceById(1L);
+        verify(userWorkoutPreferenceRepository, times(1)).findByUserId(1L); // Fix: Verify correct method
         verify(userService, times(1)).getUserById(1L);
+        verify(workoutPlanService, times(1)).getWorkoutPlanByUserId(1L); // Verify retrieving existing plan
         verify(workoutPlanGenerator, times(1)).calculateWorkoutPlan(userWorkoutPreference);
-        verify(workoutPlanService, times(1)).createWorkoutPlan(workoutPlan);
+        verify(workoutPlanService, times(1)).updateWorkoutPlan(updatedWorkoutPlan); // Fix: update instead of create
         verify(userService, times(1)).updateUser(user);
         verify(userWorkoutPreferenceRepository, times(1)).update(userWorkoutPreference);
     }
 
     @Test
     void updateUserWorkoutPreference_UserWorkoutPreferenceNotFound_ThrowsException() {
-        when(userWorkoutPreferenceRepository.getWorkoutPreferenceById(1L)).thenReturn(Optional.empty());
+        // Arrange
+        when(userWorkoutPreferenceRepository.findByUserId(1L)).thenReturn(Optional.empty()); // Fix: findByUserId
 
+        // Act & Assert
         assertThrows(UserWorkoutPreferenceNotFoundException.class,
                 () -> userWorkoutPreferenceService.updateUserWorkoutPreference(userWorkoutPreference));
 
-        verify(userWorkoutPreferenceRepository, times(1)).getWorkoutPreferenceById(1L);
+        // Verify interactions
+        verify(userWorkoutPreferenceRepository, times(1)).findByUserId(1L);
         verify(userService, never()).getUserById(anyLong());
         verify(workoutPlanGenerator, never()).calculateWorkoutPlan(any());
-        verify(workoutPlanService, never()).createWorkoutPlan(any());
+        verify(workoutPlanService, never()).updateWorkoutPlan(any()); // Fix: update instead of create
         verify(userService, never()).updateUser(any());
         verify(userWorkoutPreferenceRepository, never()).update(any());
     }
+
 
 }

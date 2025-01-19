@@ -1,9 +1,13 @@
 package fitness_app_be.fitness_app.business.impl;
 
+import fitness_app_be.fitness_app.business.WorkoutPlanService;
+import fitness_app_be.fitness_app.business.WorkoutService;
+import fitness_app_be.fitness_app.business.WorkoutStatusService;
 import fitness_app_be.fitness_app.domain.Workout;
 import fitness_app_be.fitness_app.domain.WorkoutPlan;
 import fitness_app_be.fitness_app.exception_handling.WorkoutPlanNotFoundException;
 import fitness_app_be.fitness_app.persistence.repositories.WorkoutPlanRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,16 +28,25 @@ class WorkoutPlanServiceImplTest {
     @Mock
     private WorkoutPlanRepository workoutPlanRepository;
 
+    @Mock
+    private WorkoutService workoutService;
+
+    @Mock
+    private WorkoutStatusService workoutStatusService;
+
     @InjectMocks
-    private WorkoutPlanServiceImpl workoutPlanService;
+    private WorkoutPlanServiceImpl workoutPlanService; // FIX: Use InjectMocks to test the real service logic
 
     private WorkoutPlan workoutPlan;
+    private Workout workout1;
+    private Workout workout2;
 
     @BeforeEach
     void setUp() {
-        List<Workout> workouts = new ArrayList<>();
-        workoutPlan = new WorkoutPlan(1L,1L, workouts);
-
+        workout1 = new Workout(2L, "Workout 1", "A great workout for overall fitness.", "PictureURL", null, null, null, null);
+        workout2 = new Workout(3L, "Workout 2", "A great workout for overall fitness.", "PictureURL", null, null, null, null);
+        List<Workout> workouts = new ArrayList<>(List.of(workout1, workout2));
+        workoutPlan = new WorkoutPlan(1L, 1L, workouts);
     }
 
     @Test
@@ -100,8 +113,10 @@ class WorkoutPlanServiceImplTest {
     @Test
     void deleteWorkoutPlan_ShouldDeleteWorkoutPlan_WhenWorkoutPlanExists() {
         when(workoutPlanRepository.exists(1L)).thenReturn(true);
+        doNothing().when(workoutPlanRepository).delete(1L);
 
         assertDoesNotThrow(() -> workoutPlanService.deleteWorkoutPlan(1L));
+
         verify(workoutPlanRepository, times(1)).exists(1L);
         verify(workoutPlanRepository, times(1)).delete(1L);
     }
@@ -118,22 +133,36 @@ class WorkoutPlanServiceImplTest {
     @Test
     void updateWorkoutPlan_ShouldReturnUpdatedWorkoutPlan_WhenWorkoutPlanExists() {
         when(workoutPlanRepository.getWorkoutPlanById(1L)).thenReturn(Optional.of(workoutPlan));
+        when(workoutService.getWorkoutById(2L)).thenReturn(workout1);
+        when(workoutService.getWorkoutById(3L)).thenReturn(workout2);
         when(workoutPlanRepository.update(workoutPlan)).thenReturn(workoutPlan);
+
+        doNothing().when(workoutStatusService).deleteByWorkoutPlanId(1L);
+        doNothing().when(workoutStatusService).saveAll(anyList());
 
         WorkoutPlan updatedWorkoutPlan = workoutPlanService.updateWorkoutPlan(workoutPlan);
 
         assertNotNull(updatedWorkoutPlan);
         assertEquals(workoutPlan, updatedWorkoutPlan);
+
         verify(workoutPlanRepository, times(1)).getWorkoutPlanById(1L);
+        verify(workoutService, times(1)).getWorkoutById(2L);
+        verify(workoutService, times(1)).getWorkoutById(3L);
         verify(workoutPlanRepository, times(1)).update(workoutPlan);
+        verify(workoutStatusService, times(1)).deleteByWorkoutPlanId(1L);
+        verify(workoutStatusService, times(1)).saveAll(anyList());
     }
 
     @Test
     void updateWorkoutPlan_ShouldThrowException_WhenWorkoutPlanNotFound() {
         when(workoutPlanRepository.getWorkoutPlanById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(WorkoutPlanNotFoundException.class, () -> workoutPlanService.updateWorkoutPlan(workoutPlan));
+        assertThrows(EntityNotFoundException.class, () -> workoutPlanService.updateWorkoutPlan(workoutPlan));
+
         verify(workoutPlanRepository, times(1)).getWorkoutPlanById(1L);
         verify(workoutPlanRepository, never()).update(any(WorkoutPlan.class));
+        verify(workoutService, never()).getWorkoutById(anyLong());
+        verify(workoutStatusService, never()).deleteByWorkoutPlanId(anyLong());
+        verify(workoutStatusService, never()).saveAll(anyList());
     }
 }
