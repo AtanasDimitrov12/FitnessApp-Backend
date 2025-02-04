@@ -1,4 +1,4 @@
-FROM gradle:7.5.0-jdk17
+FROM gradle:8.5-jdk21 AS build
 WORKDIR /opt/app
 
 # Copy all backend source files
