@@ -131,7 +131,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Clone frontend repository
-        run: git clone https://github.com/YOUR_GITHUB_USERNAME/YOUR_FRONTEND_REPO.git frontend
+        run: git clone https://github.com/AtanasDimitrov12/FitnessApp-Frontend.git frontend
 
       - name: Install Docker and Docker Compose
         run: |
