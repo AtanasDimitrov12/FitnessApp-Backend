@@ -108,13 +108,15 @@ jobs:
 
       - name: Fetch SonarQube vulnerability report
         run: |
-          curl -u "${{ secrets.SONARQUBE_TOKEN }}:" \
-          "${{ secrets.SONARQUBE_HOST_URL }}/api/issues/gitlab_sast_export?projectKey=FitnessApp&branch=${GITHUB_REF_NAME}" \
+          curl --silent --show-error --fail \
+          -u "${{ secrets.SONARQUBE_TOKEN }}:" \
+          "${{ secrets.SONARQUBE_HOST_URL }}/api/issues/search?componentKeys=FitnessApp" \
           -o gl-sast-sonar-report.json
         env:
           SONARQUBE_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
           SONARQUBE_HOST_URL: ${{ secrets.SONARQUBE_HOST_URL }}
         continue-on-error: true
+
 
       - name: Upload SonarQube vulnerability report
         uses: actions/upload-artifact@v4
@@ -136,10 +138,14 @@ jobs:
       - name: Install Docker and Docker Compose
         run: |
           sudo apt-get update
-          sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
-          sudo chmod 666 /var/run/docker.sock
+          sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+          
+          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          
           docker --version
-          docker compose version  # Verify installation
+          docker-compose --version
+
 
       - name: Deploy using Docker Compose
         run: docker compose up --build -d
