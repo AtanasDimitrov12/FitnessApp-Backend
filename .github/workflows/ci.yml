@@ -13,6 +13,7 @@ on:
       - develop
 
 jobs:
+  jobs:
   build:
     runs-on: ubuntu-latest
     steps:
@@ -27,19 +28,8 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Cache SonarQube packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
-      - name: Cache Gradle packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-          restore-keys: ${{ runner.os }}-gradle
+      - name: Grant execute permission to Gradle wrapper
+        run: chmod +x gradlew  # Fixes the permission error
 
       - name: Build project
         run: ./gradlew assemble
@@ -51,6 +41,7 @@ jobs:
           path: |
             build/libs/
             build/classes/
+
 
   test:
     runs-on: ubuntu-latest
