@@ -56,10 +56,12 @@ services:
     restart: unless-stopped
 
   fitness-app-frontend:
-    image: react-vite-frontend:latest # Use the previously built image
+    build:
+      context: ./frontend  # This must match the cloned frontend repo folder
+      dockerfile: Dockerfile  # Ensure this matches the actual Dockerfile name
     container_name: fitness-app-frontend
     ports:
-      - "5173:80" # Map frontend to port 5173
+      - "5173:80" # Expose frontend
     depends_on:
       - fitness-app # Ensure backend starts first
     networks:
