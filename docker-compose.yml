@@ -56,17 +56,19 @@ services:
     restart: unless-stopped
 
   fitness-app-frontend:
-    build:
-      context: ./frontend  # This must match the cloned frontend repo folder
-      dockerfile: Dockerfile  # Ensure this matches the actual Dockerfile name
+    image: fitness-app-frontend:latest  # Fallback to locally built image
     container_name: fitness-app-frontend
     ports:
-      - "5173:80" # Expose frontend
+      - "5173:80"
     depends_on:
-      - fitness-app # Ensure backend starts first
+      - fitness-app
     networks:
       - fitness-network
     restart: unless-stopped
+    build:
+      context: ./frontend  # This must match the cloned frontend repo folder
+      dockerfile: Dockerfile  # Ensure this matches the actual Dockerfile name
+
 
 networks:
   fitness-network:
